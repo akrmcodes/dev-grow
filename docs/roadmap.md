@@ -31,10 +31,10 @@
 #### Task Checklist
 
 **0.1 OpenRouter Account & API Key**
-- [ ] Create an account at [openrouter.ai](https://openrouter.ai).
-- [ ] Navigate to **Keys** and generate a new API key named `devgrow-dev`.
-- [ ] Copy the key and store it securely in a local password manager or note.
-- [ ] Confirm the free-tier model `qwen/qwen3-coder:free` is listed as available in the OpenRouter model catalogue.
+- [x] Create an account at [openrouter.ai](https://openrouter.ai).
+- [x] Navigate to **Keys** and generate a new API key named `devgrow-dev`.
+- [x] Copy the key and store it securely in a local password manager or note.
+- [x] Confirm the free-tier model `qwen/qwen3-coder:free` is listed as available in the OpenRouter model catalogue.
 
 **0.2 Next.js 15 Project Scaffold**
 - [ ] Run `npx create-next-app@latest dev-grow` with the following options: TypeScript ✅, ESLint ✅, Tailwind CSS ✅, `src/` directory ✅, App Router ✅, Turbopack ✅.
@@ -48,7 +48,7 @@
 - [ ] Verify zero peer-dependency conflicts by checking `npm install` output for warnings.
 
 **0.4 Shadcn UI Initialization**
-- [ ] Run `npx shadcn@latest init` and select the **Default** style, **Zinc** base colour, and CSS variables enabled.
+- [ ] Run `npx shadcn@latest init` and select the **Default** style, **Nova** base colour, and CSS variables enabled.
 - [ ] Add required components: `npx shadcn@latest add button card progress textarea badge separator tooltip`.
 - [ ] Confirm `src/components/ui/` directory is populated with all seven component files.
 - [ ] Verify `components.json` was created at the project root with correct aliases.
