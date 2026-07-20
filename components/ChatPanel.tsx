@@ -5,17 +5,14 @@ import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
-import {
-  RATE_LIMIT_MESSAGE,
-  RATE_LIMIT_MESSAGE_AR,
-} from "@/lib/constants";
+import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type ChatPanelProps = {
   messages: UIMessage[];
   isLoading: boolean;
   error: Error | undefined;
-  isRTL: boolean;
+  language: Language;
 };
 
 function getMessageText(message: UIMessage): string {
@@ -38,24 +35,23 @@ function getApiErrorCode(error: Error | undefined): string | null {
   }
 }
 
-function getErrorMessage(error: Error | undefined, isRTL: boolean): string {
+function getErrorMessage(error: Error | undefined, language: Language): string {
   const code = getApiErrorCode(error);
 
   if (code === "RATE_LIMIT") {
-    return isRTL ? RATE_LIMIT_MESSAGE_AR : RATE_LIMIT_MESSAGE;
+    return t("errorRateLimit", language);
   }
 
-  return isRTL
-    ? "حدث خطأ. يرجى المحاولة مرة أخرى."
-    : "Something went wrong. Please try again.";
+  return t("errorGeneric", language);
 }
 
 export function ChatPanel({
   messages,
   isLoading,
   error,
-  isRTL,
+  language,
 }: ChatPanelProps) {
+  const isRTL = language === "ar";
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,9 +71,7 @@ export function ChatPanel({
         {showEmptyState && (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <p className="max-w-[220px] text-sm text-muted-foreground">
-              {isRTL
-                ? "ستظهر الردود هنا"
-                : "Responses will appear here"}
+              {t("responsesEmpty", language)}
             </p>
           </div>
         )}
@@ -175,7 +169,7 @@ export function ChatPanel({
                 variant="secondary"
                 className="animate-thinking-pulse gap-1.5 px-3 py-1"
               >
-                {isRTL ? "يفكر…" : "Thinking…"}
+                {t("thinking", language)}
               </Badge>
             </div>
           )}
@@ -185,7 +179,7 @@ export function ChatPanel({
               className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
               role="alert"
             >
-              {getErrorMessage(error, isRTL)}
+              {getErrorMessage(error, language)}
             </div>
           )}
 

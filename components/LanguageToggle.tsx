@@ -1,9 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { type Language, t } from "@/lib/translations";
 
 type LanguageToggleProps = {
-  language: "en" | "ar";
+  language: Language;
   onToggle: () => void;
 };
 
@@ -17,7 +18,7 @@ export function LanguageToggle({ language, onToggle }: LanguageToggleProps) {
       className="min-w-9 font-semibold tracking-wide"
       onClick={onToggle}
       aria-label={
-        isArabic ? "Switch to English" : "Switch to Arabic"
+        isArabic ? t("switchToEnglish", language) : t("switchToArabic", language)
       }
     >
       {isArabic ? "EN" : "AR"}

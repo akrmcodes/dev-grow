@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { MODE_CONFIG } from "@/lib/constants";
 import type { Mode } from "@/lib/prompts";
+import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type ModeSelectorProps = {
@@ -10,7 +11,7 @@ type ModeSelectorProps = {
   onModeChange: (mode: Mode) => void;
   onSubmit: (mode: Mode) => void;
   isLoading: boolean;
-  isRTL: boolean;
+  language: Language;
 };
 
 const modes = Object.keys(MODE_CONFIG) as Mode[];
@@ -20,7 +21,7 @@ export function ModeSelector({
   onModeChange,
   onSubmit,
   isLoading,
-  isRTL,
+  language,
 }: ModeSelectorProps) {
   const handleClick = (mode: Mode) => {
     onModeChange(mode);
@@ -30,7 +31,7 @@ export function ModeSelector({
   return (
     <div className="shrink-0">
       <p className="mb-2 text-sm font-medium text-foreground">
-        {isRTL ? "اختر وضعاً" : "Select a mode"}
+        {t("selectMode", language)}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {modes.map((mode) => {
@@ -48,7 +49,7 @@ export function ModeSelector({
               aria-pressed={isActive}
             >
               <span aria-hidden="true">{config.emoji}</span>
-              <span>{isRTL ? config.labelAr : config.label}</span>
+              <span>{t(config.labelKey, language)}</span>
             </Button>
           );
         })}

@@ -154,3 +154,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Fixed chat errors shown immediately in the UI when Gemma returned upstream 429 inside the SSE stream. Added `lib/stream-text-fallback.ts` to probe a tee'd branch until text/reasoning/finish or error before returning `toUIMessageStreamResponse()`, enabling transparent fallback to the secondary model. Score route now retries the next model on `NoObjectGeneratedError` schema mismatches.
 **Files:** lib/stream-text-fallback.ts, app/api/chat/route.ts, app/api/score/route.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 7.1–7.3, 7.5] Theming & localization
+
+**Summary:** Completed Stage 7 theming and localization (excluding 7.4 animations). Added centralized `lib/translations.ts` with `Language` type and `t()` helper; migrated all UI strings from inline bilingual ternaries. Updated `ThemeToggle` to lucide Moon/Sun with `size="icon"`; removed hardcoded `dark` from `layout.tsx` so `next-themes` controls the class. Polished `AppHeader` with mobile `flex-wrap`; fixed Sidebar logical border (`border-s`); localized footer; slimmed `MODE_CONFIG` to emoji + translation keys.
+**Files:** lib/translations.ts, lib/constants.ts, app/layout.tsx, components/ThemeToggle.tsx, components/LanguageToggle.tsx, components/AppHeader.tsx, components/AppShell.tsx, components/CodeEditor.tsx, components/ModeSelector.tsx, components/ChatPanel.tsx, components/ScorecardPanel.tsx, components/Sidebar.tsx, docs/project_log.md
+**Status:** completed

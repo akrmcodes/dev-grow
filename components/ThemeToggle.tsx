@@ -1,8 +1,10 @@
 "use client";
 
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
+import { type Language, t } from "@/lib/translations";
 
 function useMounted() {
   return useSyncExternalStore(
@@ -12,7 +14,11 @@ function useMounted() {
   );
 }
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  language: Language;
+};
+
+export function ThemeToggle({ language }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
 
@@ -20,12 +26,11 @@ export function ThemeToggle() {
     return (
       <Button
         variant="ghost"
-        size="sm"
-        className="w-9 px-0"
-        aria-label="Toggle theme"
+        size="icon"
+        aria-label={t("toggleTheme", language)}
         disabled
       >
-        <span className="text-base">🌙</span>
+        <Moon className="size-4" aria-hidden="true" />
       </Button>
     );
   }
@@ -35,14 +40,17 @@ export function ThemeToggle() {
   return (
     <Button
       variant="ghost"
-      size="sm"
-      className="w-9 px-0"
+      size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={
+        isDark ? t("switchToLight", language) : t("switchToDark", language)
+      }
     >
-      <span className="text-base" aria-hidden="true">
-        {isDark ? "🌙" : "☀️"}
-      </span>
+      {isDark ? (
+        <Sun className="size-4" aria-hidden="true" />
+      ) : (
+        <Moon className="size-4" aria-hidden="true" />
+      )}
     </Button>
   );
 }

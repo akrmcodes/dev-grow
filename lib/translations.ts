@@ -1,0 +1,78 @@
+export type Language = "en" | "ar";
+
+export const translations = {
+  en: {
+    switchToLight: "Switch to light mode",
+    switchToDark: "Switch to dark mode",
+    toggleTheme: "Toggle theme",
+    switchToArabic: "Switch to Arabic",
+    switchToEnglish: "Switch to English",
+    yourCode: "Your Code",
+    codePlaceholder: "Paste your code here... 🌱",
+    line: "line",
+    lines: "lines",
+    selectMode: "Select a mode",
+    modeReview: "Review",
+    modeHint: "Hint",
+    modeConcept: "Concept",
+    modeSolution: "Solution",
+    modeAnalogy: "Analogy",
+    modeChallenge: "Challenge",
+    responsesEmpty: "Responses will appear here",
+    thinking: "Thinking…",
+    errorGeneric: "Something went wrong. Please try again.",
+    errorRateLimit:
+      "You've reached the request limit. Please wait a moment and try again.",
+    scoreTitle: "Code Score 📊",
+    scoreCode: "Score Code",
+    overallScore: "Overall Score",
+    readability: "Readability",
+    logic: "Logic",
+    documentation: "Documentation",
+    scoreEmpty: "Click Score Code or use Review mode to generate a score",
+    scoreError: "Unable to generate score.",
+    retry: "Retry",
+    validationPasteCode: "Paste some code first! 🌱",
+    footerCredit: "Powered by OpenRouter · google/gemma-4-31b-it:free",
+  },
+  ar: {
+    switchToLight: "التبديل إلى الوضع الفاتح",
+    switchToDark: "التبديل إلى الوضع الداكن",
+    toggleTheme: "تبديل المظهر",
+    switchToArabic: "التبديل إلى العربية",
+    switchToEnglish: "التبديل إلى الإنجليزية",
+    yourCode: "الكود الخاص بك",
+    codePlaceholder: "الصق الكود هنا... 🌱",
+    line: "سطر",
+    lines: "سطر",
+    selectMode: "اختر وضعاً",
+    modeReview: "مراجعة",
+    modeHint: "تلميح",
+    modeConcept: "المفهوم",
+    modeSolution: "الحل",
+    modeAnalogy: "تشبيه",
+    modeChallenge: "تحدي",
+    responsesEmpty: "ستظهر الردود هنا",
+    thinking: "يفكر…",
+    errorGeneric: "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    errorRateLimit:
+      "لقد وصلت إلى حد الطلبات. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.",
+    scoreTitle: "تقييم الكود 📊",
+    scoreCode: "قيّم الكود",
+    overallScore: "النتيجة الإجمالية",
+    readability: "القابلية للقراءة",
+    logic: "المنطق",
+    documentation: "التوثيق",
+    scoreEmpty: "اضغط «قيّم الكود» أو اختر وضع المراجعة",
+    scoreError: "تعذر إنشاء التقييم.",
+    retry: "إعادة المحاولة",
+    validationPasteCode: "الصق الكود أولاً! 🌱",
+    footerCredit: "مدعوم من OpenRouter · google/gemma-4-31b-it:free",
+  },
+} as const;
+
+export type TranslationKey = keyof typeof translations.en;
+
+export function t(key: TranslationKey, lang: Language): string {
+  return translations[lang][key];
+}

@@ -6,10 +6,11 @@ import { ModeSelector } from "@/components/ModeSelector";
 import { ScorecardPanel } from "@/components/ScorecardPanel";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
+import type { Language } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type SidebarProps = {
-  isRTL: boolean;
+  language: Language;
   activeMode: Mode;
   onModeChange: (mode: Mode) => void;
   onModeSubmit: (mode: Mode) => void;
@@ -25,7 +26,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({
-  isRTL,
+  language,
   activeMode,
   onModeChange,
   onModeSubmit,
@@ -42,7 +43,7 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "flex h-full min-h-[320px] flex-col gap-3 px-4 py-3 md:border-l md:border-border",
+        "flex h-full min-h-[320px] flex-col gap-3 px-4 py-3 md:border-s md:border-border",
       )}
     >
       <ModeSelector
@@ -50,7 +51,7 @@ export function Sidebar({
         onModeChange={onModeChange}
         onSubmit={onModeSubmit}
         isLoading={isLoading}
-        isRTL={isRTL}
+        language={language}
       />
 
       {validationError && (
@@ -63,14 +64,14 @@ export function Sidebar({
         messages={messages}
         isLoading={isLoading}
         error={error}
-        isRTL={isRTL}
+        language={language}
       />
 
       <ScorecardPanel
         data={scorecardData}
         isLoading={scorecardLoading}
         error={scorecardError}
-        isRTL={isRTL}
+        language={language}
         onRetry={onRetryScorecard}
         onScoreCode={onFetchScorecard}
       />

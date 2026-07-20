@@ -8,9 +8,8 @@ import { CodeEditor } from "@/components/CodeEditor";
 import { Sidebar } from "@/components/Sidebar";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
+import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
-
-type Language = "en" | "ar";
 
 export function AppShell() {
   const [code, setCode] = useState("");
@@ -37,9 +36,7 @@ export function AppShell() {
 
   const fetchScorecard = useCallback(async () => {
     if (!code.trim()) {
-      setValidationError(
-        isRTL ? "الصق الكود أولاً! 🌱" : "Paste some code first! 🌱",
-      );
+      setValidationError(t("validationPasteCode", language));
       return;
     }
 
@@ -70,7 +67,7 @@ export function AppShell() {
     } finally {
       setScorecardLoading(false);
     }
-  }, [code, isRTL]);
+  }, [code, language]);
 
   const handleLanguageToggle = () => {
     setLanguage((current) => (current === "en" ? "ar" : "en"));
@@ -87,9 +84,7 @@ export function AppShell() {
     setMode(selectedMode);
 
     if (!code.trim()) {
-      setValidationError(
-        isRTL ? "الصق الكود أولاً! 🌱" : "Paste some code first! 🌱",
-      );
+      setValidationError(t("validationPasteCode", language));
       return;
     }
 
@@ -112,12 +107,16 @@ export function AppShell() {
 
       <main className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2">
         <section className="flex min-h-[400px] flex-col bg-surface/50 p-4 md:min-h-0 md:p-6">
-          <CodeEditor value={code} onChange={handleCodeChange} isRTL={isRTL} />
+          <CodeEditor
+            value={code}
+            onChange={handleCodeChange}
+            language={language}
+          />
         </section>
 
         <section className="flex min-h-[320px] flex-col md:min-h-0">
           <Sidebar
-            isRTL={isRTL}
+            language={language}
             activeMode={mode}
             onModeChange={setMode}
             onModeSubmit={handleModeSubmit}
@@ -135,7 +134,7 @@ export function AppShell() {
       </main>
 
       <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">
-        Powered by OpenRouter · google/gemma-4-31b-it:free
+        {t("footerCredit", language)}
       </footer>
     </div>
   );

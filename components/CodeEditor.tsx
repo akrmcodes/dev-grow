@@ -1,15 +1,16 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
+import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type CodeEditorProps = {
   value: string;
   onChange: (value: string) => void;
-  isRTL: boolean;
+  language: Language;
 };
 
-export function CodeEditor({ value, onChange, isRTL }: CodeEditorProps) {
+export function CodeEditor({ value, onChange, language }: CodeEditorProps) {
   const lineCount = value === "" ? 1 : value.split("\n").length;
 
   return (
@@ -18,7 +19,7 @@ export function CodeEditor({ value, onChange, isRTL }: CodeEditorProps) {
         htmlFor="code-editor"
         className="text-sm font-medium text-foreground"
       >
-        {isRTL ? "الكود الخاص بك" : "Your Code"}
+        {t("yourCode", language)}
       </label>
 
       <Textarea
@@ -26,9 +27,7 @@ export function CodeEditor({ value, onChange, isRTL }: CodeEditorProps) {
         dir="ltr"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder={
-          isRTL ? "الصق الكود هنا... 🌱" : "Paste your code here... 🌱"
-        }
+        placeholder={t("codePlaceholder", language)}
         spellCheck={false}
         className={cn(
           "min-h-[400px] flex-1 resize-y font-mono text-sm leading-relaxed md:min-h-[calc(100dvh-12rem)]",
@@ -37,9 +36,7 @@ export function CodeEditor({ value, onChange, isRTL }: CodeEditorProps) {
       />
 
       <p className="text-xs text-muted-foreground" aria-live="polite">
-        {isRTL
-          ? `${lineCount} ${lineCount === 1 ? "سطر" : "سطر"}`
-          : `${lineCount} ${lineCount === 1 ? "line" : "lines"}`}
+        {`${lineCount} ${lineCount === 1 ? t("line", language) : t("lines", language)}`}
       </p>
     </div>
   );

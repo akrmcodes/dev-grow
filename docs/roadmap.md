@@ -416,29 +416,29 @@
 #### Task Checklist
 
 **7.1 Dark / Light Theme Toggle**
-- [ ] Create `src/components/ThemeToggle.tsx` using the `useTheme` hook from `next-themes`.
-- [ ] Render a Shadcn `<Button variant="ghost" size="icon">` that toggles between `"dark"` and `"light"` on click.
-- [ ] Show a `<Moon />` icon (lucide-react) in light mode and a `<Sun />` icon in dark mode.
-- [ ] Add the `ThemeToggle` to the sticky header in `src/app/page.tsx`.
-- [ ] Verify all Shadcn components (buttons, cards, progress, textarea) correctly invert colours on theme switch.
-- [ ] Ensure code blocks in the chat panel use a dark highlight.js theme even in light mode.
+- [x] Create `src/components/ThemeToggle.tsx` using the `useTheme` hook from `next-themes`.
+- [x] Render a Shadcn `<Button variant="ghost" size="icon">` that toggles between `"dark"` and `"light"` on click.
+- [x] Show a `<Moon />` icon (lucide-react) in light mode and a `<Sun />` icon in dark mode.
+- [x] Add the `ThemeToggle` to the sticky header in `src/app/page.tsx`.
+- [x] Verify all Shadcn components (buttons, cards, progress, textarea) correctly invert colours on theme switch.
+- [x] Ensure code blocks in the chat panel use a dark highlight.js theme even in light mode.
 
 **7.2 Translations Constants File**
-- [ ] Create `src/lib/translations.ts`.
-- [ ] Define and export a `translations` object with two top-level keys: `"en"` and `"ar"`.
-- [ ] For each language, provide translations for all UI strings: header title, mode button labels, code editor placeholder, "Thinking…" text, scorecard headers (Readability, Logic, Documentation, Overall Score, Code Summary), error messages, validation messages, footer credit.
-- [ ] Export a `Language` type: `'en' | 'ar'`.
-- [ ] Export a helper `t(key: keyof typeof translations['en'], lang: Language): string` function.
+- [x] Create `src/lib/translations.ts`.
+- [x] Define and export a `translations` object with two top-level keys: `"en"` and `"ar"`.
+- [x] For each language, provide translations for all UI strings: header title, mode button labels, code editor placeholder, "Thinking…" text, scorecard headers (Readability, Logic, Documentation, Overall Score, Code Summary), error messages, validation messages, footer credit.
+- [x] Export a `Language` type: `'en' | 'ar'`.
+- [x] Export a helper `t(key: keyof typeof translations['en'], lang: Language): string` function.
 
 **7.3 Language Toggle & RTL Layout Switching**
-- [ ] Create `src/components/LanguageToggle.tsx` with a button displaying `"AR"` when current language is English and `"EN"` when Arabic.
-- [ ] In `src/app/page.tsx`, add a `language: Language` state variable (default `'en'`).
-- [ ] Derive `isRTL = language === 'ar'` from state.
-- [ ] Pass `isRTL` down to all components that need directional awareness.
-- [ ] On language change, update `document.documentElement.dir` via `useEffect`: `'rtl'` when Arabic, `'ltr'` when English.
-- [ ] On language change, update `document.documentElement.lang` via `useEffect`.
-- [ ] When `isRTL` is active, apply the `font-arabic` CSS class to the root container.
-- [ ] Verify that the split-pane layout reverses correctly under RTL (editor appears on the right, sidebar on the left).
+- [x] Create `src/components/LanguageToggle.tsx` with a button displaying `"AR"` when current language is English and `"EN"` when Arabic.
+- [x] In `src/app/page.tsx`, add a `language: Language` state variable (default `'en'`).
+- [x] Derive `isRTL = language === 'ar'` from state.
+- [x] Pass `isRTL` down to all components that need directional awareness.
+- [x] On language change, update `document.documentElement.dir` via `useEffect`: `'rtl'` when Arabic, `'ltr'` when English.
+- [x] On language change, update `document.documentElement.lang` via `useEffect`.
+- [x] When `isRTL` is active, apply the `font-arabic` CSS class to the root container.
+- [x] Verify that the split-pane layout reverses correctly under RTL (editor appears on the right, sidebar on the left).
 
 **7.4 Micro-Animations**
 - [ ] **Message Fade-In:** Wrap each message bubble in the ChatPanel in a `motion.div` with `initial={{ opacity: 0, y: 10 }}` and `animate={{ opacity: 1, y: 0 }}`. Wrap the message list in `<AnimatePresence>`.
@@ -449,20 +449,20 @@
 - [ ] **Score Bar Color Transition:** Add `transition={{ duration: 0.3 }}` on color-class changes so color shifts animate smoothly when scores update.
 
 **7.5 DevGrow Header Polish**
-- [ ] Ensure the header contains: `🌱 DevGrow` logo (bold, gradient text from emerald to cyan), the `<LanguageToggle />` button, and the `<ThemeToggle />` button.
-- [ ] Add a `border-b border-border` bottom border on the header.
-- [ ] Add `backdrop-blur-sm` and a semi-transparent background (`bg-background/80`) for a frosted-glass effect.
-- [ ] Verify the header does not overflow on mobile — stack controls if needed using `flex-wrap`.
+- [x] Ensure the header contains: `🌱 DevGrow` logo (bold, gradient text from emerald to cyan), the `<LanguageToggle />` button, and the `<ThemeToggle />` button.
+- [x] Add a `border-b border-border` bottom border on the header.
+- [x] Add `backdrop-blur-sm` and a semi-transparent background (`bg-background/80`) for a frosted-glass effect.
+- [x] Verify the header does not overflow on mobile — stack controls if needed using `flex-wrap`.
 
 ---
 
 #### Stage 7 Validation Gate
-- [ ] Clicking the theme toggle switches the entire app (including Shadcn components and syntax highlighting) between dark and light mode without a flash of unstyled content (FOUC).
-- [ ] Clicking the language toggle switches all UI text between Arabic and English within one render cycle.
-- [ ] In Arabic mode, `document.dir` is `"rtl"`, the layout is visually mirrored, and the Arabic font is applied.
-- [ ] Code blocks inside the textarea and chat panel remain left-to-right in both language modes.
+- [x] Clicking the theme toggle switches the entire app (including Shadcn components and syntax highlighting) between dark and light mode without a flash of unstyled content (FOUC).
+- [x] Clicking the language toggle switches all UI text between Arabic and English within one render cycle.
+- [x] In Arabic mode, `document.dir` is `"rtl"`, the layout is visually mirrored, and the Arabic font is applied.
+- [x] Code blocks inside the textarea and chat panel remain left-to-right in both language modes.
 - [ ] All six micro-animations fire correctly: message fade-in, thinking pulse, mode button hover/tap, scorecard panel entry, language switch fade, and score bar colour transition.
-- [ ] The frosted-glass header remains legible in both dark and light themes.
+- [x] The frosted-glass header remains legible in both dark and light themes.
 
 ---
 
