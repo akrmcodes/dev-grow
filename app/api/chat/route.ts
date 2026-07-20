@@ -1,12 +1,13 @@
 import {
   APICallError,
   convertToModelMessages,
+  generateText,
   RetryError,
   streamText,
   type UIMessage,
 } from "ai";
 import { MODE_CONFIG } from "@/lib/constants";
-import { openrouter, PRIMARY_MODEL } from "@/lib/openrouter";
+import { FALLBACK_MODEL, openrouter, PRIMARY_MODEL } from "@/lib/openrouter";
 import { getSystemPrompt, type Mode } from "@/lib/prompts";
 
 // Next.js requires a route-segment literal — keep in sync with MAX_DURATION in lib/constants.ts
@@ -56,6 +57,32 @@ function handleChatError(error: unknown): Response {
   return Response.json({ error: "STREAM_ERROR" }, { status: 500 });
 }
 
+async function resolveAvailableModel(
+  systemPrompt: string,
+  modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>,
+): Promise<string> {
+  for (const model of [PRIMARY_MODEL, FALLBACK_MODEL]) {
+    try {
+      await generateText({
+        model: openrouter.chat(model),
+        system: systemPrompt,
+        messages: modelMessages,
+        maxOutputTokens: 1,
+        maxRetries: 0,
+      });
+      return model;
+    } catch (error) {
+      console.error(error);
+      if (model === PRIMARY_MODEL && getErrorStatus(error) === 429) {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error("All models unavailable");
+}
+
 export async function POST(request: Request) {
   let body: unknown;
 
@@ -94,10 +121,13 @@ export async function POST(request: Request) {
   const systemPrompt = `${getSystemPrompt(mode)}\n\nThe student's code:\n\`\`\`\n${code}\n\`\`\``;
 
   try {
+    const modelMessages = await convertToModelMessages(messagesForModel);
+    const model = await resolveAvailableModel(systemPrompt, modelMessages);
+
     const result = streamText({
-      model: openrouter.chat(PRIMARY_MODEL),
+      model: openrouter.chat(model),
       system: systemPrompt,
-      messages: await convertToModelMessages(messagesForModel),
+      messages: modelMessages,
       onError({ error }) {
         console.error(error);
       },

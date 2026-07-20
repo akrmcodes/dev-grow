@@ -171,12 +171,12 @@
 - [x] Log the full error to `console.error` in all error branches for debugging.
 
 **2.4 Manual API Testing**
-- [ ] Test `POST /api/chat` via `curl` with mode `"review"` and a sample JavaScript function as `code`. Confirm streaming text appears in the terminal.
-- [ ] Test with mode `"hint"` — confirm the response gives only a nudge, no full solution.
-- [ ] Test with mode `"analogy"` — confirm the response uses real-world analogies.
-- [ ] Test with an Arabic code comment (e.g., `// هذه دالة جمع`) — confirm the response is in Arabic.
-- [ ] Test with `mode: "invalid"` — confirm a `400` is returned.
-- [ ] Test with an empty `code` field — confirm a `400` is returned.
+- [x] Test `POST /api/chat` via `curl` with mode `"review"` and a sample JavaScript function as `code`. Confirm streaming text appears in the terminal.
+- [x] Test with mode `"hint"` — confirm the response gives only a nudge, no full solution.
+- [x] Test with mode `"analogy"` — confirm the response uses real-world analogies.
+- [x] Test with an Arabic code comment (e.g., `// هذه دالة جمع`) — confirm the response is in Arabic.
+- [x] Test with `mode: "invalid"` — confirm a `400` is returned.
+- [x] Test with an empty `code` field — confirm a `400` is returned.
 
 ---
 

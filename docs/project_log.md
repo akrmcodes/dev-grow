@@ -70,5 +70,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 2.3] Chat route error handling
 
 **Summary:** Wrapped `streamText()` in try/catch with `handleChatError()` mapping `APICallError`/`RetryError` status codes to structured JSON (`RATE_LIMIT`, `API_KEY_INVALID`, `STREAM_ERROR`). Added `streamText` `onError` callback for async stream failures with server-side logging.
+**Status:** completed
+
+## 2026-07-20 — [Stage 2.4] Manual API testing
+
+**Summary:** Ran full curl test suite against `POST /api/chat`: review/hint/analogy/arabic modes stream successfully; invalid mode and empty code return `400`. Added `resolveAvailableModel()` fallback probe (primary → fallback on 429) so streaming works when Gemma free tier is upstream rate-limited.
 **Files:** app/api/chat/route.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed
