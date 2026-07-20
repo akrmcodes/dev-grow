@@ -42,7 +42,7 @@ A deep search was conducted on the current OpenRouter free tier (July 2026). Fre
 | Model | Params (Active) | Architecture | Context | Coding Strength | Arabic Support | JSON Mode | Verdict |
 |-------|----------------|--------------|---------|-----------------|----------------|-----------|---------|
 | **Gemma 4 31B** | 31B (dense) | Dense | **256K** | ⭐⭐⭐⭐ Strong coding & reasoning | ⭐⭐⭐⭐ Multilingual (140+ languages) | ✅ Structured outputs | **🏆 PRIMARY** |
-| DeepSeek-V4-Flash | 284B (13B active) | MoE | 1M | ⭐⭐⭐⭐⭐ Excellent coding | ⭐⭐⭐⭐ Strong but English/Chinese primary | ✅ Structured outputs | Runner-up |
+| **OpenAI gpt-oss-20b** | 21B (3.6B active) | MoE | 131K | ⭐⭐⭐⭐ Solid coding & reasoning | ⭐⭐⭐ English-primary | ✅ Structured outputs | **Runner-up** |
 | Qwen3-Coder | 480B (35B active) | MoE | 1M | ⭐⭐⭐⭐⭐ SWE-Bench >70% | ⭐⭐⭐⭐⭐ Native Arabic (100+ languages) | ✅ Structured outputs | ❌ Unavailable |
 | NVIDIA Nemotron 3 Ultra | 550B (55B active) | Hybrid MoE | 128K | ⭐⭐⭐⭐⭐ Frontier reasoning | ⭐⭐⭐ English-focused | ✅ | Too slow for streaming chat |
 | Poolside Laguna XS 2.1 | 33B (3B active) | MoE | 256K | ⭐⭐⭐⭐ Good agentic coding | ⭐⭐ English-centric | ✅ | Weak Arabic |
@@ -77,7 +77,7 @@ A deep search was conducted on the current OpenRouter free tier (July 2026). Fre
 
 If Gemma 4 31B's free tier hits rate limits or experiences temporary unavailability:
 
-- **Primary Fallback:** `deepseek/deepseek-v4-flash:free` — excellent coding quality, slightly different multilingual profile.
+- **Primary Fallback:** `openai/gpt-oss-20b:free` — open-weight MoE model with lower latency (3.6B active params), structured outputs, and function calling support.
 - **Emergency Fallback:** Use `openrouter/free` (the smart router) — it automatically selects the best available free model that supports the features your request needs (streaming, structured outputs, etc.).
 
 ### 2.4 Why NOT the Others?
@@ -85,7 +85,7 @@ If Gemma 4 31B's free tier hits rate limits or experiences temporary unavailabil
 | Model | Disqualification Reason |
 |-------|------------------------|
 | **Qwen3-Coder** | Originally selected as primary, but **no longer available** on OpenRouter's free tier. Removed from the catalogue. |
-| **DeepSeek-V4-Flash** | Excellent coder, but Arabic is a second-tier language. In testing, Arabic explanations can sometimes revert to English mid-response. The model's *primary* training languages are Chinese and English. Retained as primary fallback. |
+| **DeepSeek-V4-Flash** | **No longer available** on OpenRouter's free tier. Originally retained as primary fallback; replaced by `openai/gpt-oss-20b:free`. |
 | **Nemotron 3 Ultra** | Overkill for this use case. The 550B model is optimized for deep research and complex planning — not low-latency streaming chat. Response latency would degrade the UX. |
 | **Poolside Laguna XS** | Built specifically for agentic coding (tool use, file manipulation). DevGrow needs *pedagogical* code review, not agentic workflows. Arabic support is minimal. |
 
@@ -496,13 +496,13 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 | Risk | Severity | Probability | Mitigation Strategy |
 |------|----------|-------------|---------------------|
 | **OpenRouter free tier rate limiting** (20 req/min, 50 req/day) | 🔴 High | 🟡 Medium | **During development:** Pace requests, don't spam-test. Cache test responses locally. **During demo:** Pre-warm the model with a test request 5 minutes before. Keep the demo to 5-6 requests max. **Emergency:** Purchase $10 in OpenRouter credits to unlock 1,000 requests/day — permanently. This is within the "free" spirit since it's a one-time unlock, not ongoing cost. |
-| **Gemma 4 31B free tier goes offline or is removed** | 🔴 High | 🟡 Medium | Switch the model string in `/src/lib/openrouter.ts` to `deepseek/deepseek-v4-flash:free` (one-line change). Alternatively, use `openrouter/free` (smart router) for automatic failover. Test the fallback model once during Phase 1. |
+| **Gemma 4 31B free tier goes offline or is removed** | 🔴 High | 🟡 Medium | Switch the model string in `/src/lib/openrouter.ts` to `openai/gpt-oss-20b:free` (one-line change). Alternatively, use `openrouter/free` (smart router) for automatic failover. Test the fallback model once during Phase 1. |
 | **JSON parsing failures in Scorecard** | 🟡 Medium | 🟢 Low | Three-layer defense: (1) `generateObject()` with Zod schema, (2) OpenRouter Response Healing, (3) Application-level try/catch with "Unable to score" fallback UI + retry button. At 31B model scale, JSON compliance is >99%. |
-| **Slow API response time (>10s)** | 🟡 Medium | 🟡 Medium | (1) Use the "Thinking..." animation to mask latency — users tolerate waits when they see activity. (2) Free tier models can be slow during peak hours (US business hours). Test during off-peak if possible. (3) Set `maxDuration: 30` in the Route Handler to prevent infinite hangs. (4) The fallback to DeepSeek-V4-Flash is typically faster due to its smaller active parameter count (13B active vs 31B dense). |
+| **Slow API response time (>10s)** | 🟡 Medium | 🟡 Medium | (1) Use the "Thinking..." animation to mask latency — users tolerate waits when they see activity. (2) Free tier models can be slow during peak hours (US business hours). Test during off-peak if possible. (3) Set `maxDuration: 30` in the Route Handler to prevent infinite hangs. (4) The fallback to gpt-oss-20b is typically faster due to its smaller active parameter count (3.6B active vs 31B dense). |
 | **Arabic RTL rendering issues** | 🟢 Low | 🟡 Medium | (1) Test Arabic rendering early in Phase 2, not Phase 4. (2) Use `dir="rtl"` at the container level, not globally, so code blocks (always LTR) render correctly. (3) Use CSS `unicode-bidi` and `text-align` for mixed-direction content. |
 | **API key accidentally exposed in client bundle** | 🔴 High | 🟢 Low | (1) Key is in `.env.local` (Git-ignored by default). (2) Only accessed via `process.env` in Route Handlers (server-only). (3) Add `.env.local` to `.gitignore` explicitly. (4) **Never** import the key in any file under `/src/app/` that isn't a `route.ts`. |
 | **Demo day: internet outage** | 🔴 High | 🟢 Low | (1) Record the demo video (Step 30) as a backup — if the live demo fails, play the video. (2) Have a mobile hotspot ready as backup internet. (3) Pre-record screenshots of every feature for the README/presentation. |
-| **Free model returns lower quality than expected** | 🟡 Medium | 🟢 Low | (1) The 31B Gemma 4 is a solid production-grade model — this risk is much lower than v1.0's 7B model. (2) Prompts from v1.0 are battle-tested and carry over unchanged. (3) If quality dips, try `deepseek/deepseek-v4-flash:free` which is optimized for speed/quality balance. |
+| **Free model returns lower quality than expected** | 🟡 Medium | 🟢 Low | (1) The 31B Gemma 4 is a solid production-grade model — this risk is much lower than v1.0's 7B model. (2) Prompts from v1.0 are battle-tested and carry over unchanged. (3) If quality dips, try `openai/gpt-oss-20b:free` which offers a speed/quality balance on the free tier. |
 
 ---
 

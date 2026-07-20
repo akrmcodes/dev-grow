@@ -109,12 +109,12 @@
 - [x] Write a quick in-file comment explaining why each field has its min/max constraint.
 
 **1.3 OpenRouter Singleton Provider**
-- [ ] Create `src/lib/openrouter.ts`.
-- [ ] Import `createOpenRouter` from `@openrouter/ai-sdk-provider`.
-- [ ] Initialize the provider using `process.env.OPENROUTER_API_KEY` and throw a descriptive error at module load time if the key is missing or undefined.
-- [ ] Export the initialized provider instance: `export const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })`.
-- [ ] Export the primary model constant: `export const PRIMARY_MODEL = 'google/gemma-4-31b-it:free'`.
-- [ ] Export the fallback model constant: `export const FALLBACK_MODEL = 'deepseek/deepseek-v4-flash:free'`.
+- [x] Create `src/lib/openrouter.ts`.
+- [x] Import `createOpenRouter` from `@openrouter/ai-sdk-provider`.
+- [x] Initialize the provider using `process.env.OPENROUTER_API_KEY` and throw a descriptive error at module load time if the key is missing or undefined.
+- [x] Export the initialized provider instance: `export const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })`.
+- [x] Export the primary model constant: `export const PRIMARY_MODEL = 'google/gemma-4-31b-it:free'`.
+- [x] Export the fallback model constant: `export const FALLBACK_MODEL = 'openai/gpt-oss-20b:free'`.
 
 **1.4 Utility Types & Constants**
 - [ ] Create `src/lib/constants.ts`.

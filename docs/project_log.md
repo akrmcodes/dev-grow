@@ -40,5 +40,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 1.2] Zod schema definitions
 
 **Summary:** Created `lib/schemas.ts` with `ScorecardSchema` (0–10 score fields + non-empty summary) and exported `ScorecardResult` via `z.infer`. Added block and per-field comments documenting min/max rationale for API validation and scorecard UI.
-**Files:** lib/schemas.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 1.3] OpenRouter singleton provider
+
+**Summary:** Created `lib/openrouter.ts` with module-load validation for `OPENROUTER_API_KEY`, a singleton `openrouter` instance via `createOpenRouter`, and exported `PRIMARY_MODEL` / `FALLBACK_MODEL` constants for shared use across API routes.
+**Status:** completed
+
+## 2026-07-20 — [Stage 1.3] Fallback model update
+
+**Summary:** Replaced unavailable `deepseek/deepseek-v4-flash:free` with `openai/gpt-oss-20b:free` as the fallback model in `lib/openrouter.ts`, `docs/plan.md`, `docs/roadmap.md`, and `.cursor/rules/project-identity.mdc`.
+**Files:** lib/openrouter.ts, docs/plan.md, docs/roadmap.md, .cursor/rules/project-identity.mdc, docs/project_log.md
 **Status:** completed
