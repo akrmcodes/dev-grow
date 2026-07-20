@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateObject, NoObjectGeneratedError } from "ai";
 import { getErrorStatus } from "@/lib/api-errors";
 import {
   getPreferredModels,
@@ -30,6 +30,9 @@ async function generateScorecard(code: string): Promise<ScorecardResult> {
       console.error(error);
       if (getErrorStatus(error) === 429) {
         markModelRateLimited(model);
+        continue;
+      }
+      if (NoObjectGeneratedError.isInstance(error)) {
         continue;
       }
       throw error;

@@ -148,3 +148,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Swapped active `OPENROUTER_API_KEY` in `.env.local` to a temporary testing key; previous key preserved as a commented line for manual restore after tests complete.
 **Files:** .env.local
 **Status:** completed
+
+## 2026-07-20 — Chat stream async 429 fallback fix
+
+**Summary:** Fixed chat errors shown immediately in the UI when Gemma returned upstream 429 inside the SSE stream. Added `lib/stream-text-fallback.ts` to probe a tee'd branch until text/reasoning/finish or error before returning `toUIMessageStreamResponse()`, enabling transparent fallback to the secondary model. Score route now retries the next model on `NoObjectGeneratedError` schema mismatches.
+**Files:** lib/stream-text-fallback.ts, app/api/chat/route.ts, app/api/score/route.ts, docs/project_log.md
+**Status:** completed

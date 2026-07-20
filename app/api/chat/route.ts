@@ -1,12 +1,9 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, type UIMessage } from "ai";
 import { getErrorStatus } from "@/lib/api-errors";
 import { MODE_CONFIG } from "@/lib/constants";
-import {
-  getPreferredModels,
-  markModelRateLimited,
-} from "@/lib/model-router";
 import { openrouter } from "@/lib/openrouter";
 import { getSystemPrompt, type Mode } from "@/lib/prompts";
+import { streamTextWithModelFallback } from "@/lib/stream-text-fallback";
 
 // Next.js requires a route-segment literal — keep in sync with MAX_DURATION in lib/constants.ts
 export const maxDuration = 30;
@@ -71,33 +68,13 @@ export async function POST(request: Request) {
   try {
     const modelMessages = await convertToModelMessages(messagesForModel);
 
-    for (const model of getPreferredModels()) {
-      try {
-        const result = streamText({
-          model: openrouter.chat(model),
-          system: systemPrompt,
-          messages: modelMessages,
-          maxRetries: 0,
-          onError({ error }) {
-            if (getErrorStatus(error) === 429) {
-              markModelRateLimited(model);
-            }
-            console.error(error);
-          },
-        });
+    const result = await streamTextWithModelFallback((model) => ({
+      model: openrouter.chat(model),
+      system: systemPrompt,
+      messages: modelMessages,
+    }));
 
-        return result.toUIMessageStreamResponse();
-      } catch (error) {
-        console.error(error);
-        if (getErrorStatus(error) === 429) {
-          markModelRateLimited(model);
-          continue;
-        }
-        return handleChatError(error);
-      }
-    }
-
-    return handleChatError(new Error("All models unavailable"));
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     return handleChatError(error);
   }
