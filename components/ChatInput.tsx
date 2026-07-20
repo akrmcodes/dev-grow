@@ -54,7 +54,10 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const isRTL = language === "ar";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [isComposing, setIsComposing] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     const [lineHeight, setLineHeight] = useState(20);
+
+    const lineCount = value === "" ? 1 : value.split("\n").length;
 
     useImperativeHandle(ref, () => ({
       focus: () => {
@@ -125,16 +128,16 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       <div className="sticky bottom-0 z-10 shrink-0 pt-2">
         <div
           className={cn(
-            "flex gap-2 rounded-2xl border border-border/50 bg-surface/60 px-3 py-2 shadow-lg backdrop-blur-xl",
+            "flex gap-2 rounded-2xl border bg-surface/60 px-3 py-2 shadow-lg backdrop-blur-xl transition-colors",
             isRTL ? "flex-row-reverse" : "flex-row",
+            isFocused
+              ? "border-emerald-500/60 ring-1 ring-emerald-500/20"
+              : "border-border/50",
           )}
         >
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             {activeMode && (
-              <Badge
-                variant="secondary"
-                className="w-fit gap-1 pr-1"
-              >
+              <Badge variant="secondary" className="w-fit gap-1 pr-1">
                 <span aria-hidden="true">{MODE_CONFIG[activeMode].emoji}</span>
                 <span>{t(MODE_CONFIG[activeMode].labelKey, language)}</span>
                 <Button
@@ -156,19 +159,26 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
               onChange={handleChange}
               onInput={resizeTextarea}
               onKeyDown={handleKeyDown}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               onCompositionStart={() => setIsComposing(true)}
               onCompositionEnd={() => setIsComposing(false)}
               readOnly={isStreaming}
               rows={1}
-              dir={isRTL ? "rtl" : "ltr"}
-              placeholder={t("chatInputPlaceholder", language)}
+              dir="ltr"
+              spellCheck={false}
+              placeholder={t("codePlaceholder", language)}
               className={cn(
-                "w-full resize-none overflow-x-hidden border-0 bg-transparent px-0 py-0 text-sm leading-5 text-foreground outline-none transition-[height] duration-150 ease-out placeholder:text-muted-foreground",
+                "w-full resize-none overflow-x-hidden border-0 bg-transparent px-0 py-0 font-mono text-xs leading-relaxed text-foreground outline-none transition-[height] duration-150 ease-out placeholder:text-muted-foreground",
                 "focus-visible:ring-0",
                 isStreaming && "cursor-not-allowed opacity-70",
               )}
               style={{ minHeight: getMinHeight(), maxHeight: getMaxHeight() }}
             />
+
+            <p className="text-[10px] text-muted-foreground" aria-live="polite">
+              {`${lineCount} ${lineCount === 1 ? t("line", language) : t("lines", language)}`}
+            </p>
           </div>
 
           <SendButton

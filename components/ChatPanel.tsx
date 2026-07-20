@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
+import { CopyMessageButton } from "@/components/CopyMessageButton";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -111,9 +112,12 @@ export function ChatPanel({
                       "max-w-[92%] rounded-xl px-3 py-2 text-sm",
                       isUser
                         ? "bg-primary/10 text-foreground"
-                        : "border border-border bg-card text-card-foreground",
+                        : "group relative border border-border bg-card text-card-foreground",
                     )}
                   >
+                    {!isUser && (
+                      <CopyMessageButton text={text} language={language} />
+                    )}
                     {isUser ? (
                       <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
                         {text}

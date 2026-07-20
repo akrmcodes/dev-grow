@@ -19,8 +19,8 @@ type SidebarProps = {
   messages: UIMessage[];
   error: Error | undefined;
   validationError: string | null;
-  instruction: string;
-  onInstructionChange: (value: string) => void;
+  code: string;
+  onCodeChange: (value: string) => void;
   canSend: boolean;
   onSend: () => void;
   onStop: () => void;
@@ -41,8 +41,8 @@ export function Sidebar({
   messages,
   error,
   validationError,
-  instruction,
-  onInstructionChange,
+  code,
+  onCodeChange,
   canSend,
   onSend,
   onStop,
@@ -54,11 +54,7 @@ export function Sidebar({
   onRetryScorecard,
 }: SidebarProps) {
   return (
-    <aside
-      className={cn(
-        "flex h-full min-h-[320px] flex-col gap-3 px-4 py-3 md:border-s md:border-border",
-      )}
-    >
+    <aside className={cn("flex h-full min-h-[320px] flex-col gap-3")}>
       <ModeSelector
         activeMode={activeMode}
         onModeChange={onModeChange}
@@ -85,8 +81,8 @@ export function Sidebar({
         />
         <ChatInput
           ref={chatInputRef}
-          value={instruction}
-          onChange={onInstructionChange}
+          value={code}
+          onChange={onCodeChange}
           activeMode={activeMode}
           onModeDismiss={onModeDismiss}
           isStreaming={isLoading}

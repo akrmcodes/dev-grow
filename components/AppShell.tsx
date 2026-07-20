@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import type { ChatInputHandle } from "@/components/ChatInput";
-import { CodeEditor } from "@/components/CodeEditor";
 import { Sidebar } from "@/components/Sidebar";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
@@ -15,7 +14,6 @@ import { cn } from "@/lib/utils";
 
 export function AppShell() {
   const [code, setCode] = useState("");
-  const [instruction, setInstruction] = useState("");
   const [language, setLanguage] = useState<Language>("en");
   const [mode, setMode] = useState<Mode | null>("review");
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -32,10 +30,7 @@ export function AppShell() {
 
   const isLoading = status === "submitted" || status === "streaming";
   const isRTL = language === "ar";
-  const canSend =
-    Boolean(mode) &&
-    Boolean(code.trim() || instruction.trim()) &&
-    !isLoading;
+  const canSend = Boolean(mode) && Boolean(code.trim()) && !isLoading;
 
   useEffect(() => {
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
@@ -88,13 +83,6 @@ export function AppShell() {
     }
   };
 
-  const handleInstructionChange = (value: string) => {
-    setInstruction(value);
-    if (validationError) {
-      setValidationError(null);
-    }
-  };
-
   const handleModeChange = (selectedMode: Mode) => {
     setMode(selectedMode);
     requestAnimationFrame(() => {
@@ -107,11 +95,6 @@ export function AppShell() {
   };
 
   const handleSend = () => {
-    if (!code.trim() && !instruction.trim()) {
-      setValidationError(t("validationEmpty", language));
-      return;
-    }
-
     if (!code.trim()) {
       setValidationError(t("validationPasteCode", language));
       return;
@@ -123,9 +106,7 @@ export function AppShell() {
 
     setValidationError(null);
 
-    const text = instruction.trim() || t("defaultInstruction", language);
-    void sendMessage({ text }, { body: { mode, code } });
-    setInstruction("");
+    void sendMessage({ text: code }, { body: { mode, code } });
 
     if (mode === "review") {
       void fetchScorecard();
@@ -150,17 +131,9 @@ export function AppShell() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
-        className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2"
+        className="flex min-h-0 flex-1 flex-col"
       >
-        <section className="flex min-h-[400px] flex-col bg-surface/50 p-4 md:min-h-0 md:p-6">
-          <CodeEditor
-            value={code}
-            onChange={handleCodeChange}
-            language={language}
-          />
-        </section>
-
-        <section className="flex min-h-[320px] flex-col md:min-h-0">
+        <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-3">
           <Sidebar
             language={language}
             activeMode={mode}
@@ -170,8 +143,8 @@ export function AppShell() {
             messages={messages}
             error={error}
             validationError={validationError}
-            instruction={instruction}
-            onInstructionChange={handleInstructionChange}
+            code={code}
+            onCodeChange={handleCodeChange}
             canSend={canSend}
             onSend={handleSend}
             onStop={handleStop}
@@ -182,7 +155,7 @@ export function AppShell() {
             onFetchScorecard={fetchScorecard}
             onRetryScorecard={fetchScorecard}
           />
-        </section>
+        </div>
       </motion.main>
 
       <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">

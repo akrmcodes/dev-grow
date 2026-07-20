@@ -515,11 +515,11 @@
 - [x] The button must be perfectly centred vertically within the floating input container.
 
 **8.5 Copy Response Button**
-- [ ] Add a "Copy" icon button (`lucide-react: Copy` or `ClipboardCopy`) to each **assistant** message bubble in `ChatPanel.tsx`.
-- [ ] Position it at the top-right corner of the message bubble, visible on hover (desktop) or always visible (mobile).
-- [ ] On click, use `navigator.clipboard.writeText()` to copy the raw markdown text of the assistant message.
-- [ ] Show brief visual feedback: swap the icon to a checkmark (`lucide-react: Check`) with a green tint for 2 seconds, then revert.
-- [ ] Ensure the button doesn't interfere with text selection inside the message bubble.
+- [x] Add a "Copy" icon button (`lucide-react: Copy` or `ClipboardCopy`) to each **assistant** message bubble in `ChatPanel.tsx`.
+- [x] Position it at the top-right corner of the message bubble, visible on hover (desktop) or always visible (mobile).
+- [x] On click, use `navigator.clipboard.writeText()` to copy the raw markdown text of the assistant message.
+- [x] Show brief visual feedback: swap the icon to a checkmark (`lucide-react: Check`) with a green tint for 2 seconds, then revert.
+- [x] Ensure the button doesn't interfere with text selection inside the message bubble.
 
 **8.6 Chat History Sidebar (IndexedDB — Client-Side Only)**
 - [ ] **8.6.1 IndexedDB Storage Layer**

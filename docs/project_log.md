@@ -172,3 +172,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Redesigned chat interaction to match AI SaaS patterns. Added glass-morphism `ChatInput` with auto-expanding textarea (1–5 lines), dismissible mode badge, and sticky bottom placement. Created `SendButton` with Send/Stop Framer Motion swap wired to `useChat` `stop()`. Decoupled `ModeSelector` from submission; `AppShell` now bundles code editor + instruction on send with Enter/Shift+Enter and mode autofocus. Added bilingual strings and chat pane bottom padding/gradient fade.
 **Files:** components/ChatInput.tsx, components/SendButton.tsx, components/AppShell.tsx, components/Sidebar.tsx, components/ModeSelector.tsx, components/ChatPanel.tsx, lib/translations.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 8.5] Copy button and unified code input
+
+**Summary:** Removed split-pane `CodeEditor` in favor of a single centered chat layout (`max-w-4xl`). `ChatInput` is now the sole code entry surface with CodeEditor parity (monospace, LTR, line count, emerald focus ring, code persists after send). Added `CopyMessageButton` on assistant bubbles with hover/desktop, always-visible/mobile, and 2s check feedback via clipboard API.
+**Files:** components/CopyMessageButton.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/AppShell.tsx, components/Sidebar.tsx, lib/translations.ts, components/CodeEditor.tsx (deleted), docs/roadmap.md, docs/project_log.md
+**Status:** completed
