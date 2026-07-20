@@ -117,10 +117,10 @@
 - [x] Export the fallback model constant: `export const FALLBACK_MODEL = 'openai/gpt-oss-20b:free'`.
 
 **1.4 Utility Types & Constants**
-- [ ] Create `src/lib/constants.ts`.
-- [ ] Define and export `MODE_CONFIG`: a record mapping each `Mode` to its display label (English), display label (Arabic), and emoji icon.
-- [ ] Define and export `MAX_DURATION = 30` (seconds) for Route Handler timeout configuration.
-- [ ] Define and export `RATE_LIMIT_MESSAGE` (English) and `RATE_LIMIT_MESSAGE_AR` (Arabic) user-facing strings for 429 responses.
+- [x] Create `src/lib/constants.ts`.
+- [x] Define and export `MODE_CONFIG`: a record mapping each `Mode` to its display label (English), display label (Arabic), and emoji icon.
+- [x] Define and export `MAX_DURATION = 30` (seconds) for Route Handler timeout configuration.
+- [x] Define and export `RATE_LIMIT_MESSAGE` (English) and `RATE_LIMIT_MESSAGE_AR` (Arabic) user-facing strings for 429 responses.
 
 ---
 

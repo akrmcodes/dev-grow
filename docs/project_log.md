@@ -50,5 +50,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 1.3] Fallback model update
 
 **Summary:** Replaced unavailable `deepseek/deepseek-v4-flash:free` with `openai/gpt-oss-20b:free` as the fallback model in `lib/openrouter.ts`, `docs/plan.md`, `docs/roadmap.md`, and `.cursor/rules/project-identity.mdc`.
-**Files:** lib/openrouter.ts, docs/plan.md, docs/roadmap.md, .cursor/rules/project-identity.mdc, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 1.4] Utility types and constants
+
+**Summary:** Created `lib/constants.ts` with typed `MODE_CONFIG` (6 modes × English/Arabic labels + emoji per plan.md), `MAX_DURATION = 30`, and bilingual `RATE_LIMIT_MESSAGE` strings for 429 responses.
+**Files:** lib/constants.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed
