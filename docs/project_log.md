@@ -100,3 +100,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Passed all Stage 3 exit criteria: scorecard returns `{ readability, logic, documentation, summary }` with scores 0–10; `Content-Type: application/json` on success; structured error JSON on API failure; 10/10 test submissions valid; `route.ts` compiles with fully inferred Zod types.
 **Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 4.1–4.5] App layout and code editor
+
+**Summary:** Implemented dark-first design tokens (`--surface`, emerald `--primary`, `.font-arabic`) in `app/globals.css`. Configured `app/layout.tsx` with JetBrains Mono, Tajawal, ThemeProvider, and DevGrow metadata. Built split-pane `AppShell` with sticky header, `CodeEditor`, `Sidebar` scaffold, theme/language toggles, and footer credit.
+**Files:** app/globals.css, app/layout.tsx, app/page.tsx, components/AppShell.tsx, components/AppHeader.tsx, components/CodeEditor.tsx, components/Sidebar.tsx, components/ThemeToggle.tsx, components/LanguageToggle.tsx, components/providers/theme-provider.tsx
+**Status:** completed
+
+## 2026-07-20 — [Stage 4] Validation gate
+
+**Summary:** Passed all Stage 4 exit criteria: two-column desktop / stacked mobile layout, sticky header, functional CodeEditor with line count, dark default theme, ThemeProvider with suppressHydrationWarning. `npm run build` and `npm run lint` pass with zero errors.
+**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed

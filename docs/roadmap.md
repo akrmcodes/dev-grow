@@ -253,48 +253,48 @@
 #### Task Checklist
 
 **4.1 Global Styles & Design System**
-- [ ] Open `src/app/globals.css` and configure CSS custom property design tokens: primary accent (`--primary`), background (`--background`), surface (`--surface`), border (`--border`), and text colours (`--foreground`, `--muted`).
-- [ ] Set the dark theme as the default in `globals.css` using the `:root` selector with dark palette values.
-- [ ] Import a coding-optimized monospace font (e.g., `JetBrains Mono` or `Fira Code`) via Google Fonts in `src/app/layout.tsx`.
-- [ ] Import `Tajawal` or `Noto Kufi Arabic` from Google Fonts in `layout.tsx` for Arabic RTL support.
-- [ ] Add a CSS class `.font-arabic { font-family: 'Tajawal', sans-serif; }` to `globals.css`.
+- [x] Open `src/app/globals.css` and configure CSS custom property design tokens: primary accent (`--primary`), background (`--background`), surface (`--surface`), border (`--border`), and text colours (`--foreground`, `--muted`).
+- [x] Set the dark theme as the default in `globals.css` using the `:root` selector with dark palette values.
+- [x] Import a coding-optimized monospace font (e.g., `JetBrains Mono` or `Fira Code`) via Google Fonts in `src/app/layout.tsx`.
+- [x] Import `Tajawal` or `Noto Kufi Arabic` from Google Fonts in `layout.tsx` for Arabic RTL support.
+- [x] Add a CSS class `.font-arabic { font-family: 'Tajawal', sans-serif; }` to `globals.css`.
 
 **4.2 Root Layout Configuration**
-- [ ] Open `src/app/layout.tsx`.
-- [ ] Add `<html lang="en">` with a `suppressHydrationWarning` attribute (required by `next-themes`).
-- [ ] Wrap `{children}` in a `ThemeProvider` from `next-themes` with `attribute="class"`, `defaultTheme="dark"`, and `enableSystem={false}`.
-- [ ] Add proper `<meta>` tags: `description`, `og:title`, `og:description`.
-- [ ] Set the page `<title>` to `DevGrow — AI Coding Assistant`.
+- [x] Open `src/app/layout.tsx`.
+- [x] Add `<html lang="en">` with a `suppressHydrationWarning` attribute (required by `next-themes`).
+- [x] Wrap `{children}` in a `ThemeProvider` from `next-themes` with `attribute="class"`, `defaultTheme="dark"`, and `enableSystem={false}`.
+- [x] Add proper `<meta>` tags: `description`, `og:title`, `og:description`.
+- [x] Set the page `<title>` to `DevGrow — AI Coding Assistant`.
 
 **4.3 App Shell Page Structure**
-- [ ] Open `src/app/page.tsx` and replace its contents with the root page shell.
-- [ ] Use CSS Grid (`grid-cols-[1fr_1fr]` on desktop, `grid-cols-1` on mobile) for the split-pane container.
-- [ ] Create a sticky `<header>` containing the DevGrow logo wordmark (🌱 DevGrow), a language toggle button (AR/EN), and a theme toggle button (🌙/☀️).
-- [ ] Create a `<main>` element containing the left pane (code editor area) and right pane (AI interaction area) within the grid.
-- [ ] Add a `<footer>` with a one-line credit: `Powered by OpenRouter · google/gemma-4-31b-it:free`.
+- [x] Open `src/app/page.tsx` and replace its contents with the root page shell.
+- [x] Use CSS Grid (`grid-cols-[1fr_1fr]` on desktop, `grid-cols-1` on mobile) for the split-pane container.
+- [x] Create a sticky `<header>` containing the DevGrow logo wordmark (🌱 DevGrow), a language toggle button (AR/EN), and a theme toggle button (🌙/☀️).
+- [x] Create a `<main>` element containing the left pane (code editor area) and right pane (AI interaction area) within the grid.
+- [x] Add a `<footer>` with a one-line credit: `Powered by OpenRouter · google/gemma-4-31b-it:free`.
 
 **4.4 CodeEditor Component**
-- [ ] Create `src/components/CodeEditor.tsx`.
-- [ ] Render a Shadcn `<Textarea>` with class overrides for monospace font, minimum height (`min-h-[400px]`), full width, and a subtle green border on focus (`focus:border-emerald-500`).
-- [ ] Set `placeholder="Paste your code here... 🌱"` (or the Arabic equivalent when RTL is active).
-- [ ] Accept `value` and `onChange` as props, wired so the parent page controls editor state.
-- [ ] Accept an `isRTL` boolean prop; when true, set `dir="ltr"` explicitly on the textarea (code is always LTR).
-- [ ] Add a line-count display below the textarea showing `{lineCount} lines`.
+- [x] Create `src/components/CodeEditor.tsx`.
+- [x] Render a Shadcn `<Textarea>` with class overrides for monospace font, minimum height (`min-h-[400px]`), full width, and a subtle green border on focus (`focus:border-emerald-500`).
+- [x] Set `placeholder="Paste your code here... 🌱"` (or the Arabic equivalent when RTL is active).
+- [x] Accept `value` and `onChange` as props, wired so the parent page controls editor state.
+- [x] Accept an `isRTL` boolean prop; when true, set `dir="ltr"` explicitly on the textarea (code is always LTR).
+- [x] Add a line-count display below the textarea showing `{lineCount} lines`.
 
 **4.5 Sidebar Layout**
-- [ ] Create `src/components/Sidebar.tsx` as the right-pane container.
-- [ ] Structure it as a vertical flex column: Mode Selector at the top, Chat Panel in the middle (flex-grow), Scorecard Panel at the bottom (collapsible).
-- [ ] Add `px-4 py-3` internal padding and a `border-l border-border` left border separator on desktop.
+- [x] Create `src/components/Sidebar.tsx` as the right-pane container.
+- [x] Structure it as a vertical flex column: Mode Selector at the top, Chat Panel in the middle (flex-grow), Scorecard Panel at the bottom (collapsible).
+- [x] Add `px-4 py-3` internal padding and a `border-l border-border` left border separator on desktop.
 
 ---
 
 #### Stage 4 Validation Gate
-- [ ] The app renders a two-column split-pane layout on desktop (≥768px) and a stacked layout on mobile.
-- [ ] The header is sticky and visible across all scroll positions.
-- [ ] The `<CodeEditor />` textarea accepts input, displays a monospace font, and shows the correct line count.
-- [ ] Dark mode is applied by default — the page background is not white.
-- [ ] No layout shift (CLS) occurs on initial page load.
-- [ ] The `ThemeProvider` is present in `layout.tsx` and `suppressHydrationWarning` is set on `<html>`.
+- [x] The app renders a two-column split-pane layout on desktop (≥768px) and a stacked layout on mobile.
+- [x] The header is sticky and visible across all scroll positions.
+- [x] The `<CodeEditor />` textarea accepts input, displays a monospace font, and shows the correct line count.
+- [x] Dark mode is applied by default — the page background is not white.
+- [x] No layout shift (CLS) occurs on initial page load.
+- [x] The `ThemeProvider` is present in `layout.tsx` and `suppressHydrationWarning` is set on `<html>`.
 
 ---
 
