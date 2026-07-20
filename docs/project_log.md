@@ -142,3 +142,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Diagnosed false RATE_LIMIT after one Review + Hint: `resolveAvailableModel()` ran an extra `generateText` probe before every chat stream (2–3 OpenRouter calls per mode click; 3–5 on Review with parallel score). Removed the probe, added shared `lib/model-router.ts` TTL cache so chat and score routes prefer fallback for 5 minutes after a primary 429, and loop `streamText`/`generateObject` directly with fallback retry.
 **Files:** lib/model-router.ts, app/api/chat/route.ts, app/api/score/route.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — Temporary OpenRouter API key for testing
+
+**Summary:** Swapped active `OPENROUTER_API_KEY` in `.env.local` to a temporary testing key; previous key preserved as a commented line for manual restore after tests complete.
+**Files:** .env.local
+**Status:** completed
