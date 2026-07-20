@@ -164,11 +164,11 @@
 - [x] Return `result.toDataStreamResponse()`.
 
 **2.3 Error Handling**
-- [ ] Wrap the `streamText()` call in a `try/catch` block.
-- [ ] If the caught error has `status === 429`, return a `429` JSON response with `{ error: 'RATE_LIMIT' }`.
-- [ ] If the caught error has `status === 401`, return a `500` JSON response with `{ error: 'API_KEY_INVALID' }`.
-- [ ] For all other errors, return a `500` JSON response with `{ error: 'STREAM_ERROR' }`.
-- [ ] Log the full error to `console.error` in all error branches for debugging.
+- [x] Wrap the `streamText()` call in a `try/catch` block.
+- [x] If the caught error has `status === 429`, return a `429` JSON response with `{ error: 'RATE_LIMIT' }`.
+- [x] If the caught error has `status === 401`, return a `500` JSON response with `{ error: 'API_KEY_INVALID' }`.
+- [x] For all other errors, return a `500` JSON response with `{ error: 'STREAM_ERROR' }`.
+- [x] Log the full error to `console.error` in all error branches for debugging.
 
 **2.4 Manual API Testing**
 - [ ] Test `POST /api/chat` via `curl` with mode `"review"` and a sample JavaScript function as `code`. Confirm streaming text appears in the terminal.

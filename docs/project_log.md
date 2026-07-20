@@ -65,5 +65,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 2.1–2.2] Chat streaming route
 
 **Summary:** Created `app/api/chat/route.ts` with input validation (code/mode), system prompt injection with fenced code block, and `streamText` streaming via `toUIMessageStreamResponse()` (AI SDK v7). Uses `maxDuration = 30` literal (Next.js segment-config requirement). Curl verified 400 responses; live stream blocked by upstream Gemma rate limit during testing.
+**Status:** completed
+
+## 2026-07-20 — [Stage 2.3] Chat route error handling
+
+**Summary:** Wrapped `streamText()` in try/catch with `handleChatError()` mapping `APICallError`/`RetryError` status codes to structured JSON (`RATE_LIMIT`, `API_KEY_INVALID`, `STREAM_ERROR`). Added `streamText` `onError` callback for async stream failures with server-side logging.
 **Files:** app/api/chat/route.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed

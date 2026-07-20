@@ -1,5 +1,7 @@
 import {
+  APICallError,
   convertToModelMessages,
+  RetryError,
   streamText,
   type UIMessage,
 } from "ai";
@@ -12,6 +14,46 @@ export const maxDuration = 30;
 
 function isMode(value: unknown): value is Mode {
   return typeof value === "string" && value in MODE_CONFIG;
+}
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== "object") {
+    return undefined;
+  }
+
+  if ("status" in error && typeof error.status === "number") {
+    return error.status;
+  }
+
+  if (APICallError.isInstance(error) && error.statusCode != null) {
+    return error.statusCode;
+  }
+
+  if (RetryError.isInstance(error)) {
+    return getErrorStatus(error.lastError);
+  }
+
+  if ("cause" in error) {
+    return getErrorStatus(error.cause);
+  }
+
+  return undefined;
+}
+
+function handleChatError(error: unknown): Response {
+  console.error(error);
+
+  const status = getErrorStatus(error);
+
+  if (status === 429) {
+    return Response.json({ error: "RATE_LIMIT" }, { status: 429 });
+  }
+
+  if (status === 401) {
+    return Response.json({ error: "API_KEY_INVALID" }, { status: 500 });
+  }
+
+  return Response.json({ error: "STREAM_ERROR" }, { status: 500 });
 }
 
 export async function POST(request: Request) {
@@ -51,11 +93,18 @@ export async function POST(request: Request) {
 
   const systemPrompt = `${getSystemPrompt(mode)}\n\nThe student's code:\n\`\`\`\n${code}\n\`\`\``;
 
-  const result = streamText({
-    model: openrouter.chat(PRIMARY_MODEL),
-    system: systemPrompt,
-    messages: await convertToModelMessages(messagesForModel),
-  });
+  try {
+    const result = streamText({
+      model: openrouter.chat(PRIMARY_MODEL),
+      system: systemPrompt,
+      messages: await convertToModelMessages(messagesForModel),
+      onError({ error }) {
+        console.error(error);
+      },
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    return handleChatError(error);
+  }
 }
