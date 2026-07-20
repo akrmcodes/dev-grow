@@ -82,3 +82,21 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Passed all Stage 2 exit criteria: `POST /api/chat` returns `Content-Type: text/event-stream`; all 6 modes stream distinct responses; Arabic-comment code yields Arabic output; invalid mode/code return `400`; `app/api/chat/route.ts` compiles with zero TypeScript/ESLint errors.
 **Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 3.1–3.3] Scorecard JSON route
+
+**Summary:** Created `lib/api-errors.ts` with shared `getErrorStatus()` and refactored `app/api/chat/route.ts` to import it. Built `app/api/score/route.ts` with Zod-validated `generateObject()`, OpenRouter response-healing plugin, primary-to-fallback model retry on 429, and structured error responses (`RATE_LIMIT`, `SCORE_UNAVAILABLE`).
+**Files:** lib/api-errors.ts, app/api/chat/route.ts, app/api/score/route.ts
+**Status:** completed
+
+## 2026-07-20 — [Stage 3.4] Manual API testing
+
+**Summary:** Ran full curl/node test suite against `POST /api/score`: well-written Python scored 9/9/8 vs poorly written 3/4/0; 10/10 varied snippets returned schema-compliant JSON; empty/missing/malformed input returns `400`; invalid API key returns `500` `{ error: 'SCORE_UNAVAILABLE' }`. `npm run build` and `npm run lint` pass with zero errors.
+**Files:** app/api/score/route.ts
+**Status:** completed
+
+## 2026-07-20 — [Stage 3] Validation gate
+
+**Summary:** Passed all Stage 3 exit criteria: scorecard returns `{ readability, logic, documentation, summary }` with scores 0–10; `Content-Type: application/json` on success; structured error JSON on API failure; 10/10 test submissions valid; `route.ts` compiles with fully inferred Zod types.
+**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed

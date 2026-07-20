@@ -200,41 +200,41 @@
 #### Task Checklist
 
 **3.1 Route Handler Scaffolding**
-- [ ] Create `src/app/api/score/route.ts`.
-- [ ] Add `export const maxDuration = MAX_DURATION` at the top.
-- [ ] Define and export an `async function POST(request: Request)` handler.
-- [ ] Parse the incoming JSON body and destructure `{ code }`.
-- [ ] Add input validation: if `code` is empty or falsy, return a `400` JSON response with `{ error: 'No code provided.' }`.
+- [x] Create `src/app/api/score/route.ts`.
+- [x] Add `export const maxDuration = MAX_DURATION` at the top.
+- [x] Define and export an `async function POST(request: Request)` handler.
+- [x] Parse the incoming JSON body and destructure `{ code }`.
+- [x] Add input validation: if `code` is empty or falsy, return a `400` JSON response with `{ error: 'No code provided.' }`.
 
 **3.2 Structured Generation with generateObject()**
-- [ ] Import `generateObject` from `ai`.
-- [ ] Import `openrouter` and `PRIMARY_MODEL` from `src/lib/openrouter.ts`.
-- [ ] Import `ScorecardSchema` from `src/lib/schemas.ts`.
-- [ ] Import `SCORECARD_PROMPT` from `src/lib/prompts.ts`.
-- [ ] Call `generateObject()` with `model: openrouter.chat(PRIMARY_MODEL)`, `schema: ScorecardSchema`, and a `prompt` combining `SCORECARD_PROMPT` with the user's code wrapped in a fenced block.
-- [ ] Extract `result.object` and return it as a `200` JSON response.
+- [x] Import `generateObject` from `ai`.
+- [x] Import `openrouter` and `PRIMARY_MODEL` from `src/lib/openrouter.ts`.
+- [x] Import `ScorecardSchema` from `src/lib/schemas.ts`.
+- [x] Import `SCORECARD_PROMPT` from `src/lib/prompts.ts`.
+- [x] Call `generateObject()` with `model: openrouter.chat(PRIMARY_MODEL)`, `schema: ScorecardSchema`, and a `prompt` combining `SCORECARD_PROMPT` with the user's code wrapped in a fenced block.
+- [x] Extract `result.object` and return it as a `200` JSON response.
 
 **3.3 Error Handling & Fallback**
-- [ ] Wrap `generateObject()` in a `try/catch` block.
-- [ ] On `429` errors, return `{ error: 'RATE_LIMIT' }` with HTTP `429`.
-- [ ] On all other errors, log the error and return `{ error: 'SCORE_UNAVAILABLE' }` with HTTP `500`.
-- [ ] Add a comment in the catch block explaining the three-layer reliability strategy: (1) `generateObject()` + Zod, (2) OpenRouter Response Healing, (3) this application-level fallback UI.
+- [x] Wrap `generateObject()` in a `try/catch` block.
+- [x] On `429` errors, return `{ error: 'RATE_LIMIT' }` with HTTP `429`.
+- [x] On all other errors, log the error and return `{ error: 'SCORE_UNAVAILABLE' }` with HTTP `500`.
+- [x] Add a comment in the catch block explaining the three-layer reliability strategy: (1) `generateObject()` + Zod, (2) OpenRouter Response Healing, (3) this application-level fallback UI.
 
 **3.4 Manual API Testing**
-- [ ] Test `POST /api/score` with a well-written Python function — confirm JSON with all three numeric scores and a `summary` string is returned.
-- [ ] Test with a poorly written function (no naming, no docs, complex nesting) — confirm scores are visibly lower.
-- [ ] Test with 10 consecutive varied code snippets — confirm 100% valid JSON is returned every time.
-- [ ] Test the fallback: temporarily comment out the API key, restart dev server, and confirm the route returns `{ error: 'SCORE_UNAVAILABLE' }` rather than crashing.
-- [ ] Restore the API key after testing.
+- [x] Test `POST /api/score` with a well-written Python function — confirm JSON with all three numeric scores and a `summary` string is returned.
+- [x] Test with a poorly written function (no naming, no docs, complex nesting) — confirm scores are visibly lower.
+- [x] Test with 10 consecutive varied code snippets — confirm 100% valid JSON is returned every time.
+- [x] Test the fallback: temporarily comment out the API key, restart dev server, and confirm the route returns `{ error: 'SCORE_UNAVAILABLE' }` rather than crashing.
+- [x] Restore the API key after testing.
 
 ---
 
 #### Stage 3 Validation Gate
-- [ ] `POST /api/score` returns `{ readability, logic, documentation, summary }` with correct types on every request.
-- [ ] All scores are numbers in the range 0–10; `summary` is a non-empty string.
-- [ ] The route returns a structured error JSON (not an HTML error page) when the API key is missing.
-- [ ] 10/10 test code submissions return valid, schema-compliant JSON responses.
-- [ ] TypeScript shows no errors in `route.ts` — all types are fully inferred from Zod.
+- [x] `POST /api/score` returns `{ readability, logic, documentation, summary }` with correct types on every request.
+- [x] All scores are numbers in the range 0–10; `summary` is a non-empty string.
+- [x] The route returns a structured error JSON (not an HTML error page) when the API key is missing.
+- [x] 10/10 test code submissions return valid, schema-compliant JSON responses.
+- [x] TypeScript shows no errors in `route.ts` — all types are fully inferred from Zod.
 
 ---
 

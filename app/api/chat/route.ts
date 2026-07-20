@@ -1,11 +1,10 @@
 import {
-  APICallError,
   convertToModelMessages,
   generateText,
-  RetryError,
   streamText,
   type UIMessage,
 } from "ai";
+import { getErrorStatus } from "@/lib/api-errors";
 import { MODE_CONFIG } from "@/lib/constants";
 import { FALLBACK_MODEL, openrouter, PRIMARY_MODEL } from "@/lib/openrouter";
 import { getSystemPrompt, type Mode } from "@/lib/prompts";
@@ -15,30 +14,6 @@ export const maxDuration = 30;
 
 function isMode(value: unknown): value is Mode {
   return typeof value === "string" && value in MODE_CONFIG;
-}
-
-function getErrorStatus(error: unknown): number | undefined {
-  if (!error || typeof error !== "object") {
-    return undefined;
-  }
-
-  if ("status" in error && typeof error.status === "number") {
-    return error.status;
-  }
-
-  if (APICallError.isInstance(error) && error.statusCode != null) {
-    return error.statusCode;
-  }
-
-  if (RetryError.isInstance(error)) {
-    return getErrorStatus(error.lastError);
-  }
-
-  if ("cause" in error) {
-    return getErrorStatus(error.cause);
-  }
-
-  return undefined;
 }
 
 function handleChatError(error: unknown): Response {
