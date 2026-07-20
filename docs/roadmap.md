@@ -37,21 +37,21 @@
 - [x] Confirm the free-tier model `google/gemma-4-31b-it:free` is listed as available in the OpenRouter model catalogue.
 
 **0.2 Next.js 15 Project Scaffold**
-- [ ] Run `npx create-next-app@latest dev-grow` with the following options: TypeScript ✅, ESLint ✅, Tailwind CSS ✅, `src/` directory ✅, App Router ✅, Turbopack ✅.
-- [ ] Verify the project boots with `npm run dev` and the default Next.js page renders at `localhost:3000`.
-- [ ] Delete boilerplate content from `src/app/page.tsx` and `src/app/globals.css`, leaving only the root layout shell.
-- [ ] Confirm Tailwind CSS v4 is installed (check `package.json` — version should be `^4.x`).
+- [x] Run `npx create-next-app@latest dev-grow` with the following options: TypeScript ✅, ESLint ✅, Tailwind CSS ✅, `src/` directory ✅, App Router ✅, Turbopack ✅.
+- [x] Verify the project boots with `npm run dev` and the default Next.js page renders at `localhost:3000`.
+- [x] Delete boilerplate content from `src/app/page.tsx` and `src/app/globals.css`, leaving only the root layout shell.
+- [x] Confirm Tailwind CSS v4 is installed (check `package.json` — version should be `^4.x`).
 
 **0.3 AI & Core Dependency Installation**
-- [ ] Install AI dependencies: `npm install ai @ai-sdk/react @openrouter/ai-sdk-provider zod`.
-- [ ] Install UI/UX dependencies: `npm install react-markdown rehype-highlight highlight.js framer-motion next-themes`.
-- [ ] Verify zero peer-dependency conflicts by checking `npm install` output for warnings.
+- [x] Install AI dependencies: `npm install ai @ai-sdk/react @openrouter/ai-sdk-provider zod`.
+- [x] Install UI/UX dependencies: `npm install react-markdown rehype-highlight highlight.js framer-motion next-themes`.
+- [x] Verify zero peer-dependency conflicts by checking `npm install` output for warnings.
 
 **0.4 Shadcn UI Initialization**
-- [ ] Run `npx shadcn@latest init` and select the **Default** style, **Nova** base colour, and CSS variables enabled.
-- [ ] Add required components: `npx shadcn@latest add button card progress textarea badge separator tooltip`.
-- [ ] Confirm `src/components/ui/` directory is populated with all seven component files.
-- [ ] Verify `components.json` was created at the project root with correct aliases.
+- [x] Run `npx shadcn@latest init` and select the **Default** style, **Nova** base colour, and CSS variables enabled.
+- [x] Add required components: `npx shadcn@latest add button card progress textarea badge separator tooltip`.
+- [x] Confirm `src/components/ui/` directory is populated with all seven component files.
+- [x] Verify `components.json` was created at the project root with correct aliases.
 
 **0.5 Environment Configuration**
 - [ ] Create `.env.local` at the project root.
