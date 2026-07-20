@@ -1,6 +1,10 @@
 import { generateObject } from "ai";
 import { getErrorStatus } from "@/lib/api-errors";
-import { FALLBACK_MODEL, openrouter, PRIMARY_MODEL } from "@/lib/openrouter";
+import {
+  getPreferredModels,
+  markModelRateLimited,
+} from "@/lib/model-router";
+import { openrouter } from "@/lib/openrouter";
 import { SCORECARD_PROMPT } from "@/lib/prompts";
 import { ScorecardSchema, type ScorecardResult } from "@/lib/schemas";
 
@@ -10,7 +14,7 @@ export const maxDuration = 30;
 async function generateScorecard(code: string): Promise<ScorecardResult> {
   const prompt = `${SCORECARD_PROMPT}\n\n\`\`\`\n${code}\n\`\`\``;
 
-  for (const model of [PRIMARY_MODEL, FALLBACK_MODEL]) {
+  for (const model of getPreferredModels()) {
     try {
       const result = await generateObject({
         model: openrouter.chat(model, {
@@ -24,7 +28,8 @@ async function generateScorecard(code: string): Promise<ScorecardResult> {
       return result.object;
     } catch (error) {
       console.error(error);
-      if (model === PRIMARY_MODEL && getErrorStatus(error) === 429) {
+      if (getErrorStatus(error) === 429) {
+        markModelRateLimited(model);
         continue;
       }
       throw error;
