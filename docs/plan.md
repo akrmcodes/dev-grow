@@ -13,18 +13,18 @@
 | Dimension | v1.0 (Ollama) | v2.0 (OpenRouter Cloud) |
 |-----------|---------------|------------------------|
 | **Hardware** | Requires i7-11th Gen, 16GB RAM, 6GB VRAM | Runs on **any device with a browser** |
-| **Model Quality** | 7B quantized model (Q4_K_M) — compromised quality | **Frontier-class models** (480B+ params) — full quality |
-| **Arabic Support** | Acceptable but inconsistent at 7B | **Native, production-grade** Arabic from Qwen3 family |
+| **Model Quality** | 7B quantized model (Q4_K_M) — compromised quality | **Production-grade 31B dense model** — full quality |
+| **Arabic Support** | Acceptable but inconsistent at 7B | **Strong multilingual support** (140+ languages) from Gemma family |
 | **Setup Complexity** | Install Ollama → pull model → configure VRAM | `npm run dev` → **done** |
 | **JSON Reliability** | Ollama `format: 'json'` — works, but fragile | OpenRouter `response_format` + **Response Healing** — robust |
-| **Context Window** | 4,096 tokens (VRAM constrained) | **Up to 1M tokens** — review entire files |
+| **Context Window** | 4,096 tokens (VRAM constrained) | **Up to 256K tokens** — review entire files |
 | **Demo Day** | Must demo on your specific laptop | **Demo from any machine**, even a phone |
 
 ### Refined Scope
 
-The original 4-feature scope from v1.0 is **fully preserved**. The cloud pivot changes *how* things work under the hood, not *what* ships to the user. All features become **dramatically more reliable** because they're powered by a model 60x larger than the original.
+The original 4-feature scope from v1.0 is **fully preserved**. The cloud pivot changes *how* things work under the hood, not *what* ships to the user. All features become **dramatically more reliable** because they're powered by a model 4× larger than the original.
 
-> **🎯 Project Philosophy:** Same 4 features, same tight scope, but now powered by frontier intelligence. The cloud pivot is a **quality multiplier**, not a scope expansion.
+> **🎯 Project Philosophy:** Same 4 features, same tight scope, but now powered by cloud-grade intelligence. The cloud pivot is a **quality multiplier**, not a scope expansion.
 
 ---
 
@@ -41,54 +41,53 @@ A deep search was conducted on the current OpenRouter free tier (July 2026). Fre
 
 | Model | Params (Active) | Architecture | Context | Coding Strength | Arabic Support | JSON Mode | Verdict |
 |-------|----------------|--------------|---------|-----------------|----------------|-----------|---------|
-| **Qwen3-Coder** | 480B (35B active) | MoE | **1M** | ⭐⭐⭐⭐⭐ SWE-Bench >70% | ⭐⭐⭐⭐⭐ Native Arabic (100+ languages) | ✅ Structured outputs | **🏆 PRIMARY** |
+| **Gemma 4 31B** | 31B (dense) | Dense | **256K** | ⭐⭐⭐⭐ Strong coding & reasoning | ⭐⭐⭐⭐ Multilingual (140+ languages) | ✅ Structured outputs | **🏆 PRIMARY** |
 | DeepSeek-V4-Flash | 284B (13B active) | MoE | 1M | ⭐⭐⭐⭐⭐ Excellent coding | ⭐⭐⭐⭐ Strong but English/Chinese primary | ✅ Structured outputs | Runner-up |
-| Gemma 4 27B | 27B (dense) | Dense | 128K | ⭐⭐⭐⭐ Strong general coding | ⭐⭐⭐ Acceptable | ✅ | Backup |
+| Qwen3-Coder | 480B (35B active) | MoE | 1M | ⭐⭐⭐⭐⭐ SWE-Bench >70% | ⭐⭐⭐⭐⭐ Native Arabic (100+ languages) | ✅ Structured outputs | ❌ Unavailable |
 | NVIDIA Nemotron 3 Ultra | 550B (55B active) | Hybrid MoE | 128K | ⭐⭐⭐⭐⭐ Frontier reasoning | ⭐⭐⭐ English-focused | ✅ | Too slow for streaming chat |
 | Poolside Laguna XS 2.1 | 33B (3B active) | MoE | 256K | ⭐⭐⭐⭐ Good agentic coding | ⭐⭐ English-centric | ✅ | Weak Arabic |
 | Llama 3.3 70B | 70B (dense) | Dense | 128K | ⭐⭐⭐⭐ Solid | ⭐⭐⭐ Moderate | ✅ | Not specialized for code |
 
-### 2.3 Selected Model: `qwen/qwen3-coder:free`
+### 2.3 Selected Model: `google/gemma-4-31b-it:free`
 
-> **The Qwen3-Coder is the clear winner.** No other free model simultaneously dominates both coding benchmarks and Arabic multilingual quality.
+> **Gemma 4 31B is the best available free-tier choice.** Qwen3-Coder — originally selected — is no longer available on OpenRouter's free tier. Among remaining options, Gemma 4 31B offers the strongest balance of coding capability and multilingual support.
 
-#### Why Qwen3-Coder Wins
+#### Why Gemma 4 31B Wins
 
-**1. Coding Dominance**
-- Achieves **>70% on SWE-Bench Verified** — this is a frontier-level coding benchmark where the model must fix real-world GitHub issues.
-- Purpose-built for code review, debugging, refactoring, and code generation.
-- Outperforms DeepSeek-V4-Flash and all other free models on structured coding tasks.
-- The 480B MoE architecture (35B active parameters) gives it the reasoning depth of a frontier model while keeping inference costs low enough for providers to offer it free.
+**1. Coding & Reasoning Strength**
+- Google DeepMind's **30.7B dense instruct model**, purpose-tuned for coding, reasoning, and document understanding.
+- Strong performance on code review, debugging, refactoring, and code generation tasks.
+- Configurable thinking/reasoning mode and native function calling — well-suited for structured pedagogical responses.
+- At 31B parameters (dense), it is a **4× upgrade** over v1.0's 7B quantized model while remaining fast enough for low-latency streaming chat on the free tier.
 
-**2. Arabic Language Support — The Decisive Factor**
-- The Qwen family is trained by Alibaba with **explicit multilingual intent**, covering **100+ languages** with Arabic as a first-class citizen.
-- Unlike DeepSeek (Chinese/English primary with Arabic as secondary) or Llama (English-dominant), Qwen3-Coder handles Arabic prompts, Arabic comments in code, and Arabic explanations natively.
-- For a bilingual project like DevGrow, this is not a "nice-to-have" — it is **the critical differentiator**.
-- Qwen3 models have been specifically refined for improved dialectal and standard Arabic accuracy in their 2026 releases.
+**2. Multilingual Support — Critical for DevGrow**
+- Trained with **multilingual support across 140+ languages**, including Arabic.
+- Handles Arabic prompts, Arabic comments in code, and Arabic explanations reliably — essential for a bilingual project like DevGrow.
+- While Qwen3-Coder offered marginally stronger native Arabic, Gemma 4 31B is the best multilingual option among currently available free models.
 
-**3. 1M Token Context Window**
+**3. 256K Token Context Window**
 - Obliterates the 4,096 token limitation from v1.0. Students can paste entire files, multi-file projects, or long problem descriptions without truncation.
 - No need for the "Code too long" warning from v1.0.
 
 **4. JSON Structured Output**
-- Natively supports `response_format: { type: "json_schema" }` through OpenRouter.
+- Supports `response_format: { type: "json_schema" }` through OpenRouter.
 - Combined with OpenRouter's **Response Healing** feature (auto-repairs malformed JSON), the Scorecard feature becomes rock-solid.
 
 #### Fallback Strategy
 
-If Qwen3-Coder's free tier hits rate limits or experiences temporary unavailability:
+If Gemma 4 31B's free tier hits rate limits or experiences temporary unavailability:
 
-- **Primary Fallback:** `deepseek/deepseek-v4-flash:free` — nearly identical coding quality, slightly weaker Arabic.
+- **Primary Fallback:** `deepseek/deepseek-v4-flash:free` — excellent coding quality, slightly different multilingual profile.
 - **Emergency Fallback:** Use `openrouter/free` (the smart router) — it automatically selects the best available free model that supports the features your request needs (streaming, structured outputs, etc.).
 
 ### 2.4 Why NOT the Others?
 
 | Model | Disqualification Reason |
 |-------|------------------------|
-| **DeepSeek-V4-Flash** | Excellent coder, but Arabic is a second-tier language. In testing, Arabic explanations can sometimes revert to English mid-response. The model's *primary* training languages are Chinese and English. |
+| **Qwen3-Coder** | Originally selected as primary, but **no longer available** on OpenRouter's free tier. Removed from the catalogue. |
+| **DeepSeek-V4-Flash** | Excellent coder, but Arabic is a second-tier language. In testing, Arabic explanations can sometimes revert to English mid-response. The model's *primary* training languages are Chinese and English. Retained as primary fallback. |
 | **Nemotron 3 Ultra** | Overkill for this use case. The 550B model is optimized for deep research and complex planning — not low-latency streaming chat. Response latency would degrade the UX. |
 | **Poolside Laguna XS** | Built specifically for agentic coding (tool use, file manipulation). DevGrow needs *pedagogical* code review, not agentic workflows. Arabic support is minimal. |
-| **Gemma 4 27B** | Solid general-purpose model, but as a dense 27B it's significantly smaller than Qwen3-Coder's 35B active MoE. Arabic support is acceptable but not refined. |
 
 ---
 
@@ -96,11 +95,11 @@ If Qwen3-Coder's free tier hits rate limits or experiences temporary unavailabil
 
 | # | Feature | Status | How It Works via OpenRouter API |
 |---|---------|--------|-------------------------------|
-| 1 | **Code Reviewer** | ✅ **Kept** | User's code + "Code Review" system prompt → sent to Qwen3-Coder via OpenRouter → streamed markdown response rendered in the chat panel. The 1M context window means **no code length limits**. |
-| 2 | **Progressive Learning (Hints)** | ⚡ **Simplified** | Three UI buttons ("Hint", "Concept", "Solution") each prepend a different system prompt constraint to the same API call. No state machine — the user *chooses* the help level. Same elegant UX from v1.0, now with frontier-quality responses. |
-| 3 | **Code Scorecard** | ✅ **Kept** | Separate API route calls Qwen3-Coder with `response_format: { type: "json_schema" }` and a Zod-validated schema. Returns `{ readability, logic, documentation, summary }`. OpenRouter's Response Healing auto-repairs any malformed JSON. Displayed as animated progress bars in a collapsible sidebar. |
-| 4 | **Analogy Mode (Rubber Duck)** | ✅ **Kept** | A single system prompt swap — zero additional complexity. The model explains code using real-world analogies with zero technical jargon. At 480B parameters, the analogies are genuinely creative and pedagogically rich — a massive upgrade over the 7B v1.0 quality. |
-| 5 | **Challenge Mode (Senior Dev)** | ⚡ **Merged** | A single "Challenge Me" button appends a prompt asking the model to generate one edge-case question. No mode switching. The frontier model generates genuinely insightful edge-case questions that a 7B model simply could not. |
+| 1 | **Code Reviewer** | ✅ **Kept** | User's code + "Code Review" system prompt → sent to Gemma 4 31B via OpenRouter → streamed markdown response rendered in the chat panel. The 256K context window means **no practical code length limits**. |
+| 2 | **Progressive Learning (Hints)** | ⚡ **Simplified** | Three UI buttons ("Hint", "Concept", "Solution") each prepend a different system prompt constraint to the same API call. No state machine — the user *chooses* the help level. Same elegant UX from v1.0, now with high-quality responses. |
+| 3 | **Code Scorecard** | ✅ **Kept** | Separate API route calls Gemma 4 31B with `response_format: { type: "json_schema" }` and a Zod-validated schema. Returns `{ readability, logic, documentation, summary }`. OpenRouter's Response Healing auto-repairs any malformed JSON. Displayed as animated progress bars in a collapsible sidebar. |
+| 4 | **Analogy Mode (Rubber Duck)** | ✅ **Kept** | A single system prompt swap — zero additional complexity. The model explains code using real-world analogies with zero technical jargon. At 31B parameters, the analogies are genuinely creative and pedagogically rich — a massive upgrade over the 7B v1.0 quality. |
+| 5 | **Challenge Mode (Senior Dev)** | ⚡ **Merged** | A single "Challenge Me" button appends a prompt asking the model to generate one edge-case question. No mode switching. The 31B model generates genuinely insightful edge-case questions that a 7B model simply could not. |
 | 6 | **Micro-Animations** | ⚡ **Simplified** | Pure CSS + Framer Motion. Fade-ins, pulse on "thinking" state, smooth score bar fills, button hover effects. No Lottie, no heavy assets. |
 
 ### Summary: Same 4+2 Feature Footprint, 10x Quality
@@ -200,8 +199,8 @@ If Qwen3-Coder's free tier hits rate limits or experiences temporary unavailabil
 │                    OPENROUTER API (openrouter.ai)                 │
 │                                                                   │
 │  ┌─────────────────────────────────────────────────────────────┐ │
-│  │  qwen/qwen3-coder:free                                      │ │
-│  │  480B MoE (35B active) | 1M context | Structured outputs    │ │
+│  │  google/gemma-4-31b-it:free                                 │ │
+│  │  31B dense | 256K context | Structured outputs               │ │
 │  └─────────────────────────────────────────────────────────────┘ │
 │                                                                   │
 │  Features:                                                        │
@@ -218,7 +217,7 @@ If Qwen3-Coder's free tier hits rate limits or experiences temporary unavailabil
 1. The student pastes code into the editor and clicks a mode button (e.g., "Review").
 2. The React client calls `useChat()` which POSTs to `/api/chat` with the code, the message history, and the selected mode.
 3. The Route Handler reads `process.env.OPENROUTER_API_KEY` (never exposed to the client), initializes the OpenRouter provider, selects the appropriate system prompt based on the mode, and calls `streamText()`.
-4. `streamText()` opens a streaming connection to OpenRouter, which forwards the request to Qwen3-Coder.
+4. `streamText()` opens a streaming connection to OpenRouter, which forwards the request to Gemma 4 31B.
 5. The response streams back token-by-token through OpenRouter → Route Handler → `useChat()` → the Chat Panel, rendering in real-time with markdown formatting and syntax highlighting.
 
 **Scorecard Flow (Non-Streaming):**
@@ -292,7 +291,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 | JSON Enforcement | `format: 'json'` — prompt-level hint | `response_format: json_schema` — token-level constraint |
 | Schema Validation | Manual `JSON.parse()` + try/catch | Automatic Zod validation via `generateObject()` |
 | Error Recovery | Manual retry logic | SDK auto-retry + OpenRouter Response Healing |
-| Model Quality | 7B model frequently hallucinates JSON keys | 480B model follows schemas reliably |
+| Model Quality | 7B model frequently hallucinates JSON keys | 31B model follows schemas reliably |
 
 ---
 
@@ -308,7 +307,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 - [ ] **Step 4:** Install UI dependencies: `react-markdown`, `rehype-highlight`, `highlight.js`, `framer-motion`, and `next-themes`.
 - [ ] **Step 5:** Initialize shadcn/ui and add components: `button`, `card`, `progress`, `textarea`, `badge`, `separator`, `tooltip`.
 - [ ] **Step 6:** Create `.env.local` with `OPENROUTER_API_KEY=your_key_here`.
-- [ ] **Step 7:** Verify OpenRouter connectivity: create a minimal test Route Handler that calls `streamText()` with `qwen/qwen3-coder:free` and confirm a response is received.
+- [ ] **Step 7:** Verify OpenRouter connectivity: create a minimal test Route Handler that calls `streamText()` with `google/gemma-4-31b-it:free` and confirm a response is received.
 
 **Milestone:** `npm run dev` works, OpenRouter responds, all dependencies installed.
 
@@ -328,7 +327,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
   - Accept POST with `{ messages, mode, code }`.
   - Call `getSystemPrompt(mode)` to construct the full system prompt.
   - Initialize the OpenRouter provider with `createOpenRouter()`.
-  - Call `streamText()` with `openrouter.chat('qwen/qwen3-coder:free')`, the system prompt, and the messages array.
+  - Call `streamText()` with `openrouter.chat('google/gemma-4-31b-it:free')`, the system prompt, and the messages array.
   - Return `result.toDataStreamResponse()`.
 
 - [ ] **Step 10:** Create `/src/app/api/score/route.ts` (Route Handler).
@@ -486,7 +485,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 - [ ] **Step 31:** Final rehearsal.
   - Practice the demo flow 2-3 times.
   - Ensure OpenRouter is responsive (test during expected demo time).
-  - Have the fallback model strategy ready if Qwen3-Coder's free tier is slow.
+  - Have the fallback model strategy ready if Gemma 4 31B's free tier is slow.
 
 **Milestone:** Demo-ready, rehearsed, with fallback plans.
 
@@ -497,13 +496,13 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 | Risk | Severity | Probability | Mitigation Strategy |
 |------|----------|-------------|---------------------|
 | **OpenRouter free tier rate limiting** (20 req/min, 50 req/day) | 🔴 High | 🟡 Medium | **During development:** Pace requests, don't spam-test. Cache test responses locally. **During demo:** Pre-warm the model with a test request 5 minutes before. Keep the demo to 5-6 requests max. **Emergency:** Purchase $10 in OpenRouter credits to unlock 1,000 requests/day — permanently. This is within the "free" spirit since it's a one-time unlock, not ongoing cost. |
-| **Qwen3-Coder free tier goes offline or is removed** | 🔴 High | 🟡 Medium | Switch the model string in `/src/lib/openrouter.ts` to `deepseek/deepseek-v4-flash:free` (one-line change). Alternatively, use `openrouter/free` (smart router) for automatic failover. Test the fallback model once during Phase 1. |
-| **JSON parsing failures in Scorecard** | 🟡 Medium | 🟢 Low | Three-layer defense: (1) `generateObject()` with Zod schema, (2) OpenRouter Response Healing, (3) Application-level try/catch with "Unable to score" fallback UI + retry button. At frontier model sizes, JSON compliance is >99%. |
-| **Slow API response time (>10s)** | 🟡 Medium | 🟡 Medium | (1) Use the "Thinking..." animation to mask latency — users tolerate waits when they see activity. (2) Free tier models can be slow during peak hours (US business hours). Test during off-peak if possible. (3) Set `maxDuration: 30` in the Route Handler to prevent infinite hangs. (4) The fallback to DeepSeek-V4-Flash is typically faster due to its smaller active parameter count (13B vs 35B). |
+| **Gemma 4 31B free tier goes offline or is removed** | 🔴 High | 🟡 Medium | Switch the model string in `/src/lib/openrouter.ts` to `deepseek/deepseek-v4-flash:free` (one-line change). Alternatively, use `openrouter/free` (smart router) for automatic failover. Test the fallback model once during Phase 1. |
+| **JSON parsing failures in Scorecard** | 🟡 Medium | 🟢 Low | Three-layer defense: (1) `generateObject()` with Zod schema, (2) OpenRouter Response Healing, (3) Application-level try/catch with "Unable to score" fallback UI + retry button. At 31B model scale, JSON compliance is >99%. |
+| **Slow API response time (>10s)** | 🟡 Medium | 🟡 Medium | (1) Use the "Thinking..." animation to mask latency — users tolerate waits when they see activity. (2) Free tier models can be slow during peak hours (US business hours). Test during off-peak if possible. (3) Set `maxDuration: 30` in the Route Handler to prevent infinite hangs. (4) The fallback to DeepSeek-V4-Flash is typically faster due to its smaller active parameter count (13B active vs 31B dense). |
 | **Arabic RTL rendering issues** | 🟢 Low | 🟡 Medium | (1) Test Arabic rendering early in Phase 2, not Phase 4. (2) Use `dir="rtl"` at the container level, not globally, so code blocks (always LTR) render correctly. (3) Use CSS `unicode-bidi` and `text-align` for mixed-direction content. |
 | **API key accidentally exposed in client bundle** | 🔴 High | 🟢 Low | (1) Key is in `.env.local` (Git-ignored by default). (2) Only accessed via `process.env` in Route Handlers (server-only). (3) Add `.env.local` to `.gitignore` explicitly. (4) **Never** import the key in any file under `/src/app/` that isn't a `route.ts`. |
 | **Demo day: internet outage** | 🔴 High | 🟢 Low | (1) Record the demo video (Step 30) as a backup — if the live demo fails, play the video. (2) Have a mobile hotspot ready as backup internet. (3) Pre-record screenshots of every feature for the README/presentation. |
-| **Free model returns lower quality than expected** | 🟡 Medium | 🟢 Low | (1) The 480B Qwen3-Coder is genuinely frontier-quality — this risk is much lower than v1.0's 7B model. (2) Prompts from v1.0 are battle-tested and carry over unchanged. (3) If quality dips, try `deepseek/deepseek-v4-flash:free` which is optimized for speed/quality balance. |
+| **Free model returns lower quality than expected** | 🟡 Medium | 🟢 Low | (1) The 31B Gemma 4 is a solid production-grade model — this risk is much lower than v1.0's 7B model. (2) Prompts from v1.0 are battle-tested and carry over unchanged. (3) If quality dips, try `deepseek/deepseek-v4-flash:free` which is optimized for speed/quality balance. |
 
 ---
 
@@ -526,9 +525,9 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 | Element | v1.0 | v2.0 | Change Type |
 |---------|------|------|-------------|
 | LLM Runtime | Ollama (local) | OpenRouter API (cloud) | **Architecture pivot** |
-| Model | `qwen2.5-coder:7b` (Q4_K_M) | `qwen/qwen3-coder:free` (480B MoE) | **Massive upgrade** |
+| Model | `qwen2.5-coder:7b` (Q4_K_M) | `google/gemma-4-31b-it:free` (31B dense) | **Massive upgrade** |
 | AI SDK Provider | `ollama-ai-provider` | `@openrouter/ai-sdk-provider` | **Dependency swap** |
-| Context Window | 4,096 tokens | 1,000,000 tokens | **250x increase** |
+| Context Window | 4,096 tokens | 262,144 tokens | **64× increase** |
 | JSON Strategy | `format: 'json'` + manual parse | `generateObject()` + Zod + Response Healing | **Robust by design** |
 | System Prompts | *Unchanged* | *Unchanged* | **No change needed** |
 | UI Components | shadcn/ui | shadcn/ui | **No change** |
@@ -540,7 +539,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 
 ## 11. Final Notes
 
-> **💡 The v2.0 pivot is strategically brilliant.** You're shipping the exact same product with the exact same scope, but the underlying intelligence is 60x more powerful. The prompts don't change. The UI doesn't change. Only the plumbing changes — and it becomes *simpler*, not more complex.
+> **💡 The v2.0 pivot is strategically brilliant.** You're shipping the exact same product with the exact same scope, but the underlying intelligence is 4× more powerful. The prompts don't change. The UI doesn't change. Only the plumbing changes — and it becomes *simpler*, not more complex.
 
 > **⚠️ The #1 risk is rate limits, not quality.** At 50 requests/day (free tier), you have roughly 8-10 full demo cycles. Plan your demo carefully. Consider the $10 lifetime credit purchase as insurance — it permanently unlocks 1,000 requests/day.
 

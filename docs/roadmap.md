@@ -34,7 +34,7 @@
 - [x] Create an account at [openrouter.ai](https://openrouter.ai).
 - [x] Navigate to **Keys** and generate a new API key named `devgrow-dev`.
 - [x] Copy the key and store it securely in a local password manager or note.
-- [x] Confirm the free-tier model `qwen/qwen3-coder:free` is listed as available in the OpenRouter model catalogue.
+- [x] Confirm the free-tier model `google/gemma-4-31b-it:free` is listed as available in the OpenRouter model catalogue.
 
 **0.2 Next.js 15 Project Scaffold**
 - [ ] Run `npx create-next-app@latest dev-grow` with the following options: TypeScript ✅, ESLint ✅, Tailwind CSS ✅, `src/` directory ✅, App Router ✅, Turbopack ✅.
@@ -62,7 +62,7 @@
 **0.6 OpenRouter Connectivity Smoke Test**
 - [ ] Create a temporary Route Handler at `src/app/api/test/route.ts`.
 - [ ] Inside the handler, import `createOpenRouter` from `@openrouter/ai-sdk-provider` and `streamText` from `ai`.
-- [ ] Call `streamText()` targeting `qwen/qwen3-coder:free` with the prompt `"Say hello in one sentence."`.
+- [ ] Call `streamText()` targeting `google/gemma-4-31b-it:free` with the prompt `"Say hello in one sentence."`.
 - [ ] Return `result.toDataStreamResponse()` and hit the endpoint via browser or `curl`.
 - [ ] Confirm a streamed response is received — proving API key, provider, and network connectivity all work.
 - [ ] Delete the test route file after confirming it works.
@@ -73,7 +73,7 @@
 - [ ] `npm run dev` starts without errors or TypeScript warnings.
 - [ ] All seven Shadcn components exist under `src/components/ui/`.
 - [ ] `.env.local` exists, is Git-ignored, and contains the `OPENROUTER_API_KEY`.
-- [ ] A streamed response was successfully received from `qwen/qwen3-coder:free` via the smoke-test route.
+- [ ] A streamed response was successfully received from `google/gemma-4-31b-it:free` via the smoke-test route.
 - [ ] The smoke-test route has been deleted — no debug artifacts remain in the codebase.
 
 ---
@@ -113,7 +113,7 @@
 - [ ] Import `createOpenRouter` from `@openrouter/ai-sdk-provider`.
 - [ ] Initialize the provider using `process.env.OPENROUTER_API_KEY` and throw a descriptive error at module load time if the key is missing or undefined.
 - [ ] Export the initialized provider instance: `export const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })`.
-- [ ] Export the primary model constant: `export const PRIMARY_MODEL = 'qwen/qwen3-coder:free'`.
+- [ ] Export the primary model constant: `export const PRIMARY_MODEL = 'google/gemma-4-31b-it:free'`.
 - [ ] Export the fallback model constant: `export const FALLBACK_MODEL = 'deepseek/deepseek-v4-flash:free'`.
 
 **1.4 Utility Types & Constants**
@@ -139,7 +139,7 @@
 
 ### Stage 2: Chat Streaming Route
 
-**Goal:** Build a production-ready `/api/chat` Route Handler that accepts a mode, code, and message history, selects the correct system prompt, streams a response from `qwen/qwen3-coder:free` via the Vercel AI SDK, and handles all error states gracefully.
+**Goal:** Build a production-ready `/api/chat` Route Handler that accepts a mode, code, and message history, selects the correct system prompt, streams a response from `google/gemma-4-31b-it:free` via the Vercel AI SDK, and handles all error states gracefully.
 
 **Prerequisites:** Stage 1 — Core Utilities & System Prompts complete.
 
@@ -271,7 +271,7 @@
 - [ ] Use CSS Grid (`grid-cols-[1fr_1fr]` on desktop, `grid-cols-1` on mobile) for the split-pane container.
 - [ ] Create a sticky `<header>` containing the DevGrow logo wordmark (🌱 DevGrow), a language toggle button (AR/EN), and a theme toggle button (🌙/☀️).
 - [ ] Create a `<main>` element containing the left pane (code editor area) and right pane (AI interaction area) within the grid.
-- [ ] Add a `<footer>` with a one-line credit: `Powered by OpenRouter · qwen/qwen3-coder:free`.
+- [ ] Add a `<footer>` with a one-line credit: `Powered by OpenRouter · google/gemma-4-31b-it:free`.
 
 **4.4 CodeEditor Component**
 - [ ] Create `src/components/CodeEditor.tsx`.
@@ -522,7 +522,7 @@
 - [ ] Add a **Features** table listing all 6 modes with their icon, English name, Arabic name, and one-sentence description.
 - [ ] Add a **Tech Stack** table listing every dependency, its version, and its role in the project.
 - [ ] Add a **Setup Instructions** section with numbered steps: `git clone` → `npm install` → create `.env.local` with API key → `npm run dev`.
-- [ ] Add a **Model Selection** section explaining why `qwen/qwen3-coder:free` was chosen over alternatives (condensed from `plan.md` Section 2).
+- [ ] Add a **Model Selection** section explaining why `google/gemma-4-31b-it:free` was chosen over alternatives (condensed from `plan.md` Section 2).
 - [ ] Add a **JSON Reliability Strategy** section explaining the three-layer Scorecard approach (condensed from `plan.md` Section 6).
 - [ ] Add a **Known Limitations** section: free-tier rate limits (20 req/min, 50 req/day), no persistence (chat resets on refresh), no multi-file support.
 - [ ] Add a **License** section (MIT).
@@ -534,9 +534,9 @@
   1. **[0:00–0:30] Introduction** — State the problem: programming students get stuck, traditional IDEs give no pedagogical guidance.
   2. **[0:30–1:30] Code Review Demo** — Paste the "messy JavaScript" snippet → click "Review" → narrate the streaming response → point to the Scorecard animated bars.
   3. **[1:30–2:30] Progressive Hints Demo** — Paste the "off-by-one bug" snippet → click "Hint" → read the nudge → click "Concept" → understand root cause → click "Solution" → see the fix. Emphasize the pedagogical progression.
-  4. **[2:30–3:15] Analogy Mode Demo** — Same buggy code → click "Analogy" → show the real-world analogy explanation. State: "This is the Rubber Duck Debugging principle, powered by a 480-billion parameter model."
+  4. **[2:30–3:15] Analogy Mode Demo** — Same buggy code → click "Analogy" → show the real-world analogy explanation. State: "This is the Rubber Duck Debugging principle, powered by a 31-billion parameter model."
   5. **[3:15–4:00] Bilingual Demo** — Switch to Arabic → paste the Arabic-comment Python function → click "Review" → show the full Arabic response with RTL layout. State: "Native Arabic support — not translated, genuinely understood."
-  6. **[4:00–5:00] Architecture & Closing** — Open `plan.md`, briefly show the architecture diagram, name the tech stack, explain the OpenRouter cloud pivot (same features, 60× larger model, runs on any device). Close with the project philosophy tagline.
+  6. **[4:00–5:00] Architecture & Closing** — Open `plan.md`, briefly show the architecture diagram, name the tech stack, explain the OpenRouter cloud pivot (same features, 4× larger model, runs on any device). Close with the project philosophy tagline.
 - [ ] Include "SPEAKER NOTE:" annotations for each section specifying what to say, what to point to on screen, and what to avoid.
 
 ---
