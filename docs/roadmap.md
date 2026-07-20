@@ -309,49 +309,49 @@
 #### Task Checklist
 
 **5.1 ModeSelector Component**
-- [ ] Create `src/components/ModeSelector.tsx`.
-- [ ] Render 6 Shadcn `<Button>` components — one per mode — using `MODE_CONFIG` from `src/lib/constants.ts` for labels and icons.
-- [ ] Accept `activeMode`, `onModeChange`, `onSubmit`, and `isLoading` as props.
-- [ ] Apply a distinct active visual state on the currently selected mode button (`variant="default"` for active, `variant="outline"` for inactive).
-- [ ] Add a CSS `transition` for smooth background-color changes between active states.
-- [ ] Set `disabled={isLoading}` on each button while the AI is generating a response.
-- [ ] When a mode button is clicked, immediately invoke the `onSubmit` callback that triggers chat submission with the selected mode — no separate "send" button required.
+- [x] Create `src/components/ModeSelector.tsx`.
+- [x] Render 6 Shadcn `<Button>` components — one per mode — using `MODE_CONFIG` from `src/lib/constants.ts` for labels and icons.
+- [x] Accept `activeMode`, `onModeChange`, `onSubmit`, and `isLoading` as props.
+- [x] Apply a distinct active visual state on the currently selected mode button (`variant="default"` for active, `variant="outline"` for inactive).
+- [x] Add a CSS `transition` for smooth background-color changes between active states.
+- [x] Set `disabled={isLoading}` on each button while the AI is generating a response.
+- [x] When a mode button is clicked, immediately invoke the `onSubmit` callback that triggers chat submission with the selected mode — no separate "send" button required.
 
 **5.2 useChat Hook Wiring**
-- [ ] In `src/app/page.tsx`, import `useChat` from `@ai-sdk/react`.
-- [ ] Initialize `useChat` with `api: '/api/chat'` and `body: { mode, code }` so the current mode and code are always included in each request.
-- [ ] Ensure `body` is reactive — when `mode` or `code` state changes, the next `append()` call picks up the latest values.
-- [ ] Expose `messages`, `append`, `isLoading`, and `error` from the hook to child components via props or context.
+- [x] In `src/app/page.tsx`, import `useChat` from `@ai-sdk/react`.
+- [x] Initialize `useChat` with `api: '/api/chat'` and `body: { mode, code }` so the current mode and code are always included in each request.
+- [x] Ensure `body` is reactive — when `mode` or `code` state changes, the next `append()` call picks up the latest values.
+- [x] Expose `messages`, `append`, `isLoading`, and `error` from the hook to child components via props or context.
 
 **5.3 ChatPanel Component**
-- [ ] Create `src/components/ChatPanel.tsx`.
-- [ ] Accept `messages`, `isLoading`, `error`, and `isRTL` as props.
-- [ ] Render each message with role-based styling: user messages right-aligned (or left in RTL), assistant messages left-aligned (or right in RTL), each in a distinct card-style bubble.
-- [ ] For assistant messages, render content through `<ReactMarkdown>` with `rehype-highlight` as a rehype plugin.
-- [ ] Import a `highlight.js` CSS theme (`github-dark` or equivalent) in `globals.css` for syntax-highlighted code blocks.
-- [ ] Display a **"Thinking…"** indicator (a pulsing animated `<Badge>` with three dots or a spinner) when `isLoading` is `true`.
-- [ ] Implement auto-scroll: add a `ref` to a `<div>` at the bottom of the messages list and call `ref.current.scrollIntoView({ behavior: 'smooth' })` in a `useEffect` watching `messages`.
+- [x] Create `src/components/ChatPanel.tsx`.
+- [x] Accept `messages`, `isLoading`, `error`, and `isRTL` as props.
+- [x] Render each message with role-based styling: user messages right-aligned (or left in RTL), assistant messages left-aligned (or right in RTL), each in a distinct card-style bubble.
+- [x] For assistant messages, render content through `<ReactMarkdown>` with `rehype-highlight` as a rehype plugin.
+- [x] Import a `highlight.js` CSS theme (`github-dark` or equivalent) in `globals.css` for syntax-highlighted code blocks.
+- [x] Display a **"Thinking…"** indicator (a pulsing animated `<Badge>` with three dots or a spinner) when `isLoading` is `true`.
+- [x] Implement auto-scroll: add a `ref` to a `<div>` at the bottom of the messages list and call `ref.current.scrollIntoView({ behavior: 'smooth' })` in a `useEffect` watching `messages`.
 
 **5.4 Error State Display**
-- [ ] In `ChatPanel.tsx`, check the `error` prop.
-- [ ] If the error contains `"RATE_LIMIT"`, render the `RATE_LIMIT_MESSAGE` constant (or `RATE_LIMIT_MESSAGE_AR` if RTL).
-- [ ] For other errors, render a generic "Something went wrong. Please try again." message.
-- [ ] Style error messages in a red-tinted card to visually distinguish them from normal responses.
+- [x] In `ChatPanel.tsx`, check the `error` prop.
+- [x] If the error contains `"RATE_LIMIT"`, render the `RATE_LIMIT_MESSAGE` constant (or `RATE_LIMIT_MESSAGE_AR` if RTL).
+- [x] For other errors, render a generic "Something went wrong. Please try again." message.
+- [x] Style error messages in a red-tinted card to visually distinguish them from normal responses.
 
 **5.5 Submit Flow Integration**
-- [ ] In `src/app/page.tsx`, wire the `ModeSelector`'s `onSubmit` callback to call `useChat`'s `append()` with a user message containing the current `code` value.
-- [ ] Validate that `code` is non-empty before calling `append()` — if empty, display a toast or inline validation message: "Paste some code first! 🌱".
-- [ ] Ensure the `mode` state is set before submission and reflected in the request body.
+- [x] In `src/app/page.tsx`, wire the `ModeSelector`'s `onSubmit` callback to call `useChat`'s `append()` with a user message containing the current `code` value.
+- [x] Validate that `code` is non-empty before calling `append()` — if empty, display a toast or inline validation message: "Paste some code first! 🌱".
+- [x] Ensure the `mode` state is set before submission and reflected in the request body.
 
 ---
 
 #### Stage 5 Validation Gate
-- [ ] Clicking any mode button while code is in the editor triggers a chat request and streams a response.
-- [ ] The chat panel renders markdown correctly — including bold, italics, bullet lists, and fenced code blocks with syntax highlighting.
-- [ ] The "Thinking…" indicator appears immediately on submit and disappears when the response completes.
-- [ ] The panel auto-scrolls to the latest message as tokens stream in.
-- [ ] Submitting with an empty code editor shows a validation message and does not send an API request.
-- [ ] All mode buttons are disabled during streaming and re-enabled when the stream completes.
+- [x] Clicking any mode button while code is in the editor triggers a chat request and streams a response.
+- [x] The chat panel renders markdown correctly — including bold, italics, bullet lists, and fenced code blocks with syntax highlighting.
+- [x] The "Thinking…" indicator appears immediately on submit and disappears when the response completes.
+- [x] The panel auto-scrolls to the latest message as tokens stream in.
+- [x] Submitting with an empty code editor shows a validation message and does not send an API request.
+- [x] All mode buttons are disabled during streaming and re-enabled when the stream completes.
 
 ---
 

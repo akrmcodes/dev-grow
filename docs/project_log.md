@@ -112,3 +112,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Passed all Stage 4 exit criteria: two-column desktop / stacked mobile layout, sticky header, functional CodeEditor with line count, dark default theme, ThemeProvider with suppressHydrationWarning. `npm run build` and `npm run lint` pass with zero errors.
 **Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 5.1–5.5] Mode selector and chat panel
+
+**Summary:** Built `ModeSelector` with click-to-submit and active states. Wired AI SDK v7 `useChat` + `DefaultChatTransport` in `AppShell` with per-request `{ mode, code }` body via `sendMessage`. Created `ChatPanel` with streaming markdown, `rehype-highlight`, thinking pulse badge, auto-scroll, and structured error display. Integrated into `Sidebar` with empty-code validation.
+**Files:** components/ModeSelector.tsx, components/ChatPanel.tsx, components/AppShell.tsx, components/Sidebar.tsx, app/globals.css
+**Status:** completed
+
+## 2026-07-20 — [Stage 5] Validation gate
+
+**Summary:** Passed all Stage 5 exit criteria: mode buttons trigger streaming chat, markdown and syntax highlighting render correctly, thinking indicator and auto-scroll work, empty-code validation blocks API calls, buttons disable during streaming. `npm run build` and `npm run lint` pass with zero errors.
+**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed
