@@ -89,18 +89,18 @@
 #### Task Checklist
 
 **1.1 Prompts Constants Module**
-- [ ] Create `src/lib/prompts.ts`.
-- [ ] Define and export `BASE_SYSTEM_PROMPT`: a multi-paragraph string that scopes the AI strictly to programming assistance, instructs it to detect and respond in the user's language (Arabic or English), and enforces a pedagogical, non-condescending tone.
-- [ ] Define and export six mode-specific prompt addendum constants: `REVIEW_PROMPT`, `HINT_PROMPT`, `CONCEPT_PROMPT`, `SOLUTION_PROMPT`, `ANALOGY_PROMPT`, `CHALLENGE_PROMPT`.
+- [x] Create `src/lib/prompts.ts`.
+- [x] Define and export `BASE_SYSTEM_PROMPT`: a multi-paragraph string that scopes the AI strictly to programming assistance, instructs it to detect and respond in the user's language (Arabic or English), and enforces a pedagogical, non-condescending tone.
+- [x] Define and export six mode-specific prompt addendum constants: `REVIEW_PROMPT`, `HINT_PROMPT`, `CONCEPT_PROMPT`, `SOLUTION_PROMPT`, `ANALOGY_PROMPT`, `CHALLENGE_PROMPT`.
   - `REVIEW_PROMPT`: Full code review — readability, logic, naming, documentation.
   - `HINT_PROMPT`: One directional nudge only. No code. No solution reveal.
   - `CONCEPT_PROMPT`: Explain the underlying concept behind the issue. No direct fix.
   - `SOLUTION_PROMPT`: Step-by-step walkthrough with corrected code.
   - `ANALOGY_PROMPT`: Explain the code using a real-world analogy. Zero jargon.
   - `CHALLENGE_PROMPT`: Generate one insightful edge-case question to deepen understanding.
-- [ ] Define and export `SCORECARD_PROMPT`: instructs the model to evaluate the provided code and return only a valid JSON object with keys `readability`, `logic`, `documentation` (all `number`, 0–10), and `summary` (`string`, one sentence).
-- [ ] Define and export a helper function `getSystemPrompt(mode: string): string` that concatenates `BASE_SYSTEM_PROMPT` with the appropriate mode-specific addendum and returns the full string.
-- [ ] Add a TypeScript `Mode` union type: `'review' | 'hint' | 'concept' | 'solution' | 'analogy' | 'challenge'` and export it.
+- [x] Define and export `SCORECARD_PROMPT`: instructs the model to evaluate the provided code and return only a valid JSON object with keys `readability`, `logic`, `documentation` (all `number`, 0–10), and `summary` (`string`, one sentence).
+- [x] Define and export a helper function `getSystemPrompt(mode: string): string` that concatenates `BASE_SYSTEM_PROMPT` with the appropriate mode-specific addendum and returns the full string.
+- [x] Add a TypeScript `Mode` union type: `'review' | 'hint' | 'concept' | 'solution' | 'analogy' | 'challenge'` and export it.
 
 **1.2 Zod Schema Definitions**
 - [ ] Create `src/lib/schemas.ts`.
