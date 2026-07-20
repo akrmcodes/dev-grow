@@ -3,7 +3,9 @@
 import type { UIMessage } from "ai";
 import { ChatPanel } from "@/components/ChatPanel";
 import { ModeSelector } from "@/components/ModeSelector";
+import { ScorecardPanel } from "@/components/ScorecardPanel";
 import type { Mode } from "@/lib/prompts";
+import type { ScorecardResult } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 
 type SidebarProps = {
@@ -15,6 +17,11 @@ type SidebarProps = {
   messages: UIMessage[];
   error: Error | undefined;
   validationError: string | null;
+  scorecardData: ScorecardResult | null;
+  scorecardLoading: boolean;
+  scorecardError: string | null;
+  onFetchScorecard: () => void;
+  onRetryScorecard: () => void;
 };
 
 export function Sidebar({
@@ -26,6 +33,11 @@ export function Sidebar({
   messages,
   error,
   validationError,
+  scorecardData,
+  scorecardLoading,
+  scorecardError,
+  onFetchScorecard,
+  onRetryScorecard,
 }: SidebarProps) {
   return (
     <aside
@@ -54,21 +66,14 @@ export function Sidebar({
         isRTL={isRTL}
       />
 
-      <details className="mt-auto shrink-0 rounded-xl border border-border bg-card ring-1 ring-foreground/10">
-        <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-          <span className="flex items-center justify-between gap-2">
-            {isRTL ? "تقييم الكود 📊" : "Code Score 📊"}
-            <span className="text-xs text-muted-foreground" aria-hidden="true">
-              ▾
-            </span>
-          </span>
-        </summary>
-        <div className="border-t border-border px-4 py-3 text-sm text-muted-foreground">
-          {isRTL
-            ? "سيظهر التقييم هنا بعد المراجعة"
-            : "Scores will appear here after review"}
-        </div>
-      </details>
+      <ScorecardPanel
+        data={scorecardData}
+        isLoading={scorecardLoading}
+        error={scorecardError}
+        isRTL={isRTL}
+        onRetry={onRetryScorecard}
+        onScoreCode={onFetchScorecard}
+      />
     </aside>
   );
 }

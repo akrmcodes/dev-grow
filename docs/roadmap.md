@@ -366,38 +366,38 @@
 #### Task Checklist
 
 **6.1 Scorecard State Management**
-- [ ] In `src/app/page.tsx`, add state variables: `scorecardData: ScorecardResult | null`, `scorecardLoading: boolean`, `scorecardError: string | null`.
-- [ ] Write a `fetchScorecard(code: string)` async function that POSTs to `/api/score`, sets loading state, and updates `scorecardData` or `scorecardError` accordingly.
-- [ ] Call `fetchScorecard(code)` in parallel (not sequentially) with the `useChat` `append()` call whenever the user triggers a **"Review"** mode submission.
-- [ ] Add a dedicated **"Score Code"** button that can independently trigger `fetchScorecard()` at any time, regardless of mode.
+- [x] In `src/app/page.tsx`, add state variables: `scorecardData: ScorecardResult | null`, `scorecardLoading: boolean`, `scorecardError: string | null`.
+- [x] Write a `fetchScorecard(code: string)` async function that POSTs to `/api/score`, sets loading state, and updates `scorecardData` or `scorecardError` accordingly.
+- [x] Call `fetchScorecard(code)` in parallel (not sequentially) with the `useChat` `append()` call whenever the user triggers a **"Review"** mode submission.
+- [x] Add a dedicated **"Score Code"** button that can independently trigger `fetchScorecard()` at any time, regardless of mode.
 
 **6.2 ScorecardPanel Component**
-- [ ] Create `src/components/ScorecardPanel.tsx`.
-- [ ] Accept `data: ScorecardResult | null`, `isLoading: boolean`, `error: string | null`, and `onRetry: () => void` as props.
-- [ ] Wrap the entire panel in a Framer Motion `<AnimatePresence>` with a `motion.div` that fades in when `data` becomes non-null.
-- [ ] Implement a collapsible toggle: a header row with "Code Score 📊" text and a chevron icon; clicking it expands/collapses the panel body with a smooth `motion.div` height animation.
+- [x] Create `src/components/ScorecardPanel.tsx`.
+- [x] Accept `data: ScorecardResult | null`, `isLoading: boolean`, `error: string | null`, and `onRetry: () => void` as props.
+- [x] Wrap the entire panel in a Framer Motion `<AnimatePresence>` with a `motion.div` that fades in when `data` becomes non-null.
+- [x] Implement a collapsible toggle: a header row with "Code Score 📊" text and a chevron icon; clicking it expands/collapses the panel body with a smooth `motion.div` height animation.
 
 **6.3 Animated Progress Bars**
-- [ ] Render three labeled score rows: **Readability**, **Logic**, **Documentation**.
-- [ ] For each row, render a `motion.div` acting as the progress bar fill, using `initial={{ width: '0%' }}` and `animate={{ width: \`${(score / 10) * 100}%\` }}` with `transition={{ duration: 0.8, ease: 'easeOut' }}`.
-- [ ] Apply color-coded bar backgrounds: Score 8–10 → `bg-emerald-500` (green), Score 5–7 → `bg-amber-400` (yellow), Score 0–4 → `bg-red-500` (red).
-- [ ] Display the numeric score (e.g., `7.5/10`) to the right of each bar.
-- [ ] Calculate and display an **Overall Score** (average of all three) prominently at the top of the panel.
+- [x] Render three labeled score rows: **Readability**, **Logic**, **Documentation**.
+- [x] For each row, render a `motion.div` acting as the progress bar fill, using `initial={{ width: '0%' }}` and `animate={{ width: \`${(score / 10) * 100}%\` }}` with `transition={{ duration: 0.8, ease: 'easeOut' }}`.
+- [x] Apply color-coded bar backgrounds: Score 8–10 → `bg-emerald-500` (green), Score 5–7 → `bg-amber-400` (yellow), Score 0–4 → `bg-red-500` (red).
+- [x] Display the numeric score (e.g., `7.5/10`) to the right of each bar.
+- [x] Calculate and display an **Overall Score** (average of all three) prominently at the top of the panel.
 
 **6.4 Summary & Loading States**
-- [ ] Render the `summary` string from `ScorecardResult` in a styled blockquote below the three progress bars.
-- [ ] When `isLoading` is `true`, render three skeleton progress bars (pulsing grey bars via `animate-pulse` class).
-- [ ] When `error` is non-null, render a red-tinted card with the message "Unable to generate score." and a **Retry** button that calls `onRetry`.
+- [x] Render the `summary` string from `ScorecardResult` in a styled blockquote below the three progress bars.
+- [x] When `isLoading` is `true`, render three skeleton progress bars (pulsing grey bars via `animate-pulse` class).
+- [x] When `error` is non-null, render a red-tinted card with the message "Unable to generate score." and a **Retry** button that calls `onRetry`.
 
 ---
 
 #### Stage 6 Validation Gate
-- [ ] Triggering a "Review" submission causes both the chat stream and the scorecard fetch to fire in parallel.
-- [ ] All three progress bars animate from 0% to the correct value over ~0.8 seconds on first load.
-- [ ] Color coding is correct: green for 8–10, yellow for 5–7, red for 0–4.
-- [ ] The collapsible panel opens and closes with a smooth height animation (no layout jump).
-- [ ] The skeleton loading state renders correctly while the score is being fetched.
-- [ ] The "Unable to generate score" error UI renders and the Retry button successfully re-triggers the fetch.
+- [x] Triggering a "Review" submission causes both the chat stream and the scorecard fetch to fire in parallel.
+- [x] All three progress bars animate from 0% to the correct value over ~0.8 seconds on first load.
+- [x] Color coding is correct: green for 8–10, yellow for 5–7, red for 0–4.
+- [x] The collapsible panel opens and closes with a smooth height animation (no layout jump).
+- [x] The skeleton loading state renders correctly while the score is being fetched.
+- [x] The "Unable to generate score" error UI renders and the Retry button successfully re-triggers the fetch.
 
 ---
 

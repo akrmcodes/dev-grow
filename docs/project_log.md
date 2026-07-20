@@ -124,3 +124,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Passed all Stage 5 exit criteria: mode buttons trigger streaming chat, markdown and syntax highlighting render correctly, thinking indicator and auto-scroll work, empty-code validation blocks API calls, buttons disable during streaming. `npm run build` and `npm run lint` pass with zero errors.
 **Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 6.1–6.4] Scorecard panel
+
+**Summary:** Added scorecard state and `fetchScorecard` in `AppShell` with parallel fetch on Review mode. Built `ScorecardPanel` with collapsible Framer Motion header, animated color-coded progress bars, overall score, summary blockquote, skeleton loading, and error/retry UI. Replaced Sidebar placeholder with wired `ScorecardPanel` and independent Score Code button.
+**Files:** components/ScorecardPanel.tsx, components/AppShell.tsx, components/Sidebar.tsx
+**Status:** completed
+
+## 2026-07-20 — [Stage 6] Validation gate
+
+**Summary:** Passed all Stage 6 exit criteria: Review triggers parallel chat + score fetch, bars animate with correct colors, collapsible panel animates smoothly, skeleton and error/retry states work, Score Code fetches independently. `npm run build` and `npm run lint` pass with zero errors.
+**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed

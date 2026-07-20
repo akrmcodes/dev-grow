@@ -2,11 +2,12 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Sidebar } from "@/components/Sidebar";
 import type { Mode } from "@/lib/prompts";
+import type { ScorecardResult } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 
 type Language = "en" | "ar";
@@ -16,6 +17,11 @@ export function AppShell() {
   const [language, setLanguage] = useState<Language>("en");
   const [mode, setMode] = useState<Mode>("review");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [scorecardData, setScorecardData] = useState<ScorecardResult | null>(
+    null,
+  );
+  const [scorecardLoading, setScorecardLoading] = useState(false);
+  const [scorecardError, setScorecardError] = useState<string | null>(null);
 
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -28,6 +34,43 @@ export function AppShell() {
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
     document.documentElement.lang = language;
   }, [isRTL, language]);
+
+  const fetchScorecard = useCallback(async () => {
+    if (!code.trim()) {
+      setValidationError(
+        isRTL ? "الصق الكود أولاً! 🌱" : "Paste some code first! 🌱",
+      );
+      return;
+    }
+
+    setScorecardLoading(true);
+    setScorecardError(null);
+
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+
+      const body = (await res.json()) as ScorecardResult | { error?: string };
+
+      if (!res.ok) {
+        setScorecardError(
+          "error" in body && body.error ? body.error : "SCORE_UNAVAILABLE",
+        );
+        setScorecardData(null);
+        return;
+      }
+
+      setScorecardData(body as ScorecardResult);
+    } catch {
+      setScorecardError("SCORE_UNAVAILABLE");
+      setScorecardData(null);
+    } finally {
+      setScorecardLoading(false);
+    }
+  }, [code, isRTL]);
 
   const handleLanguageToggle = () => {
     setLanguage((current) => (current === "en" ? "ar" : "en"));
@@ -52,6 +95,10 @@ export function AppShell() {
 
     setValidationError(null);
     void sendMessage({ text: code }, { body: { mode: selectedMode, code } });
+
+    if (selectedMode === "review") {
+      void fetchScorecard();
+    }
   };
 
   return (
@@ -78,6 +125,11 @@ export function AppShell() {
             messages={messages}
             error={error}
             validationError={validationError}
+            scorecardData={scorecardData}
+            scorecardLoading={scorecardLoading}
+            scorecardError={scorecardError}
+            onFetchScorecard={fetchScorecard}
+            onRetryScorecard={fetchScorecard}
           />
         </section>
       </main>
