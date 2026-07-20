@@ -2,6 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
+import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { CodeEditor } from "@/components/CodeEditor";
@@ -105,7 +106,13 @@ export function AppShell() {
     >
       <AppHeader language={language} onLanguageToggle={handleLanguageToggle} />
 
-      <main className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2">
+      <motion.main
+        key={language}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+        className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-2"
+      >
         <section className="flex min-h-[400px] flex-col bg-surface/50 p-4 md:min-h-0 md:p-6">
           <CodeEditor
             value={code}
@@ -131,7 +138,7 @@ export function AppShell() {
             onRetryScorecard={fetchScorecard}
           />
         </section>
-      </main>
+      </motion.main>
 
       <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">
         {t("footerCredit", language)}

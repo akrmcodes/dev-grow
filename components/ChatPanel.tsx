@@ -1,6 +1,7 @@
 "use client";
 
 import type { UIMessage } from "ai";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -13,6 +14,12 @@ type ChatPanelProps = {
   isLoading: boolean;
   error: Error | undefined;
   language: Language;
+};
+
+const fadeIn = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.25, ease: "easeOut" as const },
 };
 
 function getMessageText(message: UIMessage): string {
@@ -77,111 +84,126 @@ export function ChatPanel({
         )}
 
         <div className="flex flex-col gap-3 p-1">
-          {visibleMessages.map((message) => {
-            const text = getMessageText(message);
-            const isUser = message.role === "user";
+          <AnimatePresence initial={false}>
+            {visibleMessages.map((message) => {
+              const text = getMessageText(message);
+              const isUser = message.role === "user";
 
-            return (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex w-full",
-                  isUser
-                    ? isRTL
-                      ? "justify-start"
-                      : "justify-end"
-                    : isRTL
-                      ? "justify-end"
-                      : "justify-start",
-                )}
-              >
-                <div
+              return (
+                <motion.div
+                  key={message.id}
+                  initial={fadeIn.initial}
+                  animate={fadeIn.animate}
+                  transition={fadeIn.transition}
                   className={cn(
-                    "max-w-[92%] rounded-xl px-3 py-2 text-sm",
+                    "flex w-full",
                     isUser
-                      ? "bg-primary/10 text-foreground"
-                      : "border border-border bg-card text-card-foreground",
+                      ? isRTL
+                        ? "justify-start"
+                        : "justify-end"
+                      : isRTL
+                        ? "justify-end"
+                        : "justify-start",
                   )}
                 >
-                  {isUser ? (
-                    <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
-                      {text}
-                    </p>
-                  ) : (
-                    <div
-                      className={cn(
-                        "prose prose-sm dark:prose-invert max-w-none",
-                        "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
-                        "prose-code:text-emerald-300",
-                      )}
-                    >
-                      <ReactMarkdown
-                        rehypePlugins={[rehypeHighlight]}
-                        components={{
-                          pre: ({ children }) => (
-                            <pre
-                              dir="ltr"
-                              className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
-                            >
-                              {children}
-                            </pre>
-                          ),
-                          code: ({ className, children, ...props }) => {
-                            const isBlock = className?.includes("language-");
+                  <div
+                    className={cn(
+                      "max-w-[92%] rounded-xl px-3 py-2 text-sm",
+                      isUser
+                        ? "bg-primary/10 text-foreground"
+                        : "border border-border bg-card text-card-foreground",
+                    )}
+                  >
+                    {isUser ? (
+                      <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
+                        {text}
+                      </p>
+                    ) : (
+                      <div
+                        className={cn(
+                          "prose prose-sm dark:prose-invert max-w-none",
+                          "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
+                          "prose-code:text-emerald-300",
+                        )}
+                      >
+                        <ReactMarkdown
+                          rehypePlugins={[rehypeHighlight]}
+                          components={{
+                            pre: ({ children }) => (
+                              <pre
+                                dir="ltr"
+                                className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
+                              >
+                                {children}
+                              </pre>
+                            ),
+                            code: ({ className, children, ...props }) => {
+                              const isBlock = className?.includes("language-");
 
-                            if (isBlock) {
+                              if (isBlock) {
+                                return (
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              }
+
                               return (
-                                <code className={className} {...props}>
+                                <code
+                                  className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
+                                  dir="ltr"
+                                  {...props}
+                                >
                                   {children}
                                 </code>
                               );
-                            }
+                            },
+                          }}
+                        >
+                          {text}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
 
-                            return (
-                              <code
-                                className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
-                                dir="ltr"
-                                {...props}
-                              >
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {text}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-
-          {isLoading && (
-            <div
-              className={cn(
-                "flex w-full",
-                isRTL ? "justify-end" : "justify-start",
-              )}
-            >
-              <Badge
-                variant="secondary"
-                className="animate-thinking-pulse gap-1.5 px-3 py-1"
+            {isLoading && (
+              <motion.div
+                key="thinking"
+                initial={fadeIn.initial}
+                animate={fadeIn.animate}
+                exit={{ opacity: 0, y: 10 }}
+                transition={fadeIn.transition}
+                className={cn(
+                  "flex w-full",
+                  isRTL ? "justify-end" : "justify-start",
+                )}
               >
-                {t("thinking", language)}
-              </Badge>
-            </div>
-          )}
+                <Badge
+                  variant="secondary"
+                  className="animate-thinking-pulse gap-1.5 px-3 py-1"
+                >
+                  {t("thinking", language)}
+                </Badge>
+              </motion.div>
+            )}
 
-          {error && (
-            <div
-              className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-              role="alert"
-            >
-              {getErrorMessage(error, language)}
-            </div>
-          )}
+            {error && (
+              <motion.div
+                key="error"
+                initial={fadeIn.initial}
+                animate={fadeIn.animate}
+                exit={{ opacity: 0, y: 10 }}
+                transition={fadeIn.transition}
+                className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                role="alert"
+              >
+                {getErrorMessage(error, language)}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div ref={bottomRef} aria-hidden="true" />
         </div>

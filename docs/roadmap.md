@@ -441,12 +441,12 @@
 - [x] Verify that the split-pane layout reverses correctly under RTL (editor appears on the right, sidebar on the left).
 
 **7.4 Micro-Animations**
-- [ ] **Message Fade-In:** Wrap each message bubble in the ChatPanel in a `motion.div` with `initial={{ opacity: 0, y: 10 }}` and `animate={{ opacity: 1, y: 0 }}`. Wrap the message list in `<AnimatePresence>`.
-- [ ] **Thinking Pulse:** Style the "Thinking…" indicator with a CSS `@keyframes pulse` that alternates opacity between `0.4` and `1.0` on a 1.2-second loop.
-- [ ] **Mode Button Hover:** Add `whileHover={{ scale: 1.03 }}` and `whileTap={{ scale: 0.97 }}` to each mode button's `motion.button` wrapper.
-- [ ] **Scorecard Entry:** Apply `initial={{ opacity: 0, x: 20 }}` and `animate={{ opacity: 1, x: 0 }}` to the entire Scorecard panel when it first appears.
-- [ ] **Language Toggle Transition:** Apply a brief `opacity: 0 → 1` Framer Motion fade to the main content area when switching languages to mask the layout direction change.
-- [ ] **Score Bar Color Transition:** Add `transition={{ duration: 0.3 }}` on color-class changes so color shifts animate smoothly when scores update.
+- [x] **Message Fade-In:** Wrap each message bubble in the ChatPanel in a `motion.div` with `initial={{ opacity: 0, y: 10 }}` and `animate={{ opacity: 1, y: 0 }}`. Wrap the message list in `<AnimatePresence>`.
+- [x] **Thinking Pulse:** Style the "Thinking…" indicator with a CSS `@keyframes pulse` that alternates opacity between `0.4` and `1.0` on a 1.2-second loop.
+- [x] **Mode Button Hover:** Add `whileHover={{ scale: 1.03 }}` and `whileTap={{ scale: 0.97 }}` to each mode button's `motion.button` wrapper.
+- [x] **Scorecard Entry:** Apply `initial={{ opacity: 0, x: 20 }}` and `animate={{ opacity: 1, x: 0 }}` to the entire Scorecard panel when it first appears.
+- [x] **Language Toggle Transition:** Apply a brief `opacity: 0 → 1` Framer Motion fade to the main content area when switching languages to mask the layout direction change.
+- [x] **Score Bar Color Transition:** Add `transition={{ duration: 0.3 }}` on color-class changes so color shifts animate smoothly when scores update.
 
 **7.5 DevGrow Header Polish**
 - [x] Ensure the header contains: `🌱 DevGrow` logo (bold, gradient text from emerald to cyan), the `<LanguageToggle />` button, and the `<ThemeToggle />` button.
@@ -461,7 +461,7 @@
 - [x] Clicking the language toggle switches all UI text between Arabic and English within one render cycle.
 - [x] In Arabic mode, `document.dir` is `"rtl"`, the layout is visually mirrored, and the Arabic font is applied.
 - [x] Code blocks inside the textarea and chat panel remain left-to-right in both language modes.
-- [ ] All six micro-animations fire correctly: message fade-in, thinking pulse, mode button hover/tap, scorecard panel entry, language switch fade, and score bar colour transition.
+- [x] All six micro-animations fire correctly: message fade-in, thinking pulse, mode button hover/tap, scorecard panel entry, language switch fade, and score bar colour transition.
 - [x] The frosted-glass header remains legible in both dark and light themes.
 
 ---

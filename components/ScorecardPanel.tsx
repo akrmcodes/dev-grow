@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { ScorecardResult } from "@/lib/schemas";
 import { type Language, type TranslationKey, t } from "@/lib/translations";
-import { cn } from "@/lib/utils";
 
 type ScorecardPanelProps = {
   data: ScorecardResult | null;
@@ -28,10 +27,10 @@ const SCORE_ROWS: ScoreRow[] = [
   { key: "documentation", labelKey: "documentation" },
 ];
 
-function getScoreBarColor(score: number): string {
-  if (score >= 8) return "bg-emerald-500";
-  if (score >= 5) return "bg-amber-400";
-  return "bg-red-500";
+function getScoreBarColorValue(score: number): string {
+  if (score >= 8) return "#10b981";
+  if (score >= 5) return "#fbbf24";
+  return "#ef4444";
 }
 
 function getOverallScore(data: ScorecardResult): number {
@@ -62,10 +61,16 @@ function ScoreBar({ label, score }: ScoreBarProps) {
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-muted">
         <motion.div
-          className={cn("h-full rounded-full", getScoreBarColor(score))}
-          initial={{ width: "0%" }}
-          animate={{ width: `${(score / 10) * 100}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="h-full rounded-full"
+          initial={{ width: "0%", backgroundColor: getScoreBarColorValue(score) }}
+          animate={{
+            width: `${(score / 10) * 100}%`,
+            backgroundColor: getScoreBarColorValue(score),
+          }}
+          transition={{
+            width: { duration: 0.8, ease: "easeOut" },
+            backgroundColor: { duration: 0.3 },
+          }}
         />
       </div>
     </div>
@@ -97,7 +102,12 @@ export function ScorecardPanel({
   const expanded = isOpen || isLoading;
 
   return (
-    <div className="mt-auto shrink-0 rounded-xl border border-border bg-card ring-1 ring-foreground/10">
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="mt-auto shrink-0 rounded-xl border border-border bg-card ring-1 ring-foreground/10"
+    >
       <div className="flex items-center gap-2 px-4 py-3">
         <button
           type="button"
@@ -107,10 +117,7 @@ export function ScorecardPanel({
         >
           <span>{t("scoreTitle", language)}</span>
           <ChevronDown
-            className={cn(
-              "size-4 shrink-0 text-muted-foreground transition-transform duration-300",
-              expanded && "rotate-180",
-            )}
+            className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
             aria-hidden="true"
           />
         </button>
@@ -157,8 +164,8 @@ export function ScorecardPanel({
             {data && (
               <motion.div
                 key="scorecard-data"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="space-y-4"
               >
@@ -196,6 +203,6 @@ export function ScorecardPanel({
           )}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

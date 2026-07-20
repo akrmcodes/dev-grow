@@ -160,3 +160,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Completed Stage 7 theming and localization (excluding 7.4 animations). Added centralized `lib/translations.ts` with `Language` type and `t()` helper; migrated all UI strings from inline bilingual ternaries. Updated `ThemeToggle` to lucide Moon/Sun with `size="icon"`; removed hardcoded `dark` from `layout.tsx` so `next-themes` controls the class. Polished `AppHeader` with mobile `flex-wrap`; fixed Sidebar logical border (`border-s`); localized footer; slimmed `MODE_CONFIG` to emoji + translation keys.
 **Files:** lib/translations.ts, lib/constants.ts, app/layout.tsx, components/ThemeToggle.tsx, components/LanguageToggle.tsx, components/AppHeader.tsx, components/AppShell.tsx, components/CodeEditor.tsx, components/ModeSelector.tsx, components/ChatPanel.tsx, components/ScorecardPanel.tsx, components/Sidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 7.4] Micro-animations
+
+**Summary:** Implemented all six Stage 7.4 micro-animations with Framer Motion and CSS. Chat messages, thinking badge, and errors fade in via AnimatePresence; mode buttons use motion.button hover/tap scale; scorecard panel slides in from the right on mount with animated bar colors (0.3s); main content fades on language switch. Thinking pulse was already in place via globals.css.
+**Files:** components/ChatPanel.tsx, components/ModeSelector.tsx, components/ScorecardPanel.tsx, components/AppShell.tsx, docs/roadmap.md, docs/project_log.md
+**Status:** completed

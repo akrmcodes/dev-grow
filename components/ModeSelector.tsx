@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { buttonVariants } from "@/components/ui/button";
 import { MODE_CONFIG } from "@/lib/constants";
 import type { Mode } from "@/lib/prompts";
 import { type Language, t } from "@/lib/translations";
@@ -39,18 +40,25 @@ export function ModeSelector({
           const isActive = activeMode === mode;
 
           return (
-            <Button
+            <motion.button
               key={mode}
-              variant={isActive ? "default" : "outline"}
-              size="sm"
+              type="button"
               disabled={isLoading}
-              className={cn("gap-1.5 transition-colors duration-200")}
+              whileHover={isLoading ? undefined : { scale: 1.03 }}
+              whileTap={isLoading ? undefined : { scale: 0.97 }}
+              className={cn(
+                buttonVariants({
+                  variant: isActive ? "default" : "outline",
+                  size: "sm",
+                }),
+                "gap-1.5 transition-colors duration-200",
+              )}
               onClick={() => handleClick(mode)}
               aria-pressed={isActive}
             >
               <span aria-hidden="true">{config.emoji}</span>
               <span>{t(config.labelKey, language)}</span>
-            </Button>
+            </motion.button>
           );
         })}
       </div>
