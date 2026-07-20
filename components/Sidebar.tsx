@@ -1,6 +1,7 @@
 "use client";
 
 import type { UIMessage } from "ai";
+import { ChatInput, type ChatInputHandle } from "@/components/ChatInput";
 import { ChatPanel } from "@/components/ChatPanel";
 import { ModeSelector } from "@/components/ModeSelector";
 import { ScorecardPanel } from "@/components/ScorecardPanel";
@@ -11,13 +12,19 @@ import { cn } from "@/lib/utils";
 
 type SidebarProps = {
   language: Language;
-  activeMode: Mode;
+  activeMode: Mode | null;
   onModeChange: (mode: Mode) => void;
-  onModeSubmit: (mode: Mode) => void;
+  onModeDismiss: () => void;
   isLoading: boolean;
   messages: UIMessage[];
   error: Error | undefined;
   validationError: string | null;
+  instruction: string;
+  onInstructionChange: (value: string) => void;
+  canSend: boolean;
+  onSend: () => void;
+  onStop: () => void;
+  chatInputRef: React.RefObject<ChatInputHandle | null>;
   scorecardData: ScorecardResult | null;
   scorecardLoading: boolean;
   scorecardError: string | null;
@@ -29,11 +36,17 @@ export function Sidebar({
   language,
   activeMode,
   onModeChange,
-  onModeSubmit,
+  onModeDismiss,
   isLoading,
   messages,
   error,
   validationError,
+  instruction,
+  onInstructionChange,
+  canSend,
+  onSend,
+  onStop,
+  chatInputRef,
   scorecardData,
   scorecardLoading,
   scorecardError,
@@ -49,7 +62,6 @@ export function Sidebar({
       <ModeSelector
         activeMode={activeMode}
         onModeChange={onModeChange}
-        onSubmit={onModeSubmit}
         isLoading={isLoading}
         language={language}
       />
@@ -60,12 +72,30 @@ export function Sidebar({
         </p>
       )}
 
-      <ChatPanel
-        messages={messages}
-        isLoading={isLoading}
-        error={error}
-        language={language}
-      />
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-t from-background/80 to-transparent"
+        />
+        <ChatPanel
+          messages={messages}
+          isLoading={isLoading}
+          error={error}
+          language={language}
+        />
+        <ChatInput
+          ref={chatInputRef}
+          value={instruction}
+          onChange={onInstructionChange}
+          activeMode={activeMode}
+          onModeDismiss={onModeDismiss}
+          isStreaming={isLoading}
+          canSend={canSend}
+          onSend={onSend}
+          onStop={onStop}
+          language={language}
+        />
+      </div>
 
       <ScorecardPanel
         data={scorecardData}

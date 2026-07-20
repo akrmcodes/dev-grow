@@ -481,38 +481,38 @@
 #### Task Checklist
 
 **8.1 Floating Minimalist Input Container**
-- [ ] Create `components/ChatInput.tsx` — a new floating input area positioned at the bottom of the AI interaction pane (right pane / sidebar).
-- [ ] Use a `<textarea>` (not an `<input>`) rendered inside a glass-morphism container: `bg-surface/60 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg`.
-- [ ] The container must be compact by default — approximately 48–56px tall with a single line visible, **not** occupying half the screen.
-- [ ] Position the container as a sticky/floating element at the bottom of the chat pane using `sticky bottom-0` or absolute positioning within the scroll container.
-- [ ] Include the selected mode as a dismissible `<Badge>` chip inside the input container (e.g., `📝 Review ×`), giving visual feedback of which mode is armed.
-- [ ] Place the Send/Stop button inline at the trailing edge of the input container (right side in LTR, left side in RTL).
-- [ ] Ensure the floating input does not overlap or obscure the last chat message — add appropriate bottom padding to the message scroll area.
+- [x] Create `components/ChatInput.tsx` — a new floating input area positioned at the bottom of the AI interaction pane (right pane / sidebar).
+- [x] Use a `<textarea>` (not an `<input>`) rendered inside a glass-morphism container: `bg-surface/60 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg`.
+- [x] The container must be compact by default — approximately 48–56px tall with a single line visible, **not** occupying half the screen.
+- [x] Position the container as a sticky/floating element at the bottom of the chat pane using `sticky bottom-0` or absolute positioning within the scroll container.
+- [x] Include the selected mode as a dismissible `<Badge>` chip inside the input container (e.g., `📝 Review ×`), giving visual feedback of which mode is armed.
+- [x] Place the Send/Stop button inline at the trailing edge of the input container (right side in LTR, left side in RTL).
+- [x] Ensure the floating input does not overlap or obscure the last chat message — add appropriate bottom padding to the message scroll area.
 
 **8.2 Auto-Expanding Textarea with Scroll Cap**
-- [ ] Implement dynamic height expansion: as the user types, the textarea grows line-by-line from 1 visible line up to a maximum of 5 visible lines.
-- [ ] Use a hidden "mirror" `<div>` or the `scrollHeight` technique to calculate content height on each `onChange`/`onInput` event.
-- [ ] When content exceeds 5 lines, cap the container height and enable internal vertical scrolling (`overflow-y: auto`) within the textarea.
-- [ ] Reset the textarea height back to 1 line after the message is sent.
-- [ ] Add a smooth CSS `transition: height 0.15s ease` so the expansion feels fluid, not jumpy.
-- [ ] Test with RTL text, long single lines (horizontal overflow), and pasted multi-line content.
+- [x] Implement dynamic height expansion: as the user types, the textarea grows line-by-line from 1 visible line up to a maximum of 5 visible lines.
+- [x] Use a hidden "mirror" `<div>` or the `scrollHeight` technique to calculate content height on each `onChange`/`onInput` event.
+- [x] When content exceeds 5 lines, cap the container height and enable internal vertical scrolling (`overflow-y: auto`) within the textarea.
+- [x] Reset the textarea height back to 1 line after the message is sent.
+- [x] Add a smooth CSS `transition: height 0.15s ease` so the expansion feels fluid, not jumpy.
+- [x] Test with RTL text, long single lines (horizontal overflow), and pasted multi-line content.
 
 **8.3 Decoupled Mode Selection + Send Button**
-- [ ] Refactor `ModeSelector.tsx`: clicking a mode button now **only** sets the `activeMode` state — it does **not** call `onSubmit` or trigger AI generation.
-- [ ] Remove the `onSubmit` prop from `ModeSelector`. The component's sole responsibility becomes mode selection.
-- [ ] In `AppShell.tsx`, wire the new `ChatInput.tsx` Send button to trigger `sendMessage()` using the currently selected `activeMode` and the text from the floating input (which now replaces the code editor for the submission text, or optionally still reads `code` from the editor — see 8.3.1).
-- [ ] **8.3.1 Clarify input source**: The floating input is for the user's *question/instruction* to the AI. The `<CodeEditor>` remains the dedicated code-paste area. The Send action bundles both: the code from the editor + the instruction from the floating input, sent together as the user message with the selected mode.
-- [ ] Implement `Enter` key to submit (calls the send function).
-- [ ] Implement `Shift + Enter` to insert a newline in the textarea (standard AI chat convention).
-- [ ] Prevent submission if both the code editor and the floating input are empty — show the existing validation toast.
-- [ ] Auto-focus the floating input after mode selection changes to encourage immediate typing.
+- [x] Refactor `ModeSelector.tsx`: clicking a mode button now **only** sets the `activeMode` state — it does **not** call `onSubmit` or trigger AI generation.
+- [x] Remove the `onSubmit` prop from `ModeSelector`. The component's sole responsibility becomes mode selection.
+- [x] In `AppShell.tsx`, wire the new `ChatInput.tsx` Send button to trigger `sendMessage()` using the currently selected `activeMode` and the text from the floating input (which now replaces the code editor for the submission text, or optionally still reads `code` from the editor — see 8.3.1).
+- [x] **8.3.1 Clarify input source**: The floating input is for the user's *question/instruction* to the AI. The `<CodeEditor>` remains the dedicated code-paste area. The Send action bundles both: the code from the editor + the instruction from the floating input, sent together as the user message with the selected mode.
+- [x] Implement `Enter` key to submit (calls the send function).
+- [x] Implement `Shift + Enter` to insert a newline in the textarea (standard AI chat convention).
+- [x] Prevent submission if both the code editor and the floating input are empty — show the existing validation toast.
+- [x] Auto-focus the floating input after mode selection changes to encourage immediate typing.
 
 **8.4 Send / Stop Generation Button**
-- [ ] Create a unified `SendButton.tsx` (or embed logic in `ChatInput.tsx`) that renders as:
+- [x] Create a unified `SendButton.tsx` (or embed logic in `ChatInput.tsx`) that renders as:
   - **Send state** (default): An arrow-up or paper-plane icon (`lucide-react: SendHorizonal` or `ArrowUp`) with `bg-primary` styling. Disabled when both code and input are empty.
   - **Stop state** (while `status === 'submitted' || status === 'streaming'`): Transforms into a square "Stop" icon (`lucide-react: Square`) with a pulsing `bg-destructive` ring. Clicking it calls `useChat`'s `stop()` method to abort the stream.
-- [ ] Animate the icon transition between Send ↔ Stop using Framer Motion `AnimatePresence` with a quick scale/fade swap.
-- [ ] The button must be perfectly centred vertically within the floating input container.
+- [x] Animate the icon transition between Send ↔ Stop using Framer Motion `AnimatePresence` with a quick scale/fade swap.
+- [x] The button must be perfectly centred vertically within the floating input container.
 
 **8.5 Copy Response Button**
 - [ ] Add a "Copy" icon button (`lucide-react: Copy` or `ClipboardCopy`) to each **assistant** message bubble in `ChatPanel.tsx`.

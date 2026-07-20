@@ -74,7 +74,7 @@ export function ChatPanel({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-28">
         {showEmptyState && (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <p className="max-w-[220px] text-sm text-muted-foreground">

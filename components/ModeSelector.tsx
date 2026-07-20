@@ -8,9 +8,8 @@ import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type ModeSelectorProps = {
-  activeMode: Mode;
+  activeMode: Mode | null;
   onModeChange: (mode: Mode) => void;
-  onSubmit: (mode: Mode) => void;
   isLoading: boolean;
   language: Language;
 };
@@ -20,15 +19,9 @@ const modes = Object.keys(MODE_CONFIG) as Mode[];
 export function ModeSelector({
   activeMode,
   onModeChange,
-  onSubmit,
   isLoading,
   language,
 }: ModeSelectorProps) {
-  const handleClick = (mode: Mode) => {
-    onModeChange(mode);
-    onSubmit(mode);
-  };
-
   return (
     <div className="shrink-0">
       <p className="mb-2 text-sm font-medium text-foreground">
@@ -53,7 +46,7 @@ export function ModeSelector({
                 }),
                 "gap-1.5 transition-colors duration-200",
               )}
-              onClick={() => handleClick(mode)}
+              onClick={() => onModeChange(mode)}
               aria-pressed={isActive}
             >
               <span aria-hidden="true">{config.emoji}</span>

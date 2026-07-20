@@ -33,6 +33,11 @@ export const translations = {
     scoreError: "Unable to generate score.",
     retry: "Retry",
     validationPasteCode: "Paste some code first! 🌱",
+    validationEmpty: "Paste code or type a message first.",
+    chatInputPlaceholder: "Ask about your code…",
+    defaultInstruction: "Please help me with my code.",
+    send: "Send message",
+    stop: "Stop generating",
     footerCredit: "Powered by OpenRouter · google/gemma-4-31b-it:free",
   },
   ar: {
@@ -67,6 +72,11 @@ export const translations = {
     scoreError: "تعذر إنشاء التقييم.",
     retry: "إعادة المحاولة",
     validationPasteCode: "الصق الكود أولاً! 🌱",
+    validationEmpty: "الصق الكود أو اكتب رسالة أولاً.",
+    chatInputPlaceholder: "اسأل عن الكود…",
+    defaultInstruction: "ساعدني في هذا الكود.",
+    send: "إرسال الرسالة",
+    stop: "إيقاف التوليد",
     footerCredit: "مدعوم من OpenRouter · google/gemma-4-31b-it:free",
   },
 } as const;

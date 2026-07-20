@@ -3,8 +3,9 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import type { ChatInputHandle } from "@/components/ChatInput";
 import { CodeEditor } from "@/components/CodeEditor";
 import { Sidebar } from "@/components/Sidebar";
 import type { Mode } from "@/lib/prompts";
@@ -14,21 +15,27 @@ import { cn } from "@/lib/utils";
 
 export function AppShell() {
   const [code, setCode] = useState("");
+  const [instruction, setInstruction] = useState("");
   const [language, setLanguage] = useState<Language>("en");
-  const [mode, setMode] = useState<Mode>("review");
+  const [mode, setMode] = useState<Mode | null>("review");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [scorecardData, setScorecardData] = useState<ScorecardResult | null>(
     null,
   );
   const [scorecardLoading, setScorecardLoading] = useState(false);
   const [scorecardError, setScorecardError] = useState<string | null>(null);
+  const chatInputRef = useRef<ChatInputHandle>(null);
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, status, error, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
   const isLoading = status === "submitted" || status === "streaming";
   const isRTL = language === "ar";
+  const canSend =
+    Boolean(mode) &&
+    Boolean(code.trim() || instruction.trim()) &&
+    !isLoading;
 
   useEffect(() => {
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
@@ -81,20 +88,52 @@ export function AppShell() {
     }
   };
 
-  const handleModeSubmit = (selectedMode: Mode) => {
+  const handleInstructionChange = (value: string) => {
+    setInstruction(value);
+    if (validationError) {
+      setValidationError(null);
+    }
+  };
+
+  const handleModeChange = (selectedMode: Mode) => {
     setMode(selectedMode);
+    requestAnimationFrame(() => {
+      chatInputRef.current?.focus();
+    });
+  };
+
+  const handleModeDismiss = () => {
+    setMode(null);
+  };
+
+  const handleSend = () => {
+    if (!code.trim() && !instruction.trim()) {
+      setValidationError(t("validationEmpty", language));
+      return;
+    }
 
     if (!code.trim()) {
       setValidationError(t("validationPasteCode", language));
       return;
     }
 
-    setValidationError(null);
-    void sendMessage({ text: code }, { body: { mode: selectedMode, code } });
+    if (!mode) {
+      return;
+    }
 
-    if (selectedMode === "review") {
+    setValidationError(null);
+
+    const text = instruction.trim() || t("defaultInstruction", language);
+    void sendMessage({ text }, { body: { mode, code } });
+    setInstruction("");
+
+    if (mode === "review") {
       void fetchScorecard();
     }
+  };
+
+  const handleStop = () => {
+    stop();
   };
 
   return (
@@ -125,12 +164,18 @@ export function AppShell() {
           <Sidebar
             language={language}
             activeMode={mode}
-            onModeChange={setMode}
-            onModeSubmit={handleModeSubmit}
+            onModeChange={handleModeChange}
+            onModeDismiss={handleModeDismiss}
             isLoading={isLoading}
             messages={messages}
             error={error}
             validationError={validationError}
+            instruction={instruction}
+            onInstructionChange={handleInstructionChange}
+            canSend={canSend}
+            onSend={handleSend}
+            onStop={handleStop}
+            chatInputRef={chatInputRef}
             scorecardData={scorecardData}
             scorecardLoading={scorecardLoading}
             scorecardError={scorecardError}

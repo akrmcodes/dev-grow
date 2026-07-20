@@ -166,3 +166,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Implemented all six Stage 7.4 micro-animations with Framer Motion and CSS. Chat messages, thinking badge, and errors fade in via AnimatePresence; mode buttons use motion.button hover/tap scale; scorecard panel slides in from the right on mount with animated bar colors (0.3s); main content fades on language switch. Thinking pulse was already in place via globals.css.
 **Files:** components/ChatPanel.tsx, components/ModeSelector.tsx, components/ScorecardPanel.tsx, components/AppShell.tsx, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 8.1–8.4] Floating input and decoupled send flow
+
+**Summary:** Redesigned chat interaction to match AI SaaS patterns. Added glass-morphism `ChatInput` with auto-expanding textarea (1–5 lines), dismissible mode badge, and sticky bottom placement. Created `SendButton` with Send/Stop Framer Motion swap wired to `useChat` `stop()`. Decoupled `ModeSelector` from submission; `AppShell` now bundles code editor + instruction on send with Enter/Shift+Enter and mode autofocus. Added bilingual strings and chat pane bottom padding/gradient fade.
+**Files:** components/ChatInput.tsx, components/SendButton.tsx, components/AppShell.tsx, components/Sidebar.tsx, components/ModeSelector.tsx, components/ChatPanel.tsx, lib/translations.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
