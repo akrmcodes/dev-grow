@@ -54,10 +54,10 @@
 - [x] Verify `components.json` was created at the project root with correct aliases.
 
 **0.5 Environment Configuration**
-- [ ] Create `.env.local` at the project root.
-- [ ] Add `OPENROUTER_API_KEY=<your_key_here>` to `.env.local`.
-- [ ] Confirm `.env.local` is listed in `.gitignore` (it is by default in Next.js — verify explicitly).
-- [ ] Add `NEXT_PUBLIC_APP_NAME=DevGrow` to `.env.local` for use in meta tags.
+- [x] Create `.env.local` at the project root.
+- [x] Add `OPENROUTER_API_KEY=<your_key_here>` to `.env.local`.
+- [x] Confirm `.env.local` is listed in `.gitignore` (it is by default in Next.js — verify explicitly).
+- [x] Add `NEXT_PUBLIC_APP_NAME=DevGrow` to `.env.local` for use in meta tags.
 
 **0.6 OpenRouter Connectivity Smoke Test**
 - [ ] Create a temporary Route Handler at `src/app/api/test/route.ts`.
