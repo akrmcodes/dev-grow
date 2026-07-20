@@ -60,21 +60,21 @@
 - [x] Add `NEXT_PUBLIC_APP_NAME=DevGrow` to `.env.local` for use in meta tags.
 
 **0.6 OpenRouter Connectivity Smoke Test**
-- [ ] Create a temporary Route Handler at `src/app/api/test/route.ts`.
-- [ ] Inside the handler, import `createOpenRouter` from `@openrouter/ai-sdk-provider` and `streamText` from `ai`.
-- [ ] Call `streamText()` targeting `google/gemma-4-31b-it:free` with the prompt `"Say hello in one sentence."`.
-- [ ] Return `result.toDataStreamResponse()` and hit the endpoint via browser or `curl`.
-- [ ] Confirm a streamed response is received — proving API key, provider, and network connectivity all work.
-- [ ] Delete the test route file after confirming it works.
+- [x] Create a temporary Route Handler at `src/app/api/test/route.ts`.
+- [x] Inside the handler, import `createOpenRouter` from `@openrouter/ai-sdk-provider` and `streamText` from `ai`.
+- [x] Call `streamText()` targeting `google/gemma-4-31b-it:free` with the prompt `"Say hello in one sentence."`.
+- [x] Return `result.toDataStreamResponse()` and hit the endpoint via browser or `curl`.
+- [x] Confirm a streamed response is received — proving API key, provider, and network connectivity all work.
+- [x] Delete the test route file after confirming it works.
 
 ---
 
 #### Stage 0 Validation Gate
-- [ ] `npm run dev` starts without errors or TypeScript warnings.
-- [ ] All seven Shadcn components exist under `src/components/ui/`.
-- [ ] `.env.local` exists, is Git-ignored, and contains the `OPENROUTER_API_KEY`.
-- [ ] A streamed response was successfully received from `google/gemma-4-31b-it:free` via the smoke-test route.
-- [ ] The smoke-test route has been deleted — no debug artifacts remain in the codebase.
+- [x] `npm run dev` starts without errors or TypeScript warnings.
+- [x] All seven Shadcn components exist under `src/components/ui/`.
+- [x] `.env.local` exists, is Git-ignored, and contains the `OPENROUTER_API_KEY`.
+- [x] A streamed response was successfully received from `google/gemma-4-31b-it:free` via the smoke-test route.
+- [x] The smoke-test route has been deleted — no debug artifacts remain in the codebase.
 
 ---
 

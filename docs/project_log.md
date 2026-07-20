@@ -21,3 +21,14 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Created `.env.local` with `OPENROUTER_API_KEY` and `NEXT_PUBLIC_APP_NAME=DevGrow`. Verified `.env.local` is excluded from version control via the `.env*` rule in `.gitignore` (line 34).
 **Files:** .env.local, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 0.6] OpenRouter connectivity smoke test
+
+**Summary:** Created a temporary `/api/test` route using `createOpenRouter` + `streamText` against `google/gemma-4-31b-it:free`. Confirmed a streamed SSE response (`"Hello!"`) via curl, then deleted the test route. Used `toUIMessageStreamResponse()` (AI SDK v7 successor to `toDataStreamResponse()`).
+**Status:** completed
+
+## 2026-07-20 — [Stage 0] Validation gate
+
+**Summary:** Passed all Stage 0 exit criteria: `npm run dev` and `npm run build` succeed with zero TypeScript/ESLint errors; all seven shadcn primitives present under `components/ui/`; `.env.local` gitignored with `OPENROUTER_API_KEY` set; OpenRouter stream confirmed in 0.6; no smoke-test artifacts remain.
+**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed
