@@ -181,11 +181,11 @@
 ---
 
 #### Stage 2 Validation Gate
-- [ ] `POST /api/chat` with a valid mode and non-empty code returns a streaming response with `Content-Type: text/event-stream`.
-- [ ] All 6 modes produce contextually distinct responses (review is detailed, hint is minimal, analogy uses no jargon, etc.).
-- [ ] Arabic-comment code triggers an Arabic-language response.
-- [ ] Invalid inputs return proper `400` status codes, not `500` or unhandled exceptions.
-- [ ] No TypeScript compilation errors exist in the route file.
+- [x] `POST /api/chat` with a valid mode and non-empty code returns a streaming response with `Content-Type: text/event-stream`.
+- [x] All 6 modes produce contextually distinct responses (review is detailed, hint is minimal, analogy uses no jargon, etc.).
+- [x] Arabic-comment code triggers an Arabic-language response.
+- [x] Invalid inputs return proper `400` status codes, not `500` or unhandled exceptions.
+- [x] No TypeScript compilation errors exist in the route file.
 
 ---
 

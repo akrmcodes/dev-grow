@@ -75,5 +75,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 2.4] Manual API testing
 
 **Summary:** Ran full curl test suite against `POST /api/chat`: review/hint/analogy/arabic modes stream successfully; invalid mode and empty code return `400`. Added `resolveAvailableModel()` fallback probe (primary → fallback on 429) so streaming works when Gemma free tier is upstream rate-limited.
-**Files:** app/api/chat/route.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 2] Validation gate
+
+**Summary:** Passed all Stage 2 exit criteria: `POST /api/chat` returns `Content-Type: text/event-stream`; all 6 modes stream distinct responses; Arabic-comment code yields Arabic output; invalid mode/code return `400`; `app/api/chat/route.ts` compiles with zero TypeScript/ESLint errors.
+**Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
