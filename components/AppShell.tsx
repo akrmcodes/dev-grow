@@ -17,6 +17,8 @@ import {
   saveConversation,
   type ConversationMetadata,
 } from "@/lib/chat-db";
+import { handleFileUpload } from "@/lib/handle-file-upload";
+import { useVisibilitySafe } from "@/lib/hooks/use-visibility-safe";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
 import { type Language, t } from "@/lib/translations";
@@ -39,8 +41,12 @@ export function AppShell() {
   const [conversationList, setConversationList] = useState<
     ConversationMetadata[]
   >([]);
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(
+    null,
+  );
   const chatInputRef = useRef<ChatInputHandle>(null);
   const prevStatusRef = useRef<string | null>(null);
+  const visibilityKey = useVisibilitySafe();
 
   const { messages, setMessages, sendMessage, status, error, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
@@ -118,6 +124,7 @@ export function AppShell() {
   const handleNewChat = useCallback(() => {
     setMessages([]);
     setCode("");
+    setUploadedFilename(null);
     setMode("review");
     setValidationError(null);
     setActiveConversationId(null);
@@ -154,6 +161,22 @@ export function AppShell() {
 
     prevStatusRef.current = status;
   }, [persistConversation, status]);
+
+  const handleFileLoad = useCallback((content: string, filename: string) => {
+    setCode(content);
+    setUploadedFilename(filename);
+    setValidationError(null);
+    requestAnimationFrame(() => {
+      chatInputRef.current?.focus();
+    });
+  }, []);
+
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      void handleFileUpload(file, language, handleFileLoad);
+    },
+    [handleFileLoad, language],
+  );
 
   const handleLanguageToggle = () => {
     setLanguage((current) => (current === "en" ? "ar" : "en"));
@@ -208,6 +231,7 @@ export function AppShell() {
 
     setMessages(conversation.messages);
     setCode(conversation.code);
+    setUploadedFilename(null);
     setMode(conversation.mode);
     setActiveConversationId(conversation.id);
     setValidationError(null);
@@ -280,6 +304,10 @@ export function AppShell() {
             onSend={handleSend}
             onStop={handleStop}
             chatInputRef={chatInputRef}
+            uploadedFilename={uploadedFilename}
+            onFileLoad={handleFileLoad}
+            onFileSelect={handleFileSelect}
+            visibilityKey={visibilityKey}
             scorecardData={scorecardData}
             scorecardLoading={scorecardLoading}
             scorecardError={scorecardError}

@@ -8,11 +8,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { X } from "lucide-react";
+import { Paperclip, X } from "lucide-react";
 import { SendButton } from "@/components/SendButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MODE_CONFIG } from "@/lib/constants";
+import { FILE_INPUT_ACCEPT } from "@/lib/file-upload";
 import type { Mode } from "@/lib/prompts";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,8 @@ type ChatInputProps = {
   onSend: () => void;
   onStop: () => void;
   language: Language;
+  uploadedFilename: string | null;
+  onFileSelect: (file: File) => void;
 };
 
 export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
@@ -48,11 +51,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       onSend,
       onStop,
       language,
+      uploadedFilename,
+      onFileSelect,
     },
     ref,
   ) {
     const isRTL = language === "ar";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [isComposing, setIsComposing] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const [lineHeight, setLineHeight] = useState(20);
@@ -124,8 +130,33 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       }
     };
 
+    const handleFileInputChange = (
+      event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        onFileSelect(file);
+      }
+
+      event.target.value = "";
+    };
+
+    const fileBadgeLabel = uploadedFilename
+      ? t("fileBadge", language)
+          .replace("{name}", uploadedFilename)
+          .replace("{lines}", String(lineCount))
+      : null;
+
     return (
       <div className="sticky bottom-0 z-10 shrink-0 pt-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={FILE_INPUT_ACCEPT}
+          className="hidden"
+          onChange={handleFileInputChange}
+        />
+
         <div
           className={cn(
             "flex gap-2 rounded-2xl border bg-surface/60 px-3 py-2 shadow-lg backdrop-blur-xl transition-colors",
@@ -136,20 +167,47 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           )}
         >
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            {activeMode && (
-              <Badge variant="secondary" className="w-fit gap-1 pr-1">
-                <span aria-hidden="true">{MODE_CONFIG[activeMode].emoji}</span>
-                <span>{t(MODE_CONFIG[activeMode].labelKey, language)}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="size-4 rounded-full text-muted-foreground hover:text-foreground"
-                  aria-label={t("selectMode", language)}
-                  onClick={onModeDismiss}
-                >
-                  <X className="size-3" />
-                </Button>
+            <div
+              className={cn(
+                "flex items-center gap-1.5",
+                isRTL ? "flex-row-reverse" : "flex-row",
+              )}
+            >
+              {activeMode && (
+                <Badge variant="secondary" className="gap-1 pr-1">
+                  <span aria-hidden="true">
+                    {MODE_CONFIG[activeMode].emoji}
+                  </span>
+                  <span>{t(MODE_CONFIG[activeMode].labelKey, language)}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    className="size-4 rounded-full text-muted-foreground hover:text-foreground"
+                    aria-label={t("selectMode", language)}
+                    onClick={onModeDismiss}
+                  >
+                    <X className="size-3" />
+                  </Button>
+                </Badge>
+              )}
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                className="size-7 shrink-0 text-muted-foreground hover:text-foreground"
+                aria-label={t("uploadFile", language)}
+                disabled={isStreaming}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Paperclip className="size-3.5" />
+              </Button>
+            </div>
+
+            {fileBadgeLabel && (
+              <Badge variant="outline" className="w-fit font-mono text-[10px]">
+                {fileBadgeLabel}
               </Badge>
             )}
 

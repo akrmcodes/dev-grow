@@ -1,12 +1,13 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CopyMessageButton } from "@/components/CopyMessageButton";
+import { useSmartScroll } from "@/lib/hooks/use-smart-scroll";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ type ChatPanelProps = {
   isLoading: boolean;
   error: Error | undefined;
   language: Language;
+  visibilityKey: number;
 };
 
 const fadeIn = {
@@ -58,13 +60,16 @@ export function ChatPanel({
   isLoading,
   error,
   language,
+  visibilityKey,
 }: ChatPanelProps) {
   const isRTL = language === "ar";
-  const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+  const {
+    scrollContainerRef,
+    bottomSentinelRef,
+    showNewMessagesPill,
+    scrollToBottom,
+  } = useSmartScroll([messages, isLoading, visibilityKey]);
 
   const visibleMessages = messages.filter((message) => {
     const text = getMessageText(message);
@@ -74,8 +79,24 @@ export function ChatPanel({
   const showEmptyState = visibleMessages.length === 0 && !isLoading && !error;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-28">
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      {showNewMessagesPill && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-32 z-20 flex justify-center">
+          <Button
+            type="button"
+            size="sm"
+            className="pointer-events-auto rounded-full shadow-lg"
+            onClick={() => scrollToBottom("smooth")}
+          >
+            {t("newMessages", language)}
+          </Button>
+        </div>
+      )}
+
+      <div
+        ref={scrollContainerRef}
+        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-28 will-change-transform"
+      >
         {showEmptyState && (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
             <p className="max-w-[220px] text-sm text-muted-foreground">
@@ -84,133 +105,135 @@ export function ChatPanel({
           </div>
         )}
 
-        <div className="flex flex-col gap-3 p-1">
-          <AnimatePresence initial={false}>
-            {visibleMessages.map((message) => {
-              const text = getMessageText(message);
-              const isUser = message.role === "user";
+        <MotionConfig reducedMotion="never">
+          <div key={visibilityKey} className="flex flex-col gap-3 p-1">
+            <AnimatePresence initial={false}>
+              {visibleMessages.map((message) => {
+                const text = getMessageText(message);
+                const isUser = message.role === "user";
 
-              return (
-                <motion.div
-                  key={message.id}
-                  initial={fadeIn.initial}
-                  animate={fadeIn.animate}
-                  transition={fadeIn.transition}
-                  className={cn(
-                    "flex w-full",
-                    isUser
-                      ? isRTL
-                        ? "justify-start"
-                        : "justify-end"
-                      : isRTL
-                        ? "justify-end"
-                        : "justify-start",
-                  )}
-                >
-                  <div
+                return (
+                  <motion.div
+                    key={message.id}
+                    initial={fadeIn.initial}
+                    animate={fadeIn.animate}
+                    transition={fadeIn.transition}
                     className={cn(
-                      "max-w-[92%] rounded-xl px-3 py-2 text-sm",
+                      "flex w-full",
                       isUser
-                        ? "bg-primary/10 text-foreground"
-                        : "group relative border border-border bg-card text-card-foreground",
+                        ? isRTL
+                          ? "justify-start"
+                          : "justify-end"
+                        : isRTL
+                          ? "justify-end"
+                          : "justify-start",
                     )}
                   >
-                    {!isUser && (
-                      <CopyMessageButton text={text} language={language} />
-                    )}
-                    {isUser ? (
-                      <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
-                        {text}
-                      </p>
-                    ) : (
-                      <div
-                        className={cn(
-                          "prose prose-sm dark:prose-invert max-w-none",
-                          "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
-                          "prose-code:text-emerald-300",
-                        )}
-                      >
-                        <ReactMarkdown
-                          rehypePlugins={[rehypeHighlight]}
-                          components={{
-                            pre: ({ children }) => (
-                              <pre
-                                dir="ltr"
-                                className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
-                              >
-                                {children}
-                              </pre>
-                            ),
-                            code: ({ className, children, ...props }) => {
-                              const isBlock = className?.includes("language-");
+                    <div
+                      className={cn(
+                        "max-w-[92%] rounded-xl px-3 py-2 text-sm",
+                        isUser
+                          ? "bg-primary/10 text-foreground"
+                          : "group relative border border-border bg-card text-card-foreground",
+                      )}
+                    >
+                      {!isUser && (
+                        <CopyMessageButton text={text} language={language} />
+                      )}
+                      {isUser ? (
+                        <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
+                          {text}
+                        </p>
+                      ) : (
+                        <div
+                          className={cn(
+                            "prose prose-sm dark:prose-invert max-w-none",
+                            "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
+                            "prose-code:text-emerald-300",
+                          )}
+                        >
+                          <ReactMarkdown
+                            rehypePlugins={[rehypeHighlight]}
+                            components={{
+                              pre: ({ children }) => (
+                                <pre
+                                  dir="ltr"
+                                  className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
+                                >
+                                  {children}
+                                </pre>
+                              ),
+                              code: ({ className, children, ...props }) => {
+                                const isBlock = className?.includes("language-");
 
-                              if (isBlock) {
+                                if (isBlock) {
+                                  return (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                }
+
                                 return (
-                                  <code className={className} {...props}>
+                                  <code
+                                    className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
+                                    dir="ltr"
+                                    {...props}
+                                  >
                                     {children}
                                   </code>
                                 );
-                              }
+                              },
+                            }}
+                          >
+                            {text}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
 
-                              return (
-                                <code
-                                  className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
-                                  dir="ltr"
-                                  {...props}
-                                >
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {text}
-                        </ReactMarkdown>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-
-            {isLoading && (
-              <motion.div
-                key="thinking"
-                initial={fadeIn.initial}
-                animate={fadeIn.animate}
-                exit={{ opacity: 0, y: 10 }}
-                transition={fadeIn.transition}
-                className={cn(
-                  "flex w-full",
-                  isRTL ? "justify-end" : "justify-start",
-                )}
-              >
-                <Badge
-                  variant="secondary"
-                  className="animate-thinking-pulse gap-1.5 px-3 py-1"
+              {isLoading && (
+                <motion.div
+                  key="thinking"
+                  initial={fadeIn.initial}
+                  animate={fadeIn.animate}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={fadeIn.transition}
+                  className={cn(
+                    "flex w-full",
+                    isRTL ? "justify-end" : "justify-start",
+                  )}
                 >
-                  {t("thinking", language)}
-                </Badge>
-              </motion.div>
-            )}
+                  <Badge
+                    variant="secondary"
+                    className="animate-thinking-pulse gap-1.5 px-3 py-1"
+                  >
+                    {t("thinking", language)}
+                  </Badge>
+                </motion.div>
+              )}
 
-            {error && (
-              <motion.div
-                key="error"
-                initial={fadeIn.initial}
-                animate={fadeIn.animate}
-                exit={{ opacity: 0, y: 10 }}
-                transition={fadeIn.transition}
-                className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                role="alert"
-              >
-                {getErrorMessage(error, language)}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {error && (
+                <motion.div
+                  key="error"
+                  initial={fadeIn.initial}
+                  animate={fadeIn.animate}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={fadeIn.transition}
+                  className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                  role="alert"
+                >
+                  {getErrorMessage(error, language)}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <div ref={bottomRef} aria-hidden="true" />
-        </div>
+            <div ref={bottomSentinelRef} aria-hidden="true" />
+          </div>
+        </MotionConfig>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import type { UIMessage } from "ai";
 import { ChatInput, type ChatInputHandle } from "@/components/ChatInput";
 import { ChatPanel } from "@/components/ChatPanel";
+import { FileDropZone } from "@/components/FileDropZone";
 import { ModeSelector } from "@/components/ModeSelector";
 import { ScorecardPanel } from "@/components/ScorecardPanel";
 import type { Mode } from "@/lib/prompts";
@@ -25,6 +26,10 @@ type SidebarProps = {
   onSend: () => void;
   onStop: () => void;
   chatInputRef: React.RefObject<ChatInputHandle | null>;
+  uploadedFilename: string | null;
+  onFileLoad: (content: string, filename: string) => void;
+  onFileSelect: (file: File) => void;
+  visibilityKey: number;
   scorecardData: ScorecardResult | null;
   scorecardLoading: boolean;
   scorecardError: string | null;
@@ -47,6 +52,10 @@ export function Sidebar({
   onSend,
   onStop,
   chatInputRef,
+  uploadedFilename,
+  onFileLoad,
+  onFileSelect,
+  visibilityKey,
   scorecardData,
   scorecardLoading,
   scorecardError,
@@ -68,30 +77,39 @@ export function Sidebar({
         </p>
       )}
 
-      <div className="relative flex min-h-0 flex-1 flex-col">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-t from-background/80 to-transparent"
-        />
-        <ChatPanel
-          messages={messages}
-          isLoading={isLoading}
-          error={error}
-          language={language}
-        />
-        <ChatInput
-          ref={chatInputRef}
-          value={code}
-          onChange={onCodeChange}
-          activeMode={activeMode}
-          onModeDismiss={onModeDismiss}
-          isStreaming={isLoading}
-          canSend={canSend}
-          onSend={onSend}
-          onStop={onStop}
-          language={language}
-        />
-      </div>
+      <FileDropZone
+        language={language}
+        onFileLoad={onFileLoad}
+        disabled={isLoading}
+      >
+        <div className="relative flex min-h-0 flex-1 flex-col">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-t from-background/80 to-transparent"
+          />
+          <ChatPanel
+            messages={messages}
+            isLoading={isLoading}
+            error={error}
+            language={language}
+            visibilityKey={visibilityKey}
+          />
+          <ChatInput
+            ref={chatInputRef}
+            value={code}
+            onChange={onCodeChange}
+            activeMode={activeMode}
+            onModeDismiss={onModeDismiss}
+            isStreaming={isLoading}
+            canSend={canSend}
+            onSend={onSend}
+            onStop={onStop}
+            language={language}
+            uploadedFilename={uploadedFilename}
+            onFileSelect={onFileSelect}
+          />
+        </div>
+      </FileDropZone>
 
       <ScorecardPanel
         data={scorecardData}

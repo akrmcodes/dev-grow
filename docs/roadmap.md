@@ -543,41 +543,41 @@
   - [x] Generate the conversation title from the first user message: truncate to 60 characters, append "…" if truncated.
 
 **8.7 File Upload & Drag-and-Drop Zone**
-- [ ] **8.7.1 Drop Zone Component**
-  - [ ] Create `components/FileDropZone.tsx` — a full-surface overlay that appears when the user drags a file over the code editor area.
-  - [ ] Use the native HTML5 Drag and Drop API (`onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` events) — no external library required.
-  - [ ] Style the active drop zone with a glassmorphism overlay: `bg-primary/5 backdrop-blur-md border-2 border-dashed border-primary/40 rounded-xl` with a centred icon and label: "📁 Drop your code file here".
-  - [ ] Animate the drop zone entrance/exit with Framer Motion fade + subtle scale.
-  - [ ] Accept only code file extensions: `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.py`, `.java`, `.cpp`, `.c`, `.rb`, `.go`, `.rs`, `.php`, `.sql`, `.json`, `.xml`, `.md`, `.txt`.
-  - [ ] Reject non-code files (images, PDFs, etc.) with a brief error toast: "Only code files are supported."
-  - [ ] Cap file size at 100KB — show a toast if exceeded: "File too large. Max 100KB."
+- [x] **8.7.1 Drop Zone Component**
+  - [x] Create `components/FileDropZone.tsx` — a full-surface overlay that appears when the user drags a file over the code editor area.
+  - [x] Use the native HTML5 Drag and Drop API (`onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` events) — no external library required.
+  - [x] Style the active drop zone with a glassmorphism overlay: `bg-primary/5 backdrop-blur-md border-2 border-dashed border-primary/40 rounded-xl` with a centred icon and label: "📁 Drop your code file here".
+  - [x] Animate the drop zone entrance/exit with Framer Motion fade + subtle scale.
+  - [x] Accept only code file extensions: `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.py`, `.java`, `.cpp`, `.c`, `.rb`, `.go`, `.rs`, `.php`, `.sql`, `.json`, `.xml`, `.md`, `.txt`.
+  - [x] Reject non-code files (images, PDFs, etc.) with a brief error toast: "Only code files are supported."
+  - [x] Cap file size at 100KB — show a toast if exceeded: "File too large. Max 100KB."
 
-- [ ] **8.7.2 File Reading & Editor Population**
-  - [ ] On successful drop, read the file contents via `FileReader.readAsText()`.
-  - [ ] Populate the `<CodeEditor>` textarea with the file contents, replacing any existing content.
-  - [ ] Optionally display the filename as a small badge above the editor: `📄 script.js (42 lines)`.
-  - [ ] Also add a traditional file input button (`<input type="file">` hidden behind a styled `<Button>`) as an alternative to drag-and-drop. Place it in the code editor header area.
+- [x] **8.7.2 File Reading & Editor Population**
+  - [x] On successful drop, read the file contents via `FileReader.readAsText()`.
+  - [x] Populate the `<CodeEditor>` textarea with the file contents, replacing any existing content.
+  - [x] Optionally display the filename as a small badge above the editor: `📄 script.js (42 lines)`.
+  - [x] Also add a traditional file input button (`<input type="file">` hidden behind a styled `<Button>`) as an alternative to drag-and-drop. Place it in the code editor header area.
 
 **8.8 Bug Fix: Erratic Scroll During AI Streaming**
-- [ ] **Root cause:** The current `useEffect` watching `messages` fires `scrollIntoView({ behavior: 'smooth' })` on every token/chunk update, causing chaotic jumps and layout width distortion during rapid streaming.
-- [ ] **Fix — Smart Scroll Anchor:**
-  - [ ] Implement a `useSmartScroll` custom hook in `lib/hooks/use-smart-scroll.ts`.
-  - [ ] Track whether the user is "near the bottom" of the scroll container (within ~100px of the bottom edge) using an `IntersectionObserver` on the sentinel `div` at the bottom.
-  - [ ] If the user is near the bottom (auto-scroll zone), smoothly scroll to the bottom on each new content chunk.
-  - [ ] If the user has manually scrolled up (reading earlier content), **do not** auto-scroll — respect their scroll position.
-  - [ ] Show a "↓ New messages" floating pill button when the user is scrolled up and new content arrives. Clicking it scrolls to the bottom.
-  - [ ] Use `requestAnimationFrame`-throttled scroll updates (max 1 scroll per frame) to prevent layout thrashing.
-  - [ ] Ensure the scroll container has `overflow-x: hidden` to prevent horizontal distortion during streaming.
+- [x] **Root cause:** The current `useEffect` watching `messages` fires `scrollIntoView({ behavior: 'smooth' })` on every token/chunk update, causing chaotic jumps and layout width distortion during rapid streaming.
+- [x] **Fix — Smart Scroll Anchor:**
+  - [x] Implement a `useSmartScroll` custom hook in `lib/hooks/use-smart-scroll.ts`.
+  - [x] Track whether the user is "near the bottom" of the scroll container (within ~100px of the bottom edge) using an `IntersectionObserver` on the sentinel `div` at the bottom.
+  - [x] If the user is near the bottom (auto-scroll zone), smoothly scroll to the bottom on each new content chunk.
+  - [x] If the user has manually scrolled up (reading earlier content), **do not** auto-scroll — respect their scroll position.
+  - [x] Show a "↓ New messages" floating pill button when the user is scrolled up and new content arrives. Clicking it scrolls to the bottom.
+  - [x] Use `requestAnimationFrame`-throttled scroll updates (max 1 scroll per frame) to prevent layout thrashing.
+  - [x] Ensure the scroll container has `overflow-x: hidden` to prevent horizontal distortion during streaming.
 
 **8.9 Bug Fix: Tab-Switch Black Screen**
-- [ ] **Root cause:** When the browser tab loses focus, the `visibilitychange` event may pause Framer Motion animation renders and/or React's batching of streaming updates. When the tab regains focus, the accumulated state can cause a black flash or blank render.
-- [ ] **Fix — Visibility-Safe Streaming:**
-  - [ ] In `AppShell.tsx` (or a dedicated `lib/hooks/use-visibility-safe.ts` hook), listen for the `document.visibilitychange` event.
-  - [ ] When the tab becomes hidden (`document.hidden === true`), do **not** pause or disconnect the stream — let `useChat` continue receiving tokens in the background.
-  - [ ] When the tab becomes visible again, force a React re-render by toggling a dummy state key or calling `forceUpdate`, ensuring the DOM reflects all tokens received while hidden.
-  - [ ] Add `will-change: transform` to the chat scroll container to prevent GPU layer tear-down during tab switch.
-  - [ ] Disable Framer Motion's `useReducedMotion` auto-detection during tab switches — the `AnimatePresence` should not cull animations for "invisible" elements.
-  - [ ] Test: send code, switch to another tab for 10+ seconds during streaming, switch back — verify no black screen, no lost content, and the stream continues normally.
+- [x] **Root cause:** When the browser tab loses focus, the `visibilitychange` event may pause Framer Motion animation renders and/or React's batching of streaming updates. When the tab regains focus, the accumulated state can cause a black flash or blank render.
+- [x] **Fix — Visibility-Safe Streaming:**
+  - [x] In `AppShell.tsx` (or a dedicated `lib/hooks/use-visibility-safe.ts` hook), listen for the `document.visibilitychange` event.
+  - [x] When the tab becomes hidden (`document.hidden === true`), do **not** pause or disconnect the stream — let `useChat` continue receiving tokens in the background.
+  - [x] When the tab becomes visible again, force a React re-render by toggling a dummy state key or calling `forceUpdate`, ensuring the DOM reflects all tokens received while hidden.
+  - [x] Add `will-change: transform` to the chat scroll container to prevent GPU layer tear-down during tab switch.
+  - [x] Disable Framer Motion's `useReducedMotion` auto-detection during tab switches — the `AnimatePresence` should not cull animations for "invisible" elements.
+  - [x] Test: send code, switch to another tab for 10+ seconds during streaming, switch back — verify no black screen, no lost content, and the stream continues normally.
 
 ---
 

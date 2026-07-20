@@ -184,3 +184,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Added client-side chat persistence with `idb` (`lib/chat-db.ts`): CRUD, 50-conversation LRU eviction, and title generation from first user message. Built `HistorySidebar` with Framer Motion slide (LTR/RTL), time-ago labels, per-item delete, and clear-all AlertDialog. Wired `AppShell` auto-save on stream complete, conversation restore (messages, code, mode), New Chat reset, and `PanelLeft` toggle in `AppHeader`.
 **Files:** lib/chat-db.ts, lib/format-time-ago.ts, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, components/ui/alert-dialog.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 8.7–8.9] File upload, smart scroll, tab-switch fix
+
+**Summary:** Added drag-and-drop and paperclip file upload to the chat pane with extension/size validation and Sonner toasts; populates `ChatInput` with filename badge. Implemented `useSmartScroll` with IntersectionObserver, rAF-throttled auto-scroll, and "New messages" pill. Added `useVisibilitySafe` re-render on tab focus plus `MotionConfig reducedMotion="never"` on chat messages to prevent black-screen flash during background streaming.
+**Files:** lib/file-upload.ts, lib/handle-file-upload.ts, lib/hooks/use-smart-scroll.ts, lib/hooks/use-visibility-safe.ts, components/FileDropZone.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/providers/theme-provider.tsx, components/ui/sonner.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
+**Status:** completed
