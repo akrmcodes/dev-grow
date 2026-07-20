@@ -1,0 +1,41 @@
+---
+description: API route handler conventions for DevGrow OpenRouter endpoints
+globs: app/api/**/*.ts
+alwaysApply: false
+---
+
+# Next.js API Routes
+
+## Structure
+
+- Route Handlers only in `app/api/*/route.ts`.
+- Export `export const maxDuration = 30` (from `lib/constants.ts` once created).
+
+## Security
+
+- `OPENROUTER_API_KEY` via `process.env` in route handlers only — never import into client components.
+
+## Patterns
+
+| Route | Method | SDK |
+|-------|--------|-----|
+| `/api/chat` | `streamText()` → `toDataStreamResponse()` | Streaming chat |
+| `/api/score` | `generateObject()` + Zod schema | Structured JSON |
+
+- Model: `google/gemma-4-31b-it:free` via shared `lib/openrouter.ts` singleton.
+- System prompts constructed server-side from `lib/prompts.ts` — client sends `mode`, not raw prompts.
+
+## Error Responses
+
+Return structured JSON — never raw exceptions to the client:
+
+- `429` → `{ error: 'RATE_LIMIT' }`
+- `401` → `{ error: 'API_KEY_INVALID' }`
+- `400` → `{ error: 'No code provided.' }` or `{ error: 'Invalid mode.' }`
+- `500` → `{ error: 'STREAM_ERROR' }` or `{ error: 'SCORE_UNAVAILABLE' }`
+
+Log full errors with `console.error` server-side.
+
+## Next.js Version
+
+Read `node_modules/next/dist/docs/` before using App Router or Route Handler APIs — this project uses Next.js 16 with breaking changes.

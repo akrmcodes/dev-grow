@@ -1,0 +1,14 @@
+---
+description: TypeScript quality standards for DevGrow
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+- Strict TypeScript — no `any`. Use `unknown` + narrowing when type is uncertain.
+- Named exports for components and utilities (no default exports for shared modules).
+- Zod for runtime validation at API boundaries; infer types with `z.infer<typeof Schema>`.
+- Colocate types with their schemas in `lib/schemas.ts`.
+- Minimal scope — smallest correct diff; no drive-by refactors or unrelated changes.
+- Match existing naming, import style, and file structure in the surrounding code.

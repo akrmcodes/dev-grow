@@ -1,0 +1,24 @@
+---
+description: Use when adding, searching, or installing shadcn/ui components, blocks, or registry items
+alwaysApply: false
+---
+
+# shadcn MCP Protocol
+
+## Before Building UI
+
+1. **Discover** — use shadcn MCP tools to browse/search the registry before inventing components.
+2. **Check installed** — prefer existing `components/ui/*` files before adding new ones.
+3. **Install via MCP/CLI** — never manually copy component source from memory.
+
+## Installation
+
+- Primary: shadcn MCP install tools.
+- Fallback if MCP unavailable: `npx shadcn@latest add <name>` (respects `components.json` aliases).
+- Add only what the roadmap requires — avoid installing unused components.
+
+## Rules
+
+- Do not modify generated `components/ui/*` files — wrap or extend in `components/`.
+- Match `components.json` style (`base-nova`, `neutral` base color, CSS variables enabled).
+- Verify MCP is enabled in Cursor Settings (green dot on `shadcn` server).

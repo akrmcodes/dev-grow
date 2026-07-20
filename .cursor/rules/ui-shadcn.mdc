@@ -1,0 +1,33 @@
+---
+description: UI/UX standards using shadcn/ui and Tailwind design tokens
+globs: app/**/*.tsx, components/**/*.tsx
+alwaysApply: false
+---
+
+# UI & shadcn Standards
+
+## Component Priority
+
+1. Use installed shadcn primitives from `@/components/ui/*` first.
+2. Never hand-roll buttons, inputs, cards, or progress bars when a shadcn component exists.
+3. Wrap or extend in `components/` — do not edit `components/ui/*` unless fixing a bug.
+
+Installed primitives: `Button`, `Card`, `Textarea`, `Badge`, `Progress`, `Separator`, `Tooltip`.
+
+## Styling
+
+- Tailwind utilities + CSS tokens from `app/globals.css` (`--primary`, `--background`, `--border`, etc.).
+- Use `cn()` from `@/lib/utils` for conditional classes.
+- Prefer `variant` / `size` props over custom CSS.
+
+## UX
+
+- **Dark-first:** default dark theme; every component must work in light mode too.
+- **RTL:** code blocks always `dir="ltr"`; UI text follows `isRTL`; Arabic font on container only.
+- **Motion:** Framer Motion for meaningful transitions only (fade-in, progress fill, collapse) — no decorative noise.
+- **Accessibility:** preserve focus rings, `aria-*`, and keyboard navigation from shadcn/Radix.
+
+## Complexity
+
+- Extract subcomponents when a file exceeds ~150 lines.
+- No premature abstractions or unnecessary wrappers.

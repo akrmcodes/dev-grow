@@ -1,0 +1,25 @@
+---
+description: Mandatory post-task logging workflow for DevGrow
+alwaysApply: true
+---
+
+# Project Workflow
+
+After **every completed task**, append an entry to `docs/project_log.md`.
+
+## Entry Template
+
+```markdown
+## YYYY-MM-DD — [Stage X.Y] Task title
+
+**Summary:** 1–3 sentences on what was done and why.
+**Files:** comma-separated list of created/modified paths.
+**Status:** completed | blocked | in-progress
+```
+
+## Rules
+
+- Append only — never rewrite or delete prior entries.
+- Log even small tasks; skip nothing.
+- Keep entries concise and professional — no verbose narratives.
+- Use roadmap stage IDs when applicable (e.g. `[Stage 0.4]`).

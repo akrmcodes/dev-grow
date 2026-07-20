@@ -1,0 +1,32 @@
+---
+description: DevGrow project identity, scope, and canonical paths
+alwaysApply: true
+---
+
+# DevGrow Project Identity
+
+**DevGrow** — *Where the code grows, and the programmer grows.*
+
+Bilingual (Arabic/English) AI coding assistant for programming students. Six pedagogical modes (review, hint, concept, solution, analogy, challenge) plus a JSON scorecard. Cloud-first via OpenRouter — no local LLM runtime.
+
+## Stack
+
+- Next.js 16 App Router · Tailwind v4 · shadcn/ui (base-nova)
+- Vercel AI SDK (`ai`, `@ai-sdk/react`) · `@openrouter/ai-sdk-provider`
+- Primary model: `google/gemma-4-31b-it:free`
+- Fallback model: `deepseek/deepseek-v4-flash:free`
+
+## Canonical Paths
+
+| Path | Purpose |
+|------|---------|
+| `app/` | Pages, layouts, API route handlers |
+| `components/` | App components; `components/ui/` = shadcn primitives |
+| `lib/` | Utilities, prompts, schemas, provider singleton |
+| `docs/` | Architecture (`plan.md`), execution (`roadmap.md`), log (`project_log.md`) |
+
+**Note:** This project uses `app/` at root — not `src/app/`.
+
+## Scope
+
+Follow `docs/roadmap.md` stages in order. Do not expand beyond the defined 6 modes + scorecard. For architecture details, read `@docs/plan.md` and `@docs/roadmap.md` — do not duplicate them in code comments.
