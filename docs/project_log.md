@@ -35,5 +35,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 1.1] Prompts constants module
 
 **Summary:** Created `lib/prompts.ts` with `BASE_SYSTEM_PROMPT`, six mode-specific addenda, `SCORECARD_PROMPT`, exported `Mode` union type, and `getSystemPrompt()` helper that concatenates base + mode prompt via a typed `Record<Mode, string>` map.
-**Files:** lib/prompts.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 1.2] Zod schema definitions
+
+**Summary:** Created `lib/schemas.ts` with `ScorecardSchema` (0–10 score fields + non-empty summary) and exported `ScorecardResult` via `z.infer`. Added block and per-field comments documenting min/max rationale for API validation and scorecard UI.
+**Files:** lib/schemas.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed

@@ -103,10 +103,10 @@
 - [x] Add a TypeScript `Mode` union type: `'review' | 'hint' | 'concept' | 'solution' | 'analogy' | 'challenge'` and export it.
 
 **1.2 Zod Schema Definitions**
-- [ ] Create `src/lib/schemas.ts`.
-- [ ] Define and export `ScorecardSchema` using Zod with fields: `readability: z.number().min(0).max(10)`, `logic: z.number().min(0).max(10)`, `documentation: z.number().min(0).max(10)`, `summary: z.string().min(1)`.
-- [ ] Export the inferred TypeScript type: `export type ScorecardResult = z.infer<typeof ScorecardSchema>`.
-- [ ] Write a quick in-file comment explaining why each field has its min/max constraint.
+- [x] Create `src/lib/schemas.ts`.
+- [x] Define and export `ScorecardSchema` using Zod with fields: `readability: z.number().min(0).max(10)`, `logic: z.number().min(0).max(10)`, `documentation: z.number().min(0).max(10)`, `summary: z.string().min(1)`.
+- [x] Export the inferred TypeScript type: `export type ScorecardResult = z.infer<typeof ScorecardSchema>`.
+- [x] Write a quick in-file comment explaining why each field has its min/max constraint.
 
 **1.3 OpenRouter Singleton Provider**
 - [ ] Create `src/lib/openrouter.ts`.
