@@ -60,5 +60,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 1] Validation gate
 
 **Summary:** Passed all Stage 1 exit criteria: `lib/prompts.ts` exports all 8 prompt items and compiles cleanly; `lib/schemas.ts` exports `ScorecardSchema` + `ScorecardResult`; `lib/openrouter.ts` throws a descriptive error when `OPENROUTER_API_KEY` is unset; `lib/constants.ts` has all 6 modes in `MODE_CONFIG`; zero `any` types across the four utility files.
-**Files:** docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 2.1–2.2] Chat streaming route
+
+**Summary:** Created `app/api/chat/route.ts` with input validation (code/mode), system prompt injection with fenced code block, and `streamText` streaming via `toUIMessageStreamResponse()` (AI SDK v7). Uses `maxDuration = 30` literal (Next.js segment-config requirement). Curl verified 400 responses; live stream blocked by upstream Gemma rate limit during testing.
+**Files:** app/api/chat/route.ts, docs/roadmap.md, docs/project_log.md
 **Status:** completed

@@ -148,20 +148,20 @@
 #### Task Checklist
 
 **2.1 Route Handler Scaffolding**
-- [ ] Create `src/app/api/chat/route.ts`.
-- [ ] Add `export const maxDuration = MAX_DURATION` (imported from `src/lib/constants.ts`) at the top of the file.
-- [ ] Define and export an `async function POST(request: Request)` handler.
-- [ ] Parse the incoming JSON body and destructure `{ messages, mode, code }`.
-- [ ] Add input validation: if `code` is empty or not a string, return a `400` JSON response with `{ error: 'No code provided.' }`.
-- [ ] Add input validation: if `mode` is not a valid `Mode` union member, return a `400` JSON response with `{ error: 'Invalid mode.' }`.
+- [x] Create `src/app/api/chat/route.ts`.
+- [x] Add `export const maxDuration = MAX_DURATION` (imported from `src/lib/constants.ts`) at the top of the file.
+- [x] Define and export an `async function POST(request: Request)` handler.
+- [x] Parse the incoming JSON body and destructure `{ messages, mode, code }`.
+- [x] Add input validation: if `code` is empty or not a string, return a `400` JSON response with `{ error: 'No code provided.' }`.
+- [x] Add input validation: if `mode` is not a valid `Mode` union member, return a `400` JSON response with `{ error: 'Invalid mode.' }`.
 
 **2.2 System Prompt Injection & Stream Initialization**
-- [ ] Import `openrouter` and `PRIMARY_MODEL` from `src/lib/openrouter.ts`.
-- [ ] Import `getSystemPrompt` and `Mode` from `src/lib/prompts.ts`.
-- [ ] Call `getSystemPrompt(mode)` to construct the full system prompt.
-- [ ] Prepend the user's `code` as a system context block: wrap it in a fenced code block within the system prompt so the model has direct access to the code without it appearing in the user-facing chat history.
-- [ ] Call `streamText()` from `ai` with the model, full system prompt, and `messages` array.
-- [ ] Return `result.toDataStreamResponse()`.
+- [x] Import `openrouter` and `PRIMARY_MODEL` from `src/lib/openrouter.ts`.
+- [x] Import `getSystemPrompt` and `Mode` from `src/lib/prompts.ts`.
+- [x] Call `getSystemPrompt(mode)` to construct the full system prompt.
+- [x] Prepend the user's `code` as a system context block: wrap it in a fenced code block within the system prompt so the model has direct access to the code without it appearing in the user-facing chat history.
+- [x] Call `streamText()` from `ai` with the model, full system prompt, and `messages` array.
+- [x] Return `result.toDataStreamResponse()`.
 
 **2.3 Error Handling**
 - [ ] Wrap the `streamText()` call in a `try/catch` block.
