@@ -125,11 +125,11 @@
 ---
 
 #### Stage 1 Validation Gate
-- [ ] `src/lib/prompts.ts` compiles without TypeScript errors and exports all 8 items (6 mode prompts + base prompt + helper function).
-- [ ] `src/lib/schemas.ts` exports `ScorecardSchema` and `ScorecardResult` — confirmed with a TypeScript hover check in the IDE.
-- [ ] `src/lib/openrouter.ts` throws a clear error when `OPENROUTER_API_KEY` is removed from `.env.local` and the dev server is restarted.
-- [ ] `src/lib/constants.ts` exports `MODE_CONFIG` with all 6 modes fully populated with English label, Arabic label, and emoji.
-- [ ] No `any` types appear in any of the four utility files.
+- [x] `src/lib/prompts.ts` compiles without TypeScript errors and exports all 8 items (6 mode prompts + base prompt + helper function).
+- [x] `src/lib/schemas.ts` exports `ScorecardSchema` and `ScorecardResult` — confirmed with a TypeScript hover check in the IDE.
+- [x] `src/lib/openrouter.ts` throws a clear error when `OPENROUTER_API_KEY` is removed from `.env.local` and the dev server is restarted.
+- [x] `src/lib/constants.ts` exports `MODE_CONFIG` with all 6 modes fully populated with English label, Arabic label, and emoji.
+- [x] No `any` types appear in any of the four utility files.
 
 ---
 

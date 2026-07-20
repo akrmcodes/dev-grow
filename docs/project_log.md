@@ -55,5 +55,10 @@ Chronological record of completed work. Each entry is appended after a task fini
 ## 2026-07-20 — [Stage 1.4] Utility types and constants
 
 **Summary:** Created `lib/constants.ts` with typed `MODE_CONFIG` (6 modes × English/Arabic labels + emoji per plan.md), `MAX_DURATION = 30`, and bilingual `RATE_LIMIT_MESSAGE` strings for 429 responses.
-**Files:** lib/constants.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 1] Validation gate
+
+**Summary:** Passed all Stage 1 exit criteria: `lib/prompts.ts` exports all 8 prompt items and compiles cleanly; `lib/schemas.ts` exports `ScorecardSchema` + `ScorecardResult`; `lib/openrouter.ts` throws a descriptive error when `OPENROUTER_API_KEY` is unset; `lib/constants.ts` has all 6 modes in `MODE_CONFIG`; zero `any` types across the four utility files.
+**Files:** docs/roadmap.md, docs/project_log.md
 **Status:** completed
