@@ -522,25 +522,25 @@
 - [x] Ensure the button doesn't interfere with text selection inside the message bubble.
 
 **8.6 Chat History Sidebar (IndexedDB — Client-Side Only)**
-- [ ] **8.6.1 IndexedDB Storage Layer**
-  - [ ] Create `lib/chat-db.ts` using the raw `idb` (IndexedDB wrapper) library or the lightweight `idb-keyval` package.
-  - [ ] Define the database schema: DB name `devgrow-history`, object store `conversations`, with keys: `id` (auto-generated UUID), `title` (first 60 chars of the first user message), `messages` (serialized `UIMessage[]` array), `mode` (the mode used), `createdAt` (ISO timestamp), `updatedAt` (ISO timestamp).
-  - [ ] Export CRUD functions: `saveConversation()`, `loadConversation(id)`, `listConversations()` (returns metadata only — id, title, createdAt), `deleteConversation(id)`, `clearAllConversations()`.
-  - [ ] Implement a maximum of 50 stored conversations — auto-delete the oldest when the limit is exceeded (LRU eviction).
+- [x] **8.6.1 IndexedDB Storage Layer**
+  - [x] Create `lib/chat-db.ts` using the raw `idb` (IndexedDB wrapper) library or the lightweight `idb-keyval` package.
+  - [x] Define the database schema: DB name `devgrow-history`, object store `conversations`, with keys: `id` (auto-generated UUID), `title` (first 60 chars of the first user message), `messages` (serialized `UIMessage[]` array), `mode` (the mode used), `createdAt` (ISO timestamp), `updatedAt` (ISO timestamp).
+  - [x] Export CRUD functions: `saveConversation()`, `loadConversation(id)`, `listConversations()` (returns metadata only — id, title, createdAt), `deleteConversation(id)`, `clearAllConversations()`.
+  - [x] Implement a maximum of 50 stored conversations — auto-delete the oldest when the limit is exceeded (LRU eviction).
 
-- [ ] **8.6.2 History Sidebar UI**
-  - [ ] Create `components/HistorySidebar.tsx` — a slide-out panel from the left edge of the screen (LTR) or right edge (RTL).
-  - [ ] Use Framer Motion for the slide-in/slide-out animation: `initial={{ x: '-100%' }}`, `animate={{ x: 0 }}` with a backdrop overlay (`bg-black/40 backdrop-blur-sm`).
-  - [ ] Render a scrollable list of past conversations: each item shows the title (truncated), a timestamp (`timeago` style: "2h ago", "Yesterday"), and the mode badge emoji.
-  - [ ] Add a "New Chat" button at the top that clears the current conversation state (resets `messages`, `code`, `scorecardData`).
-  - [ ] Add a "Delete" swipe-action or icon button per conversation item.
-  - [ ] Add a "Clear All History" button at the bottom with a confirmation dialog.
-  - [ ] Add a toggle button in the `AppHeader` (hamburger menu icon or `lucide-react: PanelLeft`) to open/close the history sidebar.
+- [x] **8.6.2 History Sidebar UI**
+  - [x] Create `components/HistorySidebar.tsx` — a slide-out panel from the left edge of the screen (LTR) or right edge (RTL).
+  - [x] Use Framer Motion for the slide-in/slide-out animation: `initial={{ x: '-100%' }}`, `animate={{ x: 0 }}` with a backdrop overlay (`bg-black/40 backdrop-blur-sm`).
+  - [x] Render a scrollable list of past conversations: each item shows the title (truncated), a timestamp (`timeago` style: "2h ago", "Yesterday"), and the mode badge emoji.
+  - [x] Add a "New Chat" button at the top that clears the current conversation state (resets `messages`, `code`, `scorecardData`).
+  - [x] Add a "Delete" swipe-action or icon button per conversation item.
+  - [x] Add a "Clear All History" button at the bottom with a confirmation dialog.
+  - [x] Add a toggle button in the `AppHeader` (hamburger menu icon or `lucide-react: PanelLeft`) to open/close the history sidebar.
 
-- [ ] **8.6.3 Auto-Save Integration**
-  - [ ] In `AppShell.tsx`, auto-save the current conversation to IndexedDB after each completed AI response (when `status` transitions from `'streaming'` to `'ready'`).
-  - [ ] When the user clicks a conversation in the history sidebar, load its messages into `useChat`'s state, restore the code editor content, and close the sidebar.
-  - [ ] Generate the conversation title from the first user message: truncate to 60 characters, append "…" if truncated.
+- [x] **8.6.3 Auto-Save Integration**
+  - [x] In `AppShell.tsx`, auto-save the current conversation to IndexedDB after each completed AI response (when `status` transitions from `'streaming'` to `'ready'`).
+  - [x] When the user clicks a conversation in the history sidebar, load its messages into `useChat`'s state, restore the code editor content, and close the sidebar.
+  - [x] Generate the conversation title from the first user message: truncate to 60 characters, append "…" if truncated.
 
 **8.7 File Upload & Drag-and-Drop Zone**
 - [ ] **8.7.1 Drop Zone Component**

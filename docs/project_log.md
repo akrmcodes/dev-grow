@@ -178,3 +178,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed split-pane `CodeEditor` in favor of a single centered chat layout (`max-w-4xl`). `ChatInput` is now the sole code entry surface with CodeEditor parity (monospace, LTR, line count, emerald focus ring, code persists after send). Added `CopyMessageButton` on assistant bubbles with hover/desktop, always-visible/mobile, and 2s check feedback via clipboard API.
 **Files:** components/CopyMessageButton.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/AppShell.tsx, components/Sidebar.tsx, lib/translations.ts, components/CodeEditor.tsx (deleted), docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 8.6] Chat history sidebar (IndexedDB)
+
+**Summary:** Added client-side chat persistence with `idb` (`lib/chat-db.ts`): CRUD, 50-conversation LRU eviction, and title generation from first user message. Built `HistorySidebar` with Framer Motion slide (LTR/RTL), time-ago labels, per-item delete, and clear-all AlertDialog. Wired `AppShell` auto-save on stream complete, conversation restore (messages, code, mode), New Chat reset, and `PanelLeft` toggle in `AppHeader`.
+**Files:** lib/chat-db.ts, lib/format-time-ago.ts, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, components/ui/alert-dialog.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
+**Status:** completed

@@ -6,7 +6,17 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import type { ChatInputHandle } from "@/components/ChatInput";
+import { HistorySidebar } from "@/components/HistorySidebar";
 import { Sidebar } from "@/components/Sidebar";
+import {
+  clearAllConversations,
+  deleteConversation,
+  generateConversationTitle,
+  listConversations,
+  loadConversation,
+  saveConversation,
+  type ConversationMetadata,
+} from "@/lib/chat-db";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
 import { type Language, t } from "@/lib/translations";
@@ -22,9 +32,17 @@ export function AppShell() {
   );
   const [scorecardLoading, setScorecardLoading] = useState(false);
   const [scorecardError, setScorecardError] = useState<string | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [activeConversationId, setActiveConversationId] = useState<
+    string | null
+  >(null);
+  const [conversationList, setConversationList] = useState<
+    ConversationMetadata[]
+  >([]);
   const chatInputRef = useRef<ChatInputHandle>(null);
+  const prevStatusRef = useRef<string | null>(null);
 
-  const { messages, sendMessage, status, error, stop } = useChat({
+  const { messages, setMessages, sendMessage, status, error, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
@@ -32,10 +50,35 @@ export function AppShell() {
   const isRTL = language === "ar";
   const canSend = Boolean(mode) && Boolean(code.trim()) && !isLoading;
 
+  const refreshConversationList = useCallback(async () => {
+    const list = await listConversations();
+    setConversationList(list);
+  }, []);
+
   useEffect(() => {
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
     document.documentElement.lang = language;
   }, [isRTL, language]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void listConversations().then((list) => {
+      if (!cancelled) {
+        setConversationList(list);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const resetScorecard = useCallback(() => {
+    setScorecardData(null);
+    setScorecardLoading(false);
+    setScorecardError(null);
+  }, []);
 
   const fetchScorecard = useCallback(async () => {
     if (!code.trim()) {
@@ -71,6 +114,46 @@ export function AppShell() {
       setScorecardLoading(false);
     }
   }, [code, language]);
+
+  const handleNewChat = useCallback(() => {
+    setMessages([]);
+    setCode("");
+    setMode("review");
+    setValidationError(null);
+    setActiveConversationId(null);
+    resetScorecard();
+    setIsHistoryOpen(false);
+  }, [resetScorecard, setMessages]);
+
+  const persistConversation = useCallback(async () => {
+    if (messages.length === 0) {
+      return;
+    }
+
+    const conversationId = activeConversationId ?? crypto.randomUUID();
+    const resolvedMode = mode ?? "review";
+
+    await saveConversation({
+      id: conversationId,
+      title: generateConversationTitle(messages),
+      messages,
+      mode: resolvedMode,
+      code,
+    });
+
+    setActiveConversationId(conversationId);
+    await refreshConversationList();
+  }, [activeConversationId, code, messages, mode, refreshConversationList]);
+
+  useEffect(() => {
+    const prevStatus = prevStatusRef.current;
+
+    if (prevStatus === "streaming" && status === "ready") {
+      void persistConversation();
+    }
+
+    prevStatusRef.current = status;
+  }, [persistConversation, status]);
 
   const handleLanguageToggle = () => {
     setLanguage((current) => (current === "en" ? "ar" : "en"));
@@ -117,6 +200,37 @@ export function AppShell() {
     stop();
   };
 
+  const handleSelectConversation = async (id: string) => {
+    const conversation = await loadConversation(id);
+    if (!conversation) {
+      return;
+    }
+
+    setMessages(conversation.messages);
+    setCode(conversation.code);
+    setMode(conversation.mode);
+    setActiveConversationId(conversation.id);
+    setValidationError(null);
+    resetScorecard();
+    setIsHistoryOpen(false);
+  };
+
+  const handleDeleteConversation = async (id: string) => {
+    await deleteConversation(id);
+
+    if (id === activeConversationId) {
+      handleNewChat();
+    }
+
+    await refreshConversationList();
+  };
+
+  const handleClearAll = async () => {
+    await clearAllConversations();
+    handleNewChat();
+    await refreshConversationList();
+  };
+
   return (
     <div
       className={cn(
@@ -124,7 +238,24 @@ export function AppShell() {
         isRTL && "font-arabic",
       )}
     >
-      <AppHeader language={language} onLanguageToggle={handleLanguageToggle} />
+      <AppHeader
+        language={language}
+        onLanguageToggle={handleLanguageToggle}
+        onHistoryToggle={() => setIsHistoryOpen((open) => !open)}
+        isHistoryOpen={isHistoryOpen}
+      />
+
+      <HistorySidebar
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        language={language}
+        conversations={conversationList}
+        activeConversationId={activeConversationId}
+        onSelect={(id) => void handleSelectConversation(id)}
+        onDelete={(id) => void handleDeleteConversation(id)}
+        onNewChat={handleNewChat}
+        onClearAll={() => void handleClearAll()}
+      />
 
       <motion.main
         key={language}
