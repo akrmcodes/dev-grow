@@ -466,88 +466,332 @@
 
 ---
 
-## Phase 5: Finalization
+## Phase 5: Advanced UX & Stability
 
 ---
 
-### Stage 8: QA, Error Handling & Academic Documentation
+### Stage 8: Input Architecture, Chat History & Bug Fixes
 
-**Goal:** Conduct a complete QA pass covering all error states, edge cases, and cross-device responsive behaviour; harden every user-facing failure with graceful fallbacks; then produce a professional `README.md` and a timed 5-minute Professor Walkthrough script.
+**Goal:** Completely redesign the input/interaction flow to match world-class AI SaaS products (ChatGPT, Claude, Axiom). Decouple mode selection from submission. Build a floating, auto-expanding input container. Implement client-side chat history via IndexedDB. Add a file upload drag-and-drop zone. Fix erratic scroll and tab-switch rendering bugs.
 
-**Prerequisites:** All previous stages (0–7) complete and functional.
+**Prerequisites:** Stages 0–7 complete and functional.
 
 ---
 
 #### Task Checklist
 
-**8.1 Scope Enforcement QA**
+**8.1 Floating Minimalist Input Container**
+- [ ] Create `components/ChatInput.tsx` — a new floating input area positioned at the bottom of the AI interaction pane (right pane / sidebar).
+- [ ] Use a `<textarea>` (not an `<input>`) rendered inside a glass-morphism container: `bg-surface/60 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg`.
+- [ ] The container must be compact by default — approximately 48–56px tall with a single line visible, **not** occupying half the screen.
+- [ ] Position the container as a sticky/floating element at the bottom of the chat pane using `sticky bottom-0` or absolute positioning within the scroll container.
+- [ ] Include the selected mode as a dismissible `<Badge>` chip inside the input container (e.g., `📝 Review ×`), giving visual feedback of which mode is armed.
+- [ ] Place the Send/Stop button inline at the trailing edge of the input container (right side in LTR, left side in RTL).
+- [ ] Ensure the floating input does not overlap or obscure the last chat message — add appropriate bottom padding to the message scroll area.
+
+**8.2 Auto-Expanding Textarea with Scroll Cap**
+- [ ] Implement dynamic height expansion: as the user types, the textarea grows line-by-line from 1 visible line up to a maximum of 5 visible lines.
+- [ ] Use a hidden "mirror" `<div>` or the `scrollHeight` technique to calculate content height on each `onChange`/`onInput` event.
+- [ ] When content exceeds 5 lines, cap the container height and enable internal vertical scrolling (`overflow-y: auto`) within the textarea.
+- [ ] Reset the textarea height back to 1 line after the message is sent.
+- [ ] Add a smooth CSS `transition: height 0.15s ease` so the expansion feels fluid, not jumpy.
+- [ ] Test with RTL text, long single lines (horizontal overflow), and pasted multi-line content.
+
+**8.3 Decoupled Mode Selection + Send Button**
+- [ ] Refactor `ModeSelector.tsx`: clicking a mode button now **only** sets the `activeMode` state — it does **not** call `onSubmit` or trigger AI generation.
+- [ ] Remove the `onSubmit` prop from `ModeSelector`. The component's sole responsibility becomes mode selection.
+- [ ] In `AppShell.tsx`, wire the new `ChatInput.tsx` Send button to trigger `sendMessage()` using the currently selected `activeMode` and the text from the floating input (which now replaces the code editor for the submission text, or optionally still reads `code` from the editor — see 8.3.1).
+- [ ] **8.3.1 Clarify input source**: The floating input is for the user's *question/instruction* to the AI. The `<CodeEditor>` remains the dedicated code-paste area. The Send action bundles both: the code from the editor + the instruction from the floating input, sent together as the user message with the selected mode.
+- [ ] Implement `Enter` key to submit (calls the send function).
+- [ ] Implement `Shift + Enter` to insert a newline in the textarea (standard AI chat convention).
+- [ ] Prevent submission if both the code editor and the floating input are empty — show the existing validation toast.
+- [ ] Auto-focus the floating input after mode selection changes to encourage immediate typing.
+
+**8.4 Send / Stop Generation Button**
+- [ ] Create a unified `SendButton.tsx` (or embed logic in `ChatInput.tsx`) that renders as:
+  - **Send state** (default): An arrow-up or paper-plane icon (`lucide-react: SendHorizonal` or `ArrowUp`) with `bg-primary` styling. Disabled when both code and input are empty.
+  - **Stop state** (while `status === 'submitted' || status === 'streaming'`): Transforms into a square "Stop" icon (`lucide-react: Square`) with a pulsing `bg-destructive` ring. Clicking it calls `useChat`'s `stop()` method to abort the stream.
+- [ ] Animate the icon transition between Send ↔ Stop using Framer Motion `AnimatePresence` with a quick scale/fade swap.
+- [ ] The button must be perfectly centred vertically within the floating input container.
+
+**8.5 Copy Response Button**
+- [ ] Add a "Copy" icon button (`lucide-react: Copy` or `ClipboardCopy`) to each **assistant** message bubble in `ChatPanel.tsx`.
+- [ ] Position it at the top-right corner of the message bubble, visible on hover (desktop) or always visible (mobile).
+- [ ] On click, use `navigator.clipboard.writeText()` to copy the raw markdown text of the assistant message.
+- [ ] Show brief visual feedback: swap the icon to a checkmark (`lucide-react: Check`) with a green tint for 2 seconds, then revert.
+- [ ] Ensure the button doesn't interfere with text selection inside the message bubble.
+
+**8.6 Chat History Sidebar (IndexedDB — Client-Side Only)**
+- [ ] **8.6.1 IndexedDB Storage Layer**
+  - [ ] Create `lib/chat-db.ts` using the raw `idb` (IndexedDB wrapper) library or the lightweight `idb-keyval` package.
+  - [ ] Define the database schema: DB name `devgrow-history`, object store `conversations`, with keys: `id` (auto-generated UUID), `title` (first 60 chars of the first user message), `messages` (serialized `UIMessage[]` array), `mode` (the mode used), `createdAt` (ISO timestamp), `updatedAt` (ISO timestamp).
+  - [ ] Export CRUD functions: `saveConversation()`, `loadConversation(id)`, `listConversations()` (returns metadata only — id, title, createdAt), `deleteConversation(id)`, `clearAllConversations()`.
+  - [ ] Implement a maximum of 50 stored conversations — auto-delete the oldest when the limit is exceeded (LRU eviction).
+
+- [ ] **8.6.2 History Sidebar UI**
+  - [ ] Create `components/HistorySidebar.tsx` — a slide-out panel from the left edge of the screen (LTR) or right edge (RTL).
+  - [ ] Use Framer Motion for the slide-in/slide-out animation: `initial={{ x: '-100%' }}`, `animate={{ x: 0 }}` with a backdrop overlay (`bg-black/40 backdrop-blur-sm`).
+  - [ ] Render a scrollable list of past conversations: each item shows the title (truncated), a timestamp (`timeago` style: "2h ago", "Yesterday"), and the mode badge emoji.
+  - [ ] Add a "New Chat" button at the top that clears the current conversation state (resets `messages`, `code`, `scorecardData`).
+  - [ ] Add a "Delete" swipe-action or icon button per conversation item.
+  - [ ] Add a "Clear All History" button at the bottom with a confirmation dialog.
+  - [ ] Add a toggle button in the `AppHeader` (hamburger menu icon or `lucide-react: PanelLeft`) to open/close the history sidebar.
+
+- [ ] **8.6.3 Auto-Save Integration**
+  - [ ] In `AppShell.tsx`, auto-save the current conversation to IndexedDB after each completed AI response (when `status` transitions from `'streaming'` to `'ready'`).
+  - [ ] When the user clicks a conversation in the history sidebar, load its messages into `useChat`'s state, restore the code editor content, and close the sidebar.
+  - [ ] Generate the conversation title from the first user message: truncate to 60 characters, append "…" if truncated.
+
+**8.7 File Upload & Drag-and-Drop Zone**
+- [ ] **8.7.1 Drop Zone Component**
+  - [ ] Create `components/FileDropZone.tsx` — a full-surface overlay that appears when the user drags a file over the code editor area.
+  - [ ] Use the native HTML5 Drag and Drop API (`onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` events) — no external library required.
+  - [ ] Style the active drop zone with a glassmorphism overlay: `bg-primary/5 backdrop-blur-md border-2 border-dashed border-primary/40 rounded-xl` with a centred icon and label: "📁 Drop your code file here".
+  - [ ] Animate the drop zone entrance/exit with Framer Motion fade + subtle scale.
+  - [ ] Accept only code file extensions: `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.py`, `.java`, `.cpp`, `.c`, `.rb`, `.go`, `.rs`, `.php`, `.sql`, `.json`, `.xml`, `.md`, `.txt`.
+  - [ ] Reject non-code files (images, PDFs, etc.) with a brief error toast: "Only code files are supported."
+  - [ ] Cap file size at 100KB — show a toast if exceeded: "File too large. Max 100KB."
+
+- [ ] **8.7.2 File Reading & Editor Population**
+  - [ ] On successful drop, read the file contents via `FileReader.readAsText()`.
+  - [ ] Populate the `<CodeEditor>` textarea with the file contents, replacing any existing content.
+  - [ ] Optionally display the filename as a small badge above the editor: `📄 script.js (42 lines)`.
+  - [ ] Also add a traditional file input button (`<input type="file">` hidden behind a styled `<Button>`) as an alternative to drag-and-drop. Place it in the code editor header area.
+
+**8.8 Bug Fix: Erratic Scroll During AI Streaming**
+- [ ] **Root cause:** The current `useEffect` watching `messages` fires `scrollIntoView({ behavior: 'smooth' })` on every token/chunk update, causing chaotic jumps and layout width distortion during rapid streaming.
+- [ ] **Fix — Smart Scroll Anchor:**
+  - [ ] Implement a `useSmartScroll` custom hook in `lib/hooks/use-smart-scroll.ts`.
+  - [ ] Track whether the user is "near the bottom" of the scroll container (within ~100px of the bottom edge) using an `IntersectionObserver` on the sentinel `div` at the bottom.
+  - [ ] If the user is near the bottom (auto-scroll zone), smoothly scroll to the bottom on each new content chunk.
+  - [ ] If the user has manually scrolled up (reading earlier content), **do not** auto-scroll — respect their scroll position.
+  - [ ] Show a "↓ New messages" floating pill button when the user is scrolled up and new content arrives. Clicking it scrolls to the bottom.
+  - [ ] Use `requestAnimationFrame`-throttled scroll updates (max 1 scroll per frame) to prevent layout thrashing.
+  - [ ] Ensure the scroll container has `overflow-x: hidden` to prevent horizontal distortion during streaming.
+
+**8.9 Bug Fix: Tab-Switch Black Screen**
+- [ ] **Root cause:** When the browser tab loses focus, the `visibilitychange` event may pause Framer Motion animation renders and/or React's batching of streaming updates. When the tab regains focus, the accumulated state can cause a black flash or blank render.
+- [ ] **Fix — Visibility-Safe Streaming:**
+  - [ ] In `AppShell.tsx` (or a dedicated `lib/hooks/use-visibility-safe.ts` hook), listen for the `document.visibilitychange` event.
+  - [ ] When the tab becomes hidden (`document.hidden === true`), do **not** pause or disconnect the stream — let `useChat` continue receiving tokens in the background.
+  - [ ] When the tab becomes visible again, force a React re-render by toggling a dummy state key or calling `forceUpdate`, ensuring the DOM reflects all tokens received while hidden.
+  - [ ] Add `will-change: transform` to the chat scroll container to prevent GPU layer tear-down during tab switch.
+  - [ ] Disable Framer Motion's `useReducedMotion` auto-detection during tab switches — the `AnimatePresence` should not cull animations for "invisible" elements.
+  - [ ] Test: send code, switch to another tab for 10+ seconds during streaming, switch back — verify no black screen, no lost content, and the stream continues normally.
+
+---
+
+#### Stage 8 Validation Gate
+- [ ] The floating input container is compact (single line default), expands to 5 lines max, and scrolls internally beyond 5 lines.
+- [ ] Clicking a mode button only selects it — AI generation only fires on Send click or `Enter` key.
+- [ ] `Shift + Enter` inserts a newline; `Enter` submits.
+- [ ] The Send button morphs into a Stop button during streaming and successfully aborts the stream on click.
+- [ ] The Copy button appears on assistant messages and copies the full markdown content to the clipboard.
+- [ ] The History Sidebar opens/closes with a smooth slide animation, lists past conversations, and loading a conversation restores the full chat state.
+- [ ] Conversations auto-save to IndexedDB after each AI response completes.
+- [ ] Dragging a `.js` file onto the code editor populates the textarea with the file contents; non-code files are rejected with a toast.
+- [ ] Streaming no longer causes erratic scroll jumps — the smart scroll anchor is active.
+- [ ] Switching browser tabs during streaming and returning does not cause a black screen.
+- [ ] `npm run build` completes with zero TypeScript errors and zero ESLint errors.
+
+---
+
+## Phase 6: Cinematic Aesthetics & Guardrails
+
+---
+
+### Stage 9: GSAP Cinematic Entry, Mesh Gradients, Neon Skeleton & LLM Guardrails
+
+**Goal:** Transform DevGrow's visual identity into a cinematic, mind-blowing SaaS experience. Implement a GSAP-powered entry animation sequence, animated mesh gradient backgrounds, a "Neon Shimmer Skeleton" loading state, and additional micro-interactions that make the app feel alive. Harden the LLM output with Arabic-specific guardrails to prevent code-mixing and half-token leaks.
+
+**Prerequisites:** Stage 8 complete. All core UX functional.
+
+---
+
+#### Task Checklist
+
+**9.1 GSAP Installation & Configuration**
+- [ ] Install GSAP: `npm install gsap @gsap/react`.
+- [ ] Create `lib/gsap.ts` — a central GSAP registration file that imports and registers required plugins: `ScrollTrigger`, `TextPlugin`, and `SplitText` (if using GSAP Club — otherwise use CSS-based text splitting).
+- [ ] Configure GSAP defaults: `gsap.defaults({ ease: 'power3.out', duration: 0.8 })`.
+- [ ] Create a `useGSAP` integration pattern using `@gsap/react`'s `useGSAP` hook for proper React 19 cleanup.
+
+**9.2 Cinematic Entry Animation (First Load Experience)**
+- [ ] Create `components/EntryAnimation.tsx` — a full-screen overlay that plays once on the first visit.
+- [ ] **Sequence (timeline):**
+  1. **[0.0s–0.6s] Dark void** — Screen is pure black. The DevGrow 🌱 emoji scales in from 0 to 1 with a slight bounce, centred on screen.
+  2. **[0.6s–1.2s] Logo reveal** — The "DevGrow" text types in letter-by-letter beside the emoji using GSAP `TextPlugin` or a staggered `fromTo` on `<span>` elements. Apply the emerald→cyan gradient as each letter appears.
+  3. **[1.2s–1.6s] Tagline fade** — The tagline "Where the code grows, and the programmer grows." fades in below the logo with `y: 20 → 0`, `opacity: 0 → 1`.
+  4. **[1.6s–2.0s] Particle burst** — A subtle radial burst of small emerald dots emanates from the logo (pure CSS `radial-gradient` animation or GSAP staggered circles — no heavy canvas/WebGL).
+  5. **[2.0s–2.5s] Dissolve** — The entire overlay fades out, revealing the main app beneath. Use `clipPath` circle wipe or a simple opacity fade.
+- [ ] Store a `sessionStorage` flag (`devgrow-entry-seen`) so the animation only plays once per browser session — not on every page refresh during development.
+- [ ] Provide a `Skip` button (subtle, bottom-right) that immediately dissolves the overlay.
+- [ ] Total animation duration: ~2.5 seconds. Must feel fast and premium, not sluggish.
+
+**9.3 Animated Mesh Gradient Background**
+- [ ] Create `components/MeshGradient.tsx` — a fixed, full-viewport background layer rendered behind all content (`z-index: -1`, `position: fixed`, `inset: 0`).
+- [ ] Implement using pure CSS with multiple layered `radial-gradient` blobs:
+  - Blob 1: `radial-gradient(ellipse at 20% 50%, oklch(0.45 0.12 155 / 15%), transparent 50%)` (emerald tint).
+  - Blob 2: `radial-gradient(ellipse at 80% 20%, oklch(0.50 0.10 220 / 10%), transparent 50%)` (cyan tint).
+  - Blob 3: `radial-gradient(ellipse at 50% 80%, oklch(0.40 0.08 280 / 8%), transparent 50%)` (subtle violet).
+- [ ] Animate each blob's position slowly using CSS `@keyframes` with `transform: translate()` shifts over 20–30 second cycles. Use different durations per blob for organic, non-repeating motion.
+- [ ] Keep opacity very low (8–15%) — the gradient must be **faint and atmospheric**, never distracting.
+- [ ] Ensure the mesh gradient is visible in both dark and light themes (adjust opacity per theme using CSS variables).
+- [ ] Use `will-change: transform` and `contain: paint` for GPU acceleration — the gradient must have zero impact on scroll performance.
+- [ ] Disable the animation when `prefers-reduced-motion` is active.
+
+**9.4 Neon Shimmer Skeleton Loading (Ghost Code Shimmer)**
+- [ ] Create `components/NeonSkeleton.tsx` — a replacement for the current "Thinking…" pulse badge that renders while waiting for the AI's first token.
+- [ ] Design: Render 6–8 lines of fake "code" blocks of varying widths (20%–90%) inside a `rounded-xl` container with `bg-surface/50`.
+- [ ] Each line is a `div` with a subtle neon-glow shimmer effect:
+  - Base colour: `bg-emerald-500/5` (barely visible).
+  - Shimmer: A diagonal linear gradient sweep (`-45deg`, from `transparent` through `emerald-400/20` to `transparent`) that moves left-to-right across each line.
+  - Use CSS `@keyframes shimmer` with `background-position` animation, staggered per line (each line starts its shimmer 0.1s after the previous one).
+- [ ] Add a faint `text-shadow: 0 0 8px oklch(0.72 0.17 155 / 30%)` glow on the shimmer highlight for the neon effect.
+- [ ] The skeleton must auto-dismiss the instant the first real token arrives from the stream (replace with actual message content via `AnimatePresence`).
+- [ ] In `ChatPanel.tsx`, conditionally render `<NeonSkeleton>` when `isLoading && messages at this position have no text yet`.
+
+**9.5 Additional Micro-Interactions (Creative Enhancements)**
+- [ ] **9.5.1 Typing Ripple Effect**: When the user types in the floating input, emit a very subtle concentric ring animation from the cursor position (pure CSS `::after` pseudo-element with `radial-gradient` and `scale` animation). Extremely faint — more felt than seen.
+- [ ] **9.5.2 Mode Button Glow-on-Select**: When a mode button transitions to the active state, add a brief `box-shadow` glow pulse in the primary emerald colour that fades over 0.5s. Use GSAP or Framer Motion `animate`.
+- [ ] **9.5.3 Score Bar Celebration**: When any score bar reaches 8+/10, add a brief sparkle/confetti micro-animation at the tip of the bar (3–5 tiny emerald dots that scatter and fade). Use CSS `@keyframes` or Framer Motion. Must be subtle and professional — not cartoonish.
+- [ ] **9.5.4 Scroll Progress Indicator**: Add a thin (2px) emerald gradient line at the very top of the chat scroll pane that fills from 0% to 100% as the user scrolls through the conversation. Use `IntersectionObserver` or `onScroll` percentage calculation.
+- [ ] **9.5.5 Header Logo Hover Interaction**: When hovering over the "🌱 DevGrow" logo, the emoji rotates 15° and the gradient text briefly shifts hue (emerald→teal→cyan→emerald cycle over 0.6s). Pure CSS or GSAP.
+
+**9.6 LLM Output Guardrails (Arabic Purity)**
+- [ ] **9.6.1 System Prompt Enhancement**
+  - [ ] Append the following guardrail directive to `BASE_SYSTEM_PROMPT` in `lib/prompts.ts`:
+
+    ```
+    ## Output Purity Rules
+    - When responding in Arabic, write clean, fluent Arabic prose. Do not mix English words into Arabic sentences unless they are universally used technical terms (e.g., API, JavaScript, Python).
+    - Never output half-formed tokens, Unicode artifacts, or garbled characters.
+    - Keep code identifiers, keywords, and syntax in their original programming language — but all surrounding explanation must be in the detected language.
+    - Do not embed inline code snippets within prose sentences in Arabic. Use separate fenced code blocks instead.
+    ```
+
+  - [ ] Test the updated prompt with 5 Arabic code reviews — verify zero code-mixing within prose paragraphs.
+
+- [ ] **9.6.2 Client-Side Sanitization (Defence in Depth)**
+  - [ ] Create `lib/sanitize-output.ts` with a `sanitizeArabicOutput(text: string): string` function.
+  - [ ] The function should detect and remove common half-token artifacts: isolated Latin characters mixed into Arabic words, orphaned combining characters, zero-width joiners/non-joiners in inappropriate positions.
+  - [ ] Apply the sanitizer to assistant messages in `ChatPanel.tsx` before rendering, but **only** when the UI language is Arabic.
+  - [ ] The sanitizer must **not** touch fenced code blocks — only prose text outside code fences.
+
+---
+
+#### Stage 9 Validation Gate
+- [ ] The GSAP entry animation plays once on first visit, completes in ~2.5 seconds, and does not replay on refresh (session flag).
+- [ ] The animated mesh gradient is visible, faintly moving, and does not affect scroll performance (verify with Chrome DevTools Performance tab — no jank).
+- [ ] The Neon Shimmer Skeleton replaces the old "Thinking…" badge and auto-dismisses on the first streamed token.
+- [ ] All 5 micro-interactions (typing ripple, mode glow, score celebration, scroll indicator, logo hover) are implemented and feel premium, not gimmicky.
+- [ ] Arabic responses contain zero code-mixing in prose paragraphs — verified across all 6 modes.
+- [ ] The sanitizer does not corrupt fenced code blocks or technical terms.
+- [ ] The mesh gradient respects `prefers-reduced-motion`.
+- [ ] `npm run build` completes with zero TypeScript errors and zero ESLint errors.
+
+---
+
+## Phase 7: Finalization
+
+---
+
+### Stage 10: QA, Error Handling & Academic Documentation
+
+**Goal:** Conduct a complete QA pass covering all error states, edge cases, and cross-device responsive behaviour; harden every user-facing failure with graceful fallbacks; then produce a professional `README.md` and a timed 5-minute Professor Walkthrough script. This stage now also covers QA for all Stage 8–9 additions.
+
+**Prerequisites:** All previous stages (0–9) complete and functional.
+
+---
+
+#### Task Checklist
+
+**10.1 Scope Enforcement QA**
 - [ ] Send a non-programming question in English: "What's the capital of France?" — verify the AI politely refuses and stays in scope.
 - [ ] Send a non-programming question in Arabic: "ما هو الطقس اليوم؟" — verify the AI refuses in Arabic.
 - [ ] Confirm the refusal message matches the pedagogical tone defined in `BASE_SYSTEM_PROMPT` (not terse or robotic).
 
-**8.2 Arabic Support End-to-End QA**
+**10.2 Arabic Support End-to-End QA**
 - [ ] Switch to Arabic mode and send a Python function with Arabic variable names and comments.
-- [ ] Verify the response is entirely in Arabic.
+- [ ] Verify the response is entirely in Arabic with zero code-mixing in prose (Stage 9 guardrails active).
 - [ ] Test all 6 modes in Arabic — confirm each mode-specific behaviour is preserved (Hint doesn't reveal the solution, Analogy avoids jargon, etc.).
 - [ ] Verify the Scorecard `summary` field returns Arabic text when the prompt is Arabic.
 - [ ] Inspect RTL rendering in multiple browsers (Chrome, Safari, Firefox).
 
-**8.3 Scorecard JSON Reliability QA**
+**10.3 Scorecard JSON Reliability QA**
 - [ ] Submit 15 diverse code snippets (Python, JavaScript, Java, C++, pseudocode) and verify 15/15 return valid JSON.
 - [ ] Submit intentionally malformed code (syntax errors, incomplete snippets) — verify `generateObject()` still returns a valid scorecard (the model should score the code, not reject it).
 - [ ] Trigger the application-level fallback: temporarily remove `OPENROUTER_API_KEY`, hit `/api/score`, and confirm the "Unable to generate score" UI renders with a working Retry button.
 - [ ] Restore `OPENROUTER_API_KEY` and confirm the Retry button successfully fetches a score.
 
-**8.4 Edge Case Hardening**
-- [ ] **Empty submission:** Submit with no code in the editor. Confirm "Paste some code first! 🌱" appears and no API call is made.
+**10.4 New Feature QA (Stages 8–9)**
+- [ ] **Input architecture:** Verify the floating input container, auto-expansion, Enter/Shift+Enter, and mode decoupling all work correctly in both LTR and RTL.
+- [ ] **Stop generation:** Trigger a long response, click Stop, verify the stream aborts cleanly and the button reverts to Send.
+- [ ] **Copy button:** Copy an assistant response, paste into a text editor, verify the full markdown is present.
+- [ ] **Chat history:** Create 3+ conversations, navigate between them via the sidebar, verify messages and code are restored correctly. Delete a conversation and verify it's removed from IndexedDB.
+- [ ] **File upload:** Drag-and-drop a `.py` file onto the code editor — verify contents populate. Try dragging a `.png` — verify rejection toast.
+- [ ] **Scroll anchor:** During a long streaming response, scroll up to read earlier content — verify auto-scroll pauses. Click the "↓ New messages" pill — verify it scrolls to the bottom.
+- [ ] **Tab-switch stability:** Send code, switch tabs for 15 seconds, switch back — verify no black screen and the full streamed response is visible.
+- [ ] **Entry animation:** Clear `sessionStorage`, reload — verify the GSAP entry plays. Reload again — verify it does not replay.
+- [ ] **Mesh gradient:** Verify the gradient is visible in both dark and light themes. Toggle `prefers-reduced-motion` in DevTools — verify animation stops.
+- [ ] **Neon skeleton:** Trigger a mode submission — verify the shimmer skeleton appears and auto-dismisses on first token.
+
+**10.5 Edge Case Hardening**
+- [ ] **Empty submission:** Submit with no code in the editor and no text in the floating input. Confirm validation message appears and no API call is made.
 - [ ] **Rate limit (429):** Simulate a 429 by temporarily returning a 429 in the route handler. Verify the user-facing rate-limit message appears in the correct language.
 - [ ] **Network error:** Disable Wi-Fi (or block `openrouter.ai`) and submit. Verify a "Connection issue" message appears — not a raw error or blank screen.
 - [ ] **Very long code (500+ lines):** Paste a large file. Verify the textarea handles it without UI freezing and a response is received.
-- [ ] **Rapid mode switching:** Click multiple mode buttons in quick succession. Verify no race condition — only the last submitted mode's response is rendered.
+- [ ] **Rapid mode switching:** Click multiple mode buttons in quick succession, then hit Send. Verify only the last selected mode is used.
 - [ ] **API key missing at startup:** Remove `OPENROUTER_API_KEY` from `.env.local` and restart dev server. Verify the server logs a clear error and route handlers return descriptive error JSON, not an HTML 500 page.
 
-**8.5 Responsive Layout QA**
+**10.6 Responsive Layout QA**
 - [ ] Open Chrome DevTools and test at 375px (iPhone SE), 768px (iPad), and 1440px (desktop).
 - [ ] Verify the split pane stacks vertically on mobile with no horizontal overflow.
+- [ ] Verify the floating input container is usable on mobile — not too small, not overlapping content.
+- [ ] Verify the History Sidebar opens as a full-screen overlay on mobile (not a side panel).
+- [ ] Verify the file drop zone works on mobile (via the fallback file input button, since mobile lacks desktop drag-and-drop).
 - [ ] Verify all buttons, text, and scorecard bars are readable and tappable at 375px.
 - [ ] Verify the Scorecard collapsible panel is accessible on mobile — the toggle button must be easy to tap.
 - [ ] Test RTL layout at all three breakpoints.
 
-**8.6 README.md — Professional Academic Documentation**
-- [ ] Create `README.md` at the project root.
-- [ ] Add a banner section: project name, tagline, and a screenshot of the app in dark mode.
+**10.7 README.md — Professional Academic Documentation**
+- [ ] Create `README.md` at the project root (or update the existing one).
+- [ ] Add a banner section: project name, tagline, and a screenshot of the app in dark mode (including the new GSAP entry animation as a GIF).
 - [ ] Add a **Badges** row: Next.js version, Tailwind version, AI SDK version, OpenRouter model, license.
 - [ ] Write an **Overview** section (3–4 sentences) explaining what DevGrow does and who it is for.
-- [ ] Add the **Architecture Diagram** (the ASCII diagram from `plan.md` Section 5.1, verbatim in a fenced block).
+- [ ] Add the **Architecture Diagram** (the ASCII diagram from `plan.md` Section 5.1, updated to reflect chat history and file upload flows).
 - [ ] Add a **Features** table listing all 6 modes with their icon, English name, Arabic name, and one-sentence description.
-- [ ] Add a **Tech Stack** table listing every dependency, its version, and its role in the project.
+- [ ] Add a **New in v2.1** section highlighting: GSAP entry animation, chat history, file upload, floating input, smart scroll, neon skeleton.
+- [ ] Add a **Tech Stack** table listing every dependency (including GSAP, idb), its version, and its role in the project.
 - [ ] Add a **Setup Instructions** section with numbered steps: `git clone` → `npm install` → create `.env.local` with API key → `npm run dev`.
 - [ ] Add a **Model Selection** section explaining why `google/gemma-4-31b-it:free` was chosen over alternatives (condensed from `plan.md` Section 2).
 - [ ] Add a **JSON Reliability Strategy** section explaining the three-layer Scorecard approach (condensed from `plan.md` Section 6).
-- [ ] Add a **Known Limitations** section: free-tier rate limits (20 req/min, 50 req/day), no persistence (chat resets on refresh), no multi-file support.
+- [ ] Add a **Known Limitations** section: free-tier rate limits (20 req/min, 50 req/day), chat history is browser-local (IndexedDB), no multi-file upload, no real-time collaboration.
 - [ ] Add a **License** section (MIT).
 
-**8.7 5-Minute Professor Walkthrough Script**
+**10.8 5-Minute Professor Walkthrough Script**
 - [ ] Create `WALKTHROUGH.md` at the project root.
-- [ ] Add a **Pre-Demo Checklist** at the top: test API key works, have all 4 code snippets copied and ready, browser tab open on `localhost:3000`, DevTools closed, dark mode active.
-- [ ] Write a timed script with six sections, each labelled with its target duration:
-  1. **[0:00–0:30] Introduction** — State the problem: programming students get stuck, traditional IDEs give no pedagogical guidance.
-  2. **[0:30–1:30] Code Review Demo** — Paste the "messy JavaScript" snippet → click "Review" → narrate the streaming response → point to the Scorecard animated bars.
-  3. **[1:30–2:30] Progressive Hints Demo** — Paste the "off-by-one bug" snippet → click "Hint" → read the nudge → click "Concept" → understand root cause → click "Solution" → see the fix. Emphasize the pedagogical progression.
-  4. **[2:30–3:15] Analogy Mode Demo** — Same buggy code → click "Analogy" → show the real-world analogy explanation. State: "This is the Rubber Duck Debugging principle, powered by a 31-billion parameter model."
-  5. **[3:15–4:00] Bilingual Demo** — Switch to Arabic → paste the Arabic-comment Python function → click "Review" → show the full Arabic response with RTL layout. State: "Native Arabic support — not translated, genuinely understood."
-  6. **[4:00–5:00] Architecture & Closing** — Open `plan.md`, briefly show the architecture diagram, name the tech stack, explain the OpenRouter cloud pivot (same features, 4× larger model, runs on any device). Close with the project philosophy tagline.
+- [ ] Add a **Pre-Demo Checklist** at the top: test API key works, have all 4 code snippets copied and ready, clear `sessionStorage` to trigger entry animation, browser tab open on `localhost:3000`, DevTools closed, dark mode active.
+- [ ] Write a timed script with seven sections, each labelled with its target duration:
+  1. **[0:00–0:20] Cinematic Entry** — Let the GSAP entry animation play. Let it speak for itself.
+  2. **[0:20–1:00] Code Review Demo** — Drag-and-drop a `.js` file into the editor → select "Review" mode → type an instruction in the floating input → hit Enter → narrate the Neon Skeleton → watch the streaming response → point to the Scorecard animated bars and Copy button.
+  3. **[1:00–2:00] Progressive Hints Demo** — Paste the "off-by-one bug" snippet → click "Hint" → Send → read the nudge → click "Concept" → Send → understand root cause → click "Solution" → Send → see the fix. Emphasize the pedagogical progression and the new decoupled flow.
+  4. **[2:00–2:40] Analogy Mode Demo** — Same buggy code → click "Analogy" → Send → show the real-world analogy explanation. State: "This is the Rubber Duck Debugging principle, powered by a 31-billion parameter model."
+  5. **[2:40–3:20] Bilingual Demo** — Switch to Arabic → paste the Arabic-comment Python function → click "Review" → Send → show the full Arabic response with RTL layout. State: "Native Arabic support — not translated, genuinely understood. Zero code-mixing in prose."
+  6. **[3:20–4:00] Chat History & UX Demo** — Open the History Sidebar → show past conversations → click one → show it restores. Create a new chat. Show the floating input, auto-expand, Stop button during streaming.
+  7. **[4:00–5:00] Architecture & Closing** — Open `plan.md`, briefly show the architecture diagram, name the tech stack, explain the OpenRouter cloud pivot (same features, 4× larger model, runs on any device). Mention GSAP, IndexedDB, smart scroll as technical highlights. Close with the project philosophy tagline.
 - [ ] Include "SPEAKER NOTE:" annotations for each section specifying what to say, what to point to on screen, and what to avoid.
 
 ---
 
-#### Stage 8 Validation Gate
+#### Stage 10 Validation Gate
 - [ ] 100% of edge cases (empty submit, rate limit, network error, missing API key, long code, rapid switching) produce graceful, user-friendly responses — zero raw errors reach the UI.
-- [ ] Arabic mode works correctly in all 6 modes, with RTL layout, Arabic font, and Arabic Scorecard summaries.
+- [ ] Arabic mode works correctly in all 6 modes, with RTL layout, Arabic font, Arabic Scorecard summaries, and zero code-mixing in prose.
 - [ ] 15/15 diverse code snippets produce valid Scorecard JSON.
 - [ ] The responsive layout is verified at 375px, 768px, and 1440px — no overflow, no broken layouts.
+- [ ] All Stage 8–9 features pass their respective QA items above.
 - [ ] `README.md` is complete with all sections: overview, architecture diagram, feature table, tech stack, setup, model selection rationale, JSON reliability strategy, known limitations.
-- [ ] `WALKTHROUGH.md` is complete with all six timed sections, speaker notes, and pre-demo checklist.
+- [ ] `WALKTHROUGH.md` is complete with all seven timed sections, speaker notes, and pre-demo checklist.
 - [ ] `npm run build` completes with zero TypeScript errors and zero ESLint errors.
 
 ---
@@ -556,7 +800,7 @@
 
 | Phase | Stage | Name | Primary Deliverable |
 |-------|-------|------|---------------------|
-| 1 — Foundation | 0 | Project Scaffold & Environment | Booted Next.js 15 app, all deps, OpenRouter verified |
+| 1 — Foundation | 0 | Project Scaffold & Environment | Booted Next.js app, all deps, OpenRouter verified |
 | 1 — Foundation | 1 | Core Utilities & System Prompts | `prompts.ts`, `schemas.ts`, `openrouter.ts`, `constants.ts` |
 | 2 — AI Engine | 2 | Chat Streaming Route | `/api/chat` — streams via `streamText()`, all 6 modes |
 | 2 — AI Engine | 3 | Scorecard JSON Route | `/api/score` — structured output via `generateObject()` + Zod |
@@ -564,9 +808,47 @@
 | 3 — UI Shell | 5 | Mode Selector & Chat Panel | `<ModeSelector />`, `useChat` wiring, streaming markdown |
 | 3 — UI Shell | 6 | The Scorecard Panel | Animated progress bars, collapsible panel, error UI |
 | 4 — Polish | 7 | Theming & Localization | Dark/light toggle, AR/EN RTL switch, micro-animations |
-| 5 — Finalization | 8 | QA, Error Handling & Academic Documentation | Full QA pass, `README.md`, `WALKTHROUGH.md` |
+| 5 — Advanced UX | 8 | Input Architecture, Chat History & Bug Fixes | Floating input, IndexedDB history, file upload, scroll/tab fixes |
+| 6 — Cinematic | 9 | GSAP Aesthetics, Mesh Gradients & Guardrails | Entry animation, mesh bg, neon skeleton, Arabic guardrails |
+| 7 — Finalization | 10 | QA, Error Handling & Academic Documentation | Full QA pass (Stages 0–9), `README.md`, `WALKTHROUGH.md` |
 
 ---
 
-*Roadmap generated for DevGrow v2.0 — Cloud-First AI Coding Assistant.*
-*Based strictly on `plan.md` (The OpenRouter Cloud Pivot) architectural specification.*
+## Appendix A: Required npm Libraries (Stages 8–9)
+
+| Library | Purpose | Stage |
+|---------|---------|-------|
+| `gsap` | GreenSock Animation Platform — cinematic entry timeline, micro-interactions | 9 |
+| `@gsap/react` | Official React integration — `useGSAP` hook with proper cleanup | 9 |
+| `idb` | Lightweight IndexedDB wrapper with Promise API — chat history storage | 8 |
+
+> **Note:** No other new runtime dependencies are required. File upload uses the native HTML5 Drag-and-Drop API. The neon skeleton, mesh gradient, and micro-interactions are implemented with CSS `@keyframes` + existing Framer Motion. The sanitizer is a pure utility function with no external dependency.
+
+## Appendix B: Recommended Animation & Component Resources
+
+| Resource | URL | What to Look For |
+|----------|-----|------------------|
+| **GSAP Showcase** | [gsap.com/showcase](https://gsap.com/showcase) | Study entry animations, text reveals, and scroll-triggered sequences from award-winning sites |
+| **Aceternity UI** | [ui.aceternity.com](https://ui.aceternity.com) | Free React + Framer Motion components: meteor effects, sparkles, text generate effects, background gradients, card hover effects — all production-ready and MIT licensed |
+| **Magic UI** | [magicui.design](https://magicui.design) | Animated borders, shimmer buttons, number tickers, globe animations — copy-paste React components designed for SaaS landing pages |
+| **Shadcn Themes** | [ui.shadcn.com/themes](https://ui.shadcn.com/themes) | Dark theme colour palette inspiration and extended component variants |
+| **Hover.dev** | [hover.dev](https://hover.dev) | Premium Framer Motion animation patterns: card hovers, text transitions, reveal animations — with source code |
+| **GSAP Codepen Collection** | [codepen.io/GreenSock](https://codepen.io/GreenSock) | Official GSAP examples: SplitText reveals, SVG morph, stagger animations. Directly portable to React via `useGSAP` |
+| **Animista** | [animista.net](https://animista.net) | Pure CSS animation generator — great for shimmer, pulse, fade, and slide effects without JS overhead |
+| **Coolors** | [coolors.co](https://coolors.co) | Curated colour palette generator — use to refine the emerald/cyan/violet mesh gradient palette |
+
+### Specific Component Recommendations
+
+| Component Type | Source | Why |
+|----------------|--------|-----|
+| **Text Reveal / Typewriter** | Aceternity `TextGenerateEffect` or GSAP `SplitText` | For the cinematic entry logo animation |
+| **Animated Gradient Background** | Aceternity `BackgroundGradientAnimation` or Magic UI `DotPattern` | Ready-made mesh gradient with React/Tailwind integration |
+| **Sparkle / Confetti Burst** | Aceternity `SparklesCore` or Magic UI `Particles` | For the score bar celebration effect (8+ score) |
+| **Shimmer Card / Skeleton** | Magic UI `ShimmerButton` pattern (adapt for skeleton lines) | Reference for the neon shimmer effect technique |
+| **Slide-out Panel** | Shadcn `Sheet` component (already available via shadcn) | Base component for the History Sidebar |
+| **Floating Input Bar** | Study ChatGPT/Claude input area patterns | Design reference for the floating minimalist input container |
+
+---
+
+*Roadmap updated for DevGrow v2.1 — World-Class AI Coding Assistant.*
+*Extends the original `plan.md` (The OpenRouter Cloud Pivot) with cinematic aesthetics, advanced UX, and client-side persistence.*
