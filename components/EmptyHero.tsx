@@ -6,11 +6,11 @@ import { Ripple } from "@/components/ui/ripple";
 import { cn } from "@/lib/utils";
 
 export const EMPTY_HERO_WORDS = [
-  "cleaner code",
-  "faster logic",
-  "world-class architecture",
-  "clearer intent",
-  "sharper reviews",
+  "clarity",
+  "velocity",
+  "precision",
+  "craft",
+  "mastery",
 ];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -50,12 +50,9 @@ export function EmptyHero({ visible, className }: EmptyHeroProps) {
           <div
             dir="ltr"
             lang="en"
-            className="relative z-10 flex max-w-[min(92vw,36rem)] flex-col items-center px-6 text-center"
+            className="relative z-10 flex items-center justify-center px-6"
           >
-            <p className="mb-3 text-sm font-medium text-muted-foreground sm:text-base">
-              Where the code grows into
-            </p>
-            <div className="min-h-[1.35em] text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+            <div className="min-h-[1.35em] text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
               <FlipWords words={EMPTY_HERO_WORDS} duration={3000} />
             </div>
           </div>
