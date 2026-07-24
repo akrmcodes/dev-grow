@@ -1,6 +1,12 @@
 "use client";
 
-import { memo, useMemo, useRef, type ReactNode } from "react";
+import {
+  isValidElement,
+  memo,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -17,57 +23,136 @@ type AssistantMessageProps = {
   isStreaming?: boolean;
 };
 
+/** How prose blocks should reveal. */
+type RevealMode = "incremental" | "enter" | "static";
+
+/**
+ * Extract plain text for generate animation.
+ * Unwraps strong/em/span; bails (null) when code or links are present
+ * so those blocks keep rich Markdown rendering.
+ */
 function flattenToText(node: ReactNode): string | null {
   if (node == null || typeof node === "boolean") return "";
   if (typeof node === "string" || typeof node === "number") return String(node);
+
   if (Array.isArray(node)) {
     const parts = node.map(flattenToText);
     if (parts.some((part) => part === null)) return null;
     return parts.join("");
   }
+
+  if (isValidElement(node)) {
+    const props = node.props as {
+      children?: ReactNode;
+      className?: string;
+      href?: string;
+    };
+    const type = node.type;
+    const className = props.className ?? "";
+
+    // Keep rich rendering for code / links.
+    if (
+      props.href != null ||
+      (typeof type === "string" && (type === "code" || type === "a" || type === "pre")) ||
+      className.includes("font-mono") ||
+      className.includes("language-")
+    ) {
+      return null;
+    }
+
+    return flattenToText(props.children);
+  }
+
   return null;
 }
 
+function RevealText({
+  text,
+  mode,
+  as,
+  className,
+  duration = 0.28,
+}: {
+  text: string;
+  mode: RevealMode;
+  as: "p" | "li" | "h1" | "h2" | "h3";
+  className: string;
+  duration?: number;
+}) {
+  if (mode === "static") {
+    const Tag = as;
+    return <Tag className={className}>{text}</Tag>;
+  }
+
+  return (
+    <TextGenerateEffect
+      words={text}
+      as={as}
+      className={className}
+      duration={duration}
+      incremental={mode === "incremental"}
+      // Blur on full entrance only — streaming stays snappy.
+      filter={mode === "enter"}
+    />
+  );
+}
+
 function createMarkdownComponents(options: {
-  useWordGenerate: boolean;
+  revealMode: RevealMode;
 }): Components {
-  const { useWordGenerate } = options;
+  const { revealMode } = options;
+  const canReveal = revealMode !== "static";
+
+  const maybeReveal = (
+    as: "p" | "li" | "h1" | "h2" | "h3",
+    className: string,
+    children: ReactNode,
+    duration?: number,
+  ) => {
+    const plain = flattenToText(children);
+    if (canReveal && plain && plain.trim().length > 0) {
+      return (
+        <RevealText
+          text={plain}
+          mode={revealMode}
+          as={as}
+          className={className}
+          duration={duration}
+        />
+      );
+    }
+    const Tag = as;
+    return <Tag className={className}>{children}</Tag>;
+  };
 
   return {
-    p: ({ children }) => {
-      const plain = flattenToText(children);
-      if (useWordGenerate && plain && plain.trim().length > 0) {
-        return (
-          <TextGenerateEffect
-            words={plain}
-            as="p"
-            className="mb-4 text-[15px] font-normal leading-7 last:mb-0"
-            duration={0.28}
-          />
-        );
-      }
-
-      return (
-        <p className="mb-4 text-[15px] leading-7 text-foreground/95 last:mb-0">
-          {children}
-        </p>
-      );
-    },
-    h1: ({ children }) => (
-      <h1 className="mb-3 mt-6 text-xl font-semibold tracking-tight text-foreground first:mt-0">
-        {children}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="mb-2.5 mt-5 text-lg font-semibold tracking-tight text-foreground first:mt-0">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="mb-2 mt-4 text-base font-semibold tracking-tight text-foreground first:mt-0">
-        {children}
-      </h3>
-    ),
+    p: ({ children }) =>
+      maybeReveal(
+        "p",
+        "mb-4 text-[15px] font-normal leading-7 text-foreground/95 last:mb-0",
+        children,
+      ),
+    h1: ({ children }) =>
+      maybeReveal(
+        "h1",
+        "mb-3 mt-6 text-xl font-semibold text-foreground first:mt-0",
+        children,
+        0.32,
+      ),
+    h2: ({ children }) =>
+      maybeReveal(
+        "h2",
+        "mb-2.5 mt-5 text-lg font-semibold text-foreground first:mt-0",
+        children,
+        0.3,
+      ),
+    h3: ({ children }) =>
+      maybeReveal(
+        "h3",
+        "mb-2 mt-4 text-base font-semibold text-foreground first:mt-0",
+        children,
+        0.28,
+      ),
     ul: ({ children }) => (
       <ul className="mb-4 list-disc space-y-1.5 ps-5 text-[15px] leading-7 marker:text-foreground/40">
         {children}
@@ -78,9 +163,8 @@ function createMarkdownComponents(options: {
         {children}
       </ol>
     ),
-    li: ({ children }) => (
-      <li className="ps-0.5 text-foreground/95">{children}</li>
-    ),
+    li: ({ children }) =>
+      maybeReveal("li", "ps-0.5 leading-7 text-foreground/95", children, 0.24),
     blockquote: ({ children }) => (
       <blockquote className="mb-4 border-s-2 border-foreground/20 ps-4 text-[15px] leading-7 text-muted-foreground italic">
         {children}
@@ -153,9 +237,10 @@ function createMarkdownComponents(options: {
 }
 
 /**
- * Borderless assistant reply.
- * Streaming stays lightweight (no highlight / no word-generate) so tokens paint continuously.
- * History may use TextGenerateEffect once; live streams never remount into it after settle.
+ * Borderless assistant reply with reliable text-generate:
+ * - Live stream → incremental word reveal (no remount flicker)
+ * - History mount → full entrance animation (any length)
+ * - Just-finished stream → static (already revealed; no second play)
  */
 function AssistantMessageComponent({
   text,
@@ -164,23 +249,20 @@ function AssistantMessageComponent({
 }: AssistantMessageProps) {
   const cleanText = useMemo(() => sanitizeAssistantText(text), [text]);
 
-  // Once this instance has streamed live, never switch into TextGenerateEffect
-  // on settle — that remount caused freeze-then-pop after the response finished.
   const sawStreamingRef = useRef(isStreaming);
   if (isStreaming) {
     sawStreamingRef.current = true;
   }
 
-  const wordCount = cleanText.split(/\s+/).filter(Boolean).length;
-  const enableGenerate =
-    !isStreaming &&
-    !sawStreamingRef.current &&
-    wordCount > 0 &&
-    wordCount <= 120;
+  const revealMode: RevealMode = isStreaming
+    ? "incremental"
+    : sawStreamingRef.current
+      ? "static"
+      : "enter";
 
   const components = useMemo(
-    () => createMarkdownComponents({ useWordGenerate: enableGenerate }),
-    [enableGenerate],
+    () => createMarkdownComponents({ revealMode }),
+    [revealMode],
   );
 
   const rehypePlugins = useMemo(

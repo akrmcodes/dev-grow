@@ -412,3 +412,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** FlipWords was splitting Arabic into per-letter inline-block spans, which breaks cursive glyph shaping; joining-script words now animate as a single text run, and tracking-tight is disabled for Arabic.
 **Files:** components/ui/flip-words.tsx, components/EmptyHero.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Reliable text-generate everywhere
+
+**Summary:** Root causes were disabled generate during streaming, post-stream skip, ≤120-word cap, and paragraph-only coverage. Added incremental stream reveal, full entrance for history (any length), static settle after live stream, and generate for headings/list items; Arabic skips blur/tracking.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
+**Status:** completed
