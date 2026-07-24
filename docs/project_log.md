@@ -256,3 +256,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Softened Gooey Input appearance with a delayed fade/blur crossfade and aligned DesktopSidebar width easing so search no longer pops in ahead of the rail expand.
 **Files:** components/HistorySidebar.tsx, components/ui/sidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Align sidebar search with New Chat chrome
+
+**Summary:** Search now mirrors the New Chat row (square icon + label); click starts the Gooey morph. Restyled Gooey Input to square corners, size-7 height, and background/foreground colors (white light / black dark).
+**Files:** components/HistorySidebar.tsx, components/ui/gooey-input.tsx, docs/project_log.md
+**Status:** completed

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageSquarePlus, Search, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,54 +82,97 @@ function HistorySearch({
   onValueChange: (value: string) => void;
 }) {
   const { open, animate, setOpen } = useSidebar();
-  const showControl = !animate || open;
+  const showLabels = !animate || open;
+  const [isSearching, setIsSearching] = useState(false);
+  const [gooeyOpen, setGooeyOpen] = useState(false);
+
+  const endSearch = () => {
+    setGooeyOpen(false);
+    setIsSearching(false);
+    onValueChange("");
+  };
+
+  // Reset active search when the rail collapses.
+  useEffect(() => {
+    if (!showLabels && isSearching) {
+      endSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to rail visibility
+  }, [showLabels]);
+
+  const startSearch = () => {
+    setOpen(true);
+    setIsSearching(true);
+    setGooeyOpen(false);
+    // Mount collapsed, then expand so the gooey morph plays.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setGooeyOpen(true));
+    });
+  };
+
+  if (!showLabels) {
+    return (
+      <button
+        type="button"
+        className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground transition-colors hover:bg-muted/70"
+        aria-label={t("searchHistory", language)}
+        onClick={startSearch}
+      >
+        <Search className="size-4" />
+      </button>
+    );
+  }
 
   return (
-    <div
-      className="relative mt-4 flex h-10 items-center overflow-visible"
-      onMouseEnter={() => setOpen(true)}
-    >
+    <div className="relative overflow-visible" onMouseEnter={() => setOpen(true)}>
       <AnimatePresence mode="wait" initial={false}>
-        {showControl ? (
+        {isSearching ? (
           <motion.div
             key="gooey-search"
-            className="w-full"
-            initial={{ opacity: 0, x: -6, filter: "blur(4px)" }}
-            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, x: -4, filter: "blur(3px)" }}
-            // Let the rail width lead slightly so the control doesn't outpace it.
-            transition={{
-              ...SIDEBAR_CONTENT_TRANSITION,
-              delay: 0.1,
-            }}
+            className="flex h-9 items-center px-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={SIDEBAR_CONTENT_TRANSITION}
           >
             <GooeyInput
               value={value}
               onValueChange={onValueChange}
+              open={gooeyOpen}
+              onOpenChange={(next) => {
+                setGooeyOpen(next);
+                if (next) {
+                  setOpen(true);
+                } else {
+                  endSearch();
+                }
+              }}
               placeholder={t("searchHistory", language)}
-              collapsedWidth={128}
+              collapsedWidth={28}
               expandedWidth={228}
-              expandedOffset={44}
+              expandedOffset={36}
               gooeyBlur={5}
               className="justify-start"
-              onOpenChange={(searchOpen) => {
-                if (searchOpen) setOpen(true);
-              }}
             />
           </motion.div>
         ) : (
           <motion.button
-            key="search-icon"
+            key="search-row"
             type="button"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.92 }}
-            transition={SIDEBAR_CONTENT_TRANSITION}
-            className="flex size-7 items-center justify-center rounded-full border border-border bg-foreground text-background shadow-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ ...SIDEBAR_CONTENT_TRANSITION, delay: 0.08 }}
+            onClick={startSearch}
+            className="group/sidebar flex w-full items-center gap-2 rounded-lg px-1 py-2 text-start transition-colors hover:bg-muted/70"
             aria-label={t("searchHistory", language)}
-            onClick={() => setOpen(true)}
           >
-            <Search className="size-3.5" />
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground">
+              <Search className="size-4" />
+            </span>
+            <SidebarLabel className="font-medium">
+              {t("searchHistory", language)}
+            </SidebarLabel>
           </motion.button>
         )}
       </AnimatePresence>
@@ -300,13 +343,12 @@ function SidebarContent({
       <div className="flex min-h-0 flex-1 flex-col">
         <Brand />
 
-        <HistorySearch
-          language={language}
-          value={query}
-          onValueChange={setQuery}
-        />
-
-        <div className="mt-4 flex flex-col gap-1">
+        <div className="mt-6 flex flex-col gap-1">
+          <HistorySearch
+            language={language}
+            value={query}
+            onValueChange={setQuery}
+          />
           <NewChatRow language={language} onNewChat={onNewChat} />
         </div>
 

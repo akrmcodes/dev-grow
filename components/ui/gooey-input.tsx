@@ -92,6 +92,8 @@ export interface GooeyInputProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  /** Controlled expand state — omit for uncontrolled */
+  open?: boolean;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
 }
@@ -107,6 +109,7 @@ export function GooeyInput({
   value: valueProp,
   defaultValue = "",
   onValueChange,
+  open: openProp,
   onOpenChange,
   disabled = false,
 }: GooeyInputProps) {
@@ -118,28 +121,32 @@ export function GooeyInput({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const prevExpandedRef = useRef(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [uncontrolledExpanded, setUncontrolledExpanded] = useState(false);
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
 
-  const isControlled = valueProp !== undefined;
-  const searchText = isControlled ? valueProp : uncontrolledValue;
+  const isControlledValue = valueProp !== undefined;
+  const isControlledOpen = openProp !== undefined;
+  const searchText = isControlledValue ? valueProp : uncontrolledValue;
+  const isExpanded = isControlledOpen ? openProp : uncontrolledExpanded;
 
   const setSearchText = useCallback(
     (next: string) => {
-      if (!isControlled) {
+      if (!isControlledValue) {
         setUncontrolledValue(next);
       }
       onValueChange?.(next);
     },
-    [isControlled, onValueChange],
+    [isControlledValue, onValueChange],
   );
 
   const setExpanded = useCallback(
     (next: boolean) => {
-      setIsExpanded(next);
+      if (!isControlledOpen) {
+        setUncontrolledExpanded(next);
+      }
       onOpenChange?.(next);
     },
-    [onOpenChange],
+    [isControlledOpen, onOpenChange],
   );
 
   useEffect(() => {
@@ -174,8 +181,9 @@ export function GooeyInput({
     if (!searchText) setExpanded(false);
   }, [searchText, setExpanded]);
 
+  // Light: white · Dark: black — matches DevGrow chrome, square corners.
   const surfaceClass =
-    "bg-foreground text-background shadow-sm ring-1 ring-border/60";
+    "rounded-md border border-border bg-background text-foreground shadow-sm";
 
   return (
     <div
@@ -189,13 +197,16 @@ export function GooeyInput({
 
       <div
         className={cn(
-          "relative flex h-10 items-center justify-center",
+          "relative flex h-7 items-center justify-center",
           classNames?.filterWrap,
         )}
         style={{ filter: `url(#${filterId})` }}
       >
         <motion.div
-          className={cn("flex h-10 items-center justify-center", classNames?.buttonRow)}
+          className={cn(
+            "flex h-7 items-center justify-center",
+            classNames?.buttonRow,
+          )}
           variants={buttonVariants}
           initial="collapsed"
           animate={isExpanded ? "expanded" : "collapsed"}
@@ -206,14 +217,12 @@ export function GooeyInput({
             disabled={disabled}
             onClick={handleExpand}
             className={cn(
-              "flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
+              "flex h-7 w-full cursor-pointer items-center justify-center gap-2 px-2.5 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
               surfaceClass,
               classNames?.trigger,
             )}
           >
-            {!isExpanded ? (
-              <SearchIcon layoutId={iconLayoutId} />
-            ) : null}
+            {!isExpanded ? <SearchIcon layoutId={iconLayoutId} /> : null}
             <motion.input
               layoutId={inputLayoutId}
               ref={inputRef}
@@ -226,10 +235,10 @@ export function GooeyInput({
               disabled={disabled || !isExpanded}
               placeholder={placeholder}
               className={cn(
-                "h-full min-w-0 flex-1 bg-transparent text-sm text-background outline-none",
+                "h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none",
                 isExpanded
-                  ? "placeholder:text-background/50 dark:placeholder:text-background/45"
-                  : "pointer-events-none placeholder:text-background/80 dark:placeholder:text-background/70",
+                  ? "placeholder:text-muted-foreground"
+                  : "pointer-events-none placeholder:text-muted-foreground/80",
                 classNames?.input,
               )}
             />
@@ -238,7 +247,7 @@ export function GooeyInput({
 
         <motion.div
           className={cn(
-            "absolute top-1/2 left-0 flex size-10 -translate-y-1/2 items-center justify-center",
+            "absolute top-1/2 left-0 flex size-7 -translate-y-1/2 items-center justify-center",
             classNames?.bubble,
           )}
           variants={iconBubbleVariants}
@@ -248,7 +257,7 @@ export function GooeyInput({
         >
           <div
             className={cn(
-              "flex size-10 items-center justify-center rounded-full",
+              "flex size-7 items-center justify-center",
               surfaceClass,
               classNames?.bubbleSurface,
             )}
