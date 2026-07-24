@@ -226,3 +226,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed the “Where the code grows into” lead line; hero now shows only a centered single cycling word (clarity / velocity / precision / craft / mastery) over the Ripple.
 **Files:** components/EmptyHero.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 9.2] EmptyHero flip word size tweak
+
+**Summary:** Slightly reduced Flip Words type scale so cycling words stay within the Ripple circle.
+**Files:** components/EmptyHero.tsx, docs/project_log.md
+**Status:** completed

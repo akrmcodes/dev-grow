@@ -52,7 +52,7 @@ export function EmptyHero({ visible, className }: EmptyHeroProps) {
             lang="en"
             className="relative z-10 flex items-center justify-center px-6"
           >
-            <div className="min-h-[1.35em] text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+            <div className="min-h-[1.35em] text-center text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
               <FlipWords words={EMPTY_HERO_WORDS} duration={3000} />
             </div>
           </div>
