@@ -81,7 +81,7 @@ export function ChatPanel({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       {showNewMessagesPill && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-32 z-20 flex justify-center">
+        <div className="pointer-events-none absolute inset-x-0 bottom-40 z-20 flex justify-center">
           <Button
             type="button"
             size="sm"
@@ -95,7 +95,7 @@ export function ChatPanel({
 
       <div
         ref={scrollContainerRef}
-        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-28 will-change-transform"
+        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-40 will-change-transform"
       >
         {showEmptyState && (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">

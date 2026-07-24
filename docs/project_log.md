@@ -190,3 +190,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Added drag-and-drop and paperclip file upload to the chat pane with extension/size validation and Sonner toasts; populates `ChatInput` with filename badge. Implemented `useSmartScroll` with IntersectionObserver, rAF-throttled auto-scroll, and "New messages" pill. Added `useVisibilitySafe` re-render on tab focus plus `MotionConfig reducedMotion="never"` on chat messages to prevent black-screen flash during background streaming.
 **Files:** lib/file-upload.ts, lib/handle-file-upload.ts, lib/hooks/use-smart-scroll.ts, lib/hooks/use-visibility-safe.ts, components/FileDropZone.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/providers/theme-provider.tsx, components/ui/sonner.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] AI chat input redesign with inline modes
+
+**Summary:** Replaced the floating chat input with an adapted 21st.dev `PromptInput` (spring height morph, voice/send/stop action). Swapped the Effort control for lucide mode icons (Review–Challenge); selecting a mode expands its label beside the icon. Removed the top `ModeSelector` so mode picking lives in the composer.
+**Files:** components/ui/ai-chat-input.tsx, components/ChatInput.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/ChatPanel.tsx, lib/mode-icons.tsx, docs/project_log.md
+**Status:** completed

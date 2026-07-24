@@ -196,10 +196,6 @@ export function AppShell() {
     });
   };
 
-  const handleModeDismiss = () => {
-    setMode(null);
-  };
-
   const handleSend = () => {
     if (!code.trim()) {
       setValidationError(t("validationPasteCode", language));
@@ -293,7 +289,6 @@ export function AppShell() {
             language={language}
             activeMode={mode}
             onModeChange={handleModeChange}
-            onModeDismiss={handleModeDismiss}
             isLoading={isLoading}
             messages={messages}
             error={error}

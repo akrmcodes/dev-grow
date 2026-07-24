@@ -4,7 +4,6 @@ import type { UIMessage } from "ai";
 import { ChatInput, type ChatInputHandle } from "@/components/ChatInput";
 import { ChatPanel } from "@/components/ChatPanel";
 import { FileDropZone } from "@/components/FileDropZone";
-import { ModeSelector } from "@/components/ModeSelector";
 import { ScorecardPanel } from "@/components/ScorecardPanel";
 import type { Mode } from "@/lib/prompts";
 import type { ScorecardResult } from "@/lib/schemas";
@@ -15,7 +14,6 @@ type SidebarProps = {
   language: Language;
   activeMode: Mode | null;
   onModeChange: (mode: Mode) => void;
-  onModeDismiss: () => void;
   isLoading: boolean;
   messages: UIMessage[];
   error: Error | undefined;
@@ -41,7 +39,6 @@ export function Sidebar({
   language,
   activeMode,
   onModeChange,
-  onModeDismiss,
   isLoading,
   messages,
   error,
@@ -64,13 +61,6 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <aside className={cn("flex h-full min-h-[320px] flex-col gap-3")}>
-      <ModeSelector
-        activeMode={activeMode}
-        onModeChange={onModeChange}
-        isLoading={isLoading}
-        language={language}
-      />
-
       {validationError && (
         <p className="text-sm text-destructive" role="alert">
           {validationError}
@@ -99,7 +89,7 @@ export function Sidebar({
             value={code}
             onChange={onCodeChange}
             activeMode={activeMode}
-            onModeDismiss={onModeDismiss}
+            onModeChange={onModeChange}
             isStreaming={isLoading}
             canSend={canSend}
             onSend={onSend}
