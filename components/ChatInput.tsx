@@ -10,6 +10,7 @@ import {
   type PromptInputHandle,
 } from "@/components/ui/ai-chat-input";
 import { Badge } from "@/components/ui/badge";
+import { FolderUploadTrigger } from "@/components/FolderUploadTrigger";
 import { MODE_CONFIG } from "@/lib/constants";
 import { FILE_INPUT_ACCEPT } from "@/lib/file-upload";
 import type { Mode } from "@/lib/prompts";
@@ -109,6 +110,13 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             canSend={canSend}
             onAttachClick={() => fileInputRef.current?.click()}
             attachDisabled={isStreaming}
+            attachSlot={
+              <FolderUploadTrigger
+                language={language}
+                disabled={isStreaming}
+                onClick={() => fileInputRef.current?.click()}
+              />
+            }
             mono
             clearOnSubmit
           />

@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { FolderOpen } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
+import { AnimatedFolder } from "@/components/ui/3d-folder";
 import { handleFileUpload } from "@/lib/handle-file-upload";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
@@ -87,25 +87,28 @@ export function FileDropZone({
       {children}
 
       <AnimatePresence>
-        {isDragging && !disabled && (
+        {isDragging && !disabled ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             className={cn(
               "pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl",
-              "border-2 border-dashed border-primary/40 bg-primary/5 backdrop-blur-md",
+              "border border-dashed border-foreground/25 bg-background/70 backdrop-blur-md",
             )}
           >
-            <div className="flex flex-col items-center gap-2 text-center">
-              <FolderOpen className="size-8 text-primary" aria-hidden="true" />
-              <p className="text-sm font-medium text-foreground">
-                {t("dropZoneLabel", language)}
-              </p>
-            </div>
+            <AnimatedFolder
+              title={t("dropZoneLabel", language)}
+              subtitle={t("uploadFolderSubtitle", language)}
+              hint=""
+              size="lg"
+              open
+              interactive={false}
+              className="border-foreground/20 shadow-2xl"
+            />
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

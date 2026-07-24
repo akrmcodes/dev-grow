@@ -234,6 +234,8 @@ export interface PromptInputProps {
   canSend?: boolean;
   onAttachClick?: () => void;
   attachDisabled?: boolean;
+  /** Custom attach control (e.g. 3D folder). Falls back to the default + button. */
+  attachSlot?: React.ReactNode;
   mono?: boolean;
   clearOnSubmit?: boolean;
 }
@@ -259,6 +261,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
       canSend = true,
       onAttachClick,
       attachDisabled = false,
+      attachSlot,
       mono = false,
       clearOnSubmit = false,
     },
@@ -873,7 +876,9 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
               ))}
             </div>
 
-            {onAttachClick ? (
+            {attachSlot ? (
+              <div className="ml-auto shrink-0">{attachSlot}</div>
+            ) : onAttachClick ? (
               <button
                 type="button"
                 onMouseDown={(e) => e.preventDefault()}

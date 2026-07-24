@@ -101,6 +101,10 @@
   --selection-foreground: oklch(0.99 0 0);
   --selection-strong: color-mix(in oklch, var(--foreground) 92%, transparent);
   --selection-strong-foreground: oklch(0.145 0 0);
+  /* 3D folder — monochrome paperboard */
+  --folder-back: color-mix(in oklch, var(--foreground) 28%, var(--card));
+  --folder-front: color-mix(in oklch, var(--foreground) 16%, var(--card));
+  --folder-tab: color-mix(in oklch, var(--foreground) 36%, var(--card));
 }
 
 .light {
@@ -142,6 +146,10 @@
   --selection-foreground: oklch(0.12 0 0);
   --selection-strong: color-mix(in oklch, var(--foreground) 90%, transparent);
   --selection-strong-foreground: oklch(0.99 0 0);
+  /* 3D folder — monochrome paperboard */
+  --folder-back: color-mix(in oklch, var(--foreground) 14%, var(--card));
+  --folder-front: color-mix(in oklch, var(--foreground) 8%, var(--card));
+  --folder-tab: color-mix(in oklch, var(--foreground) 20%, var(--card));
 }
 
 .font-arabic {

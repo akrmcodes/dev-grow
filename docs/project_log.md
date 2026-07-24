@@ -334,3 +334,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Elevated native text selection with monochrome brand tokens — luminous wash + soft ink rim for prose, solid inverted stamp for code/inputs — tuned for both light and dark themes.
 **Files:** app/globals.css, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — 3D folder upload experience
+
+**Summary:** Integrated a monochrome adaptation of the 21st.dev 3D Folder for uploads — code-file sheets replace images; hover on the attach control instantly opens a folder flyout; drag-and-drop overlay uses the same open folder.
+**Files:** components/ui/3d-folder.tsx, components/FolderUploadTrigger.tsx, components/FileDropZone.tsx, components/ChatInput.tsx, components/ui/ai-chat-input.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
+**Status:** completed
