@@ -65,7 +65,10 @@ export function Sidebar({
   return (
     <aside className={cn("flex min-h-0 flex-1 flex-col gap-2")}>
       {validationError && (
-        <p className="text-sm text-destructive" role="alert">
+        <p
+          className="mx-auto w-full max-w-4xl px-4 text-sm text-destructive"
+          role="alert"
+        >
           {validationError}
         </p>
       )}
@@ -89,7 +92,7 @@ export function Sidebar({
           </div>
 
           {/* Composer + scorecard dock under the hero */}
-          <div className="relative z-10 mx-auto flex w-full max-w-xl shrink-0 flex-col gap-2.5 px-1 pb-1">
+          <div className="relative z-10 mx-auto flex w-full max-w-xl shrink-0 flex-col gap-2.5 px-4 pb-1">
             <ChatInput
               ref={chatInputRef}
               value={code}

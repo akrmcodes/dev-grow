@@ -93,10 +93,14 @@ export function ChatPanel({
     <div className="relative flex h-full min-h-0 flex-1 flex-col">
       <div
         ref={scrollContainerRef}
-        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-4 will-change-transform"
+        className="chat-scroll flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto will-change-transform"
       >
+        {/* Content stays centered; scrollbar sits on the full-bleed column edge */}
         <MotionConfig reducedMotion="never">
-          <div key={visibilityKey} className="flex flex-col gap-3 p-1">
+          <div
+            key={visibilityKey}
+            className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 pt-1 pb-4"
+          >
             <AnimatePresence initial={false}>
               {visibleMessages.map((message) => {
                 const text = getMessageText(message);

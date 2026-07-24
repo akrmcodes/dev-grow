@@ -352,3 +352,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Enlarged the three fanned code icons in the upload glyph and switched their open/close motion to spring physics for a smoother, more polished fan-out.
 **Files:** components/ui/3d-folder.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Chat scrollbar to pane edge
+
+**Summary:** Moved conversation scrolling to a full-bleed column so the scrollbar sits at the main pane edge, while messages remain centered in max-w-4xl; added thin monochrome scrollbar styling with stable gutter.
+**Files:** components/AppShell.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, app/globals.css, docs/project_log.md
+**Status:** completed

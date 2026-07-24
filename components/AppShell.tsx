@@ -291,7 +291,8 @@ export function AppShell() {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col px-4 py-3">
+          {/* Full-bleed scroll column — content width is constrained inside ChatPanel */}
+          <div className="flex min-h-0 w-full flex-1 flex-col py-3">
             <Sidebar
               language={language}
               activeMode={mode}
