@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import type { ChatInputHandle } from "@/components/ChatInput";
+import { CustomCursor } from "@/components/CustomCursor";
 import { HistorySidebar } from "@/components/HistorySidebar";
 import { Sidebar } from "@/components/Sidebar";
 import {
@@ -260,6 +261,8 @@ export function AppShell() {
         isRTL && "font-arabic",
       )}
     >
+      <CustomCursor />
+
       <HistorySidebar
         open={isHistoryOpen}
         setOpen={setIsHistoryOpen}

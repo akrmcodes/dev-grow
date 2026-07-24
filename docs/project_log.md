@@ -274,3 +274,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed emerald/green brand accents site-wide. Primary and sidebar tokens are now neutral white (dark) / charcoal (light); score tones, brand wordmarks, code highlights, and copy feedback use foreground greyscale only.
 **Files:** app/globals.css, components/ScorecardPanel.tsx, components/HistorySidebar.tsx, components/AppHeader.tsx, components/ChatPanel.tsx, components/CopyMessageButton.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Custom monochrome smooth cursor
+
+**Summary:** Added CustomCursor (sharp dot + trailing ring) with Framer Motion springs, interactive hover/click scales, coarse-pointer auto-hide, and desktop `cursor: none` with text-caret exceptions; mounted in AppShell.
+**Files:** components/CustomCursor.tsx, components/AppShell.tsx, app/globals.css, components/ui/smooth-cursor.tsx, docs/project_log.md
+**Status:** completed
