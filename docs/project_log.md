@@ -244,3 +244,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced the slide-over HistorySidebar with Aceternity/21st.dev Sidebar (hover-expand desktop rail + mobile overlay). Wired New Chat, conversation list, delete, and clear-all into the rail; AppShell is a full-height flex shell with RTL row reverse; AppHeader hamburger opens mobile overlay only.
 **Files:** components/ui/sidebar.tsx, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, package.json, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Gooey search in history sidebar
+
+**Summary:** Installed Aceternity Gooey Input and integrated it into HistorySidebar to filter conversations by title; collapsed rail shows a search affordance that expands the sidebar; EN/AR copy for search + empty results.
+**Files:** components/ui/gooey-input.tsx, components/HistorySidebar.tsx, components/ui/sidebar.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed

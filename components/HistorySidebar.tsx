@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquarePlus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { MessageSquarePlus, Search, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { GooeyInput } from "@/components/ui/gooey-input";
 import {
   Sidebar,
   SidebarBody,
@@ -64,6 +65,54 @@ function Brand() {
   const { open, animate } = useSidebar();
   const showLabel = !animate || open;
   return <BrandMark expanded={showLabel} />;
+}
+
+function HistorySearch({
+  language,
+  value,
+  onValueChange,
+}: {
+  language: Language;
+  value: string;
+  onValueChange: (value: string) => void;
+}) {
+  const { open, animate, setOpen } = useSidebar();
+  const showControl = !animate || open;
+
+  if (!showControl) {
+    return (
+      <button
+        type="button"
+        className="mt-4 flex size-7 items-center justify-center rounded-full border border-border bg-foreground text-background shadow-sm transition-opacity hover:opacity-90"
+        aria-label={t("searchHistory", language)}
+        onClick={() => setOpen(true)}
+      >
+        <Search className="size-3.5" />
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className="mt-4 overflow-visible"
+      // Keep the rail open while interacting with the gooey control.
+      onMouseEnter={() => setOpen(true)}
+    >
+      <GooeyInput
+        value={value}
+        onValueChange={onValueChange}
+        placeholder={t("searchHistory", language)}
+        collapsedWidth={128}
+        expandedWidth={228}
+        expandedOffset={44}
+        gooeyBlur={5}
+        className="justify-start"
+        onOpenChange={(searchOpen) => {
+          if (searchOpen) setOpen(true);
+        }}
+      />
+    </div>
+  );
 }
 
 function NewChatRow({
@@ -209,24 +258,47 @@ function SidebarContent({
   onRequestClear: () => void;
 }) {
   const { open, animate } = useSidebar();
-  const showEmptyCopy = (!animate || open) && conversations.length === 0;
+  const [query, setQuery] = useState("");
+  const showLabels = !animate || open;
+
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return conversations;
+    return conversations.filter((conversation) =>
+      conversation.title.toLowerCase().includes(needle),
+    );
+  }, [conversations, query]);
+
+  const showEmptyHistory = showLabels && conversations.length === 0;
+  const showNoResults =
+    showLabels && conversations.length > 0 && filtered.length === 0;
 
   return (
     <>
-      <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col">
         <Brand />
 
-        <div className="mt-6 flex flex-col gap-1">
+        <HistorySearch
+          language={language}
+          value={query}
+          onValueChange={setQuery}
+        />
+
+        <div className="mt-4 flex flex-col gap-1">
           <NewChatRow language={language} onNewChat={onNewChat} />
         </div>
 
-        <div className="mt-4 flex flex-col gap-0.5">
-          {showEmptyCopy ? (
+        <div className="mt-4 flex min-h-0 flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto">
+          {showEmptyHistory ? (
             <p className="px-1 py-6 text-center text-xs text-muted-foreground">
               {t("noHistory", language)}
             </p>
+          ) : showNoResults ? (
+            <p className="px-1 py-6 text-center text-xs text-muted-foreground">
+              {t("noSearchResults", language)}
+            </p>
           ) : (
-            conversations.map((conversation) => (
+            filtered.map((conversation) => (
               <ConversationRow
                 key={conversation.id}
                 conversation={conversation}
@@ -274,7 +346,7 @@ export function HistorySidebar({
   return (
     <>
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-6">
+        <SidebarBody className="justify-between gap-6 overflow-visible">
           <SidebarContent
             language={language}
             conversations={conversations}
