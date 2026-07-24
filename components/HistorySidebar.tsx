@@ -22,11 +22,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import type { ConversationMetadata } from "@/lib/chat-db";
+import { MODE_CONFIG } from "@/lib/constants";
 import { formatTimeAgo } from "@/lib/format-time-ago";
 import { useCustomCursorPreference } from "@/lib/hooks/use-custom-cursor-preference";
 import { MODE_ICONS } from "@/lib/mode-icons";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type HistorySidebarProps = {
   open: boolean;
@@ -226,6 +232,7 @@ function ConversationRow({
   const { open, animate, setOpen } = useSidebar();
   const showMeta = !animate || open;
   const ModeIcon = MODE_ICONS[conversation.mode];
+  const modeLabel = t(MODE_CONFIG[conversation.mode].labelKey, language);
 
   return (
     <div
@@ -242,17 +249,32 @@ function ConversationRow({
           setOpen(false);
         }}
       >
-        <span
-          className={cn(
-            "flex size-7 shrink-0 items-center justify-center rounded-md border text-muted-foreground transition-colors",
-            isActive
-              ? "border-border bg-card text-foreground"
-              : "border-transparent bg-foreground/[0.04] group-hover/sidebar:border-border/60 group-hover/sidebar:bg-card",
-          )}
-          aria-hidden="true"
-        >
-          <ModeIcon className="size-3.5" strokeWidth={1.75} />
-        </span>
+        <Tooltip>
+          <TooltipTrigger
+            delay={320}
+            closeDelay={60}
+            render={
+              <span
+                className={cn(
+                  "flex size-7 shrink-0 items-center justify-center rounded-md border text-muted-foreground transition-colors",
+                  isActive
+                    ? "border-border bg-card text-foreground"
+                    : "border-transparent bg-foreground/[0.04] group-hover/sidebar:border-border/60 group-hover/sidebar:bg-card",
+                )}
+                aria-hidden="true"
+              />
+            }
+          >
+            <ModeIcon className="size-3.5" strokeWidth={1.75} />
+          </TooltipTrigger>
+          <TooltipContent
+            side="top"
+            sideOffset={8}
+            className="border border-border/40 px-2 py-1 text-[11px] font-medium tracking-wide shadow-sm"
+          >
+            {modeLabel}
+          </TooltipContent>
+        </Tooltip>
         <span className="min-w-0 flex-1">
           <SidebarLabel className="block font-medium">
             {conversation.title}

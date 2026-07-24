@@ -6,6 +6,11 @@ import { MODE_ICONS } from "@/lib/mode-icons";
 import type { Mode } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   buildVanishSnapshot,
   prefersReducedMotion,
   runVanishAnimation,
@@ -120,27 +125,8 @@ function ModeButton({
 }) {
   const Icon = MODE_ICONS[mode];
 
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onMouseDown={(e) => e.preventDefault()}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(mode);
-      }}
-      aria-pressed={isActive}
-      aria-label={label}
-      title={label}
-      className={cn(
-        "group relative flex h-7 shrink-0 items-center overflow-hidden rounded-full outline-none",
-        "transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
-        "disabled:pointer-events-none disabled:opacity-40",
-        isActive
-          ? "gap-1.5 bg-primary/15 pr-2.5 pl-2 text-primary shadow-[inset_0_0_0_1px] shadow-primary/30"
-          : "w-7 justify-center text-foreground/55 hover:bg-accent/70 hover:text-foreground",
-      )}
-    >
+  const content = (
+    <>
       <Icon
         className={cn(
           "size-3.5 shrink-0 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
@@ -159,11 +145,77 @@ function ModeButton({
       >
         <span className="overflow-hidden">
           <span className="block text-xs font-semibold whitespace-nowrap select-none">
-            {isActive ? <MorphingText text={label} /> : <span className="px-0.5">{label}</span>}
+            {isActive ? (
+              <MorphingText text={label} />
+            ) : (
+              <span className="px-0.5">{label}</span>
+            )}
           </span>
         </span>
       </span>
-    </button>
+    </>
+  );
+
+  const buttonClassName = cn(
+    "group relative flex h-7 shrink-0 items-center overflow-hidden rounded-full outline-none",
+    "transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
+    "disabled:pointer-events-none disabled:opacity-40",
+    isActive
+      ? "gap-1.5 bg-primary/15 pr-2.5 pl-2 text-primary shadow-[inset_0_0_0_1px] shadow-primary/30"
+      : "w-7 justify-center text-foreground/55 hover:bg-accent/70 hover:text-foreground",
+  );
+
+  // Active mode already reveals its label inline — skip redundant tooltip.
+  if (isActive) {
+    return (
+      <button
+        type="button"
+        disabled={disabled}
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(mode);
+        }}
+        aria-pressed={isActive}
+        aria-label={label}
+        className={buttonClassName}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        delay={280}
+        closeDelay={80}
+        disabled={disabled}
+        render={
+          <button
+            type="button"
+            disabled={disabled}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(mode);
+            }}
+            aria-pressed={isActive}
+            aria-label={label}
+            className={buttonClassName}
+          />
+        }
+      >
+        {content}
+      </TooltipTrigger>
+      <TooltipContent
+        side="top"
+        sideOffset={8}
+        className="border border-border/40 px-2 py-1 text-[11px] font-medium tracking-wide shadow-sm"
+      >
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

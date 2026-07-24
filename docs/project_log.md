@@ -304,3 +304,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced the plain thinking badge with a monochrome hybrid loader (ripple spinner + cycling AI text + processor-pulse badge frame) that shows only until the first stream token, then fades out; EN/AR progress copy added.
 **Files:** components/ui/spinner-09.tsx, components/ui/ai-text-loading.tsx, components/ui/animated-badge.tsx, components/AiThinkingIndicator.tsx, components/ChatPanel.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Mode icon tooltips
+
+**Summary:** Added elegant top-side tooltips on job-type mode icons in the chat input (inactive modes) and history sidebar mode tiles, showing localized labels (Review, Hint, etc.) for first-time users.
+**Files:** components/ui/ai-chat-input.tsx, components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
