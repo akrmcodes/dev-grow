@@ -20,6 +20,10 @@ export const translations = {
     modeChallenge: "Challenge",
     responsesEmpty: "Responses will appear here",
     thinking: "Thinking…",
+    thinkingProgressStructure: "Analyzing code structure...",
+    thinkingProgressLogic: "Evaluating logic & edge cases...",
+    thinkingProgressFlow: "Tracing control flow...",
+    thinkingProgressCompose: "Composing guidance...",
     errorGeneric: "Something went wrong. Please try again.",
     errorRateLimit:
       "You've reached the request limit. Please wait a moment and try again.",
@@ -85,6 +89,10 @@ export const translations = {
     modeChallenge: "تحدي",
     responsesEmpty: "ستظهر الردود هنا",
     thinking: "يفكر…",
+    thinkingProgressStructure: "تحليل بنية الكود...",
+    thinkingProgressLogic: "تقييم المنطق والحالات الحدية...",
+    thinkingProgressFlow: "تتبع تدفق التحكم...",
+    thinkingProgressCompose: "صياغة الإرشاد...",
     errorGeneric: "حدث خطأ. يرجى المحاولة مرة أخرى.",
     errorRateLimit:
       "لقد وصلت إلى حد الطلبات. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.",

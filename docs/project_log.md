@@ -298,3 +298,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Added a sidebar Smooth cursor switch (desktop only) with localStorage persistence so users can enable/disable the custom cursor; preference syncs to CustomCursor via a shared hook.
 **Files:** lib/hooks/use-custom-cursor-preference.ts, components/CustomCursor.tsx, components/HistorySidebar.tsx, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Hybrid AI thinking indicator
+
+**Summary:** Replaced the plain thinking badge with a monochrome hybrid loader (ripple spinner + cycling AI text + processor-pulse badge frame) that shows only until the first stream token, then fades out; EN/AR progress copy added.
+**Files:** components/ui/spinner-09.tsx, components/ui/ai-text-loading.tsx, components/ui/animated-badge.tsx, components/AiThinkingIndicator.tsx, components/ChatPanel.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
+**Status:** completed

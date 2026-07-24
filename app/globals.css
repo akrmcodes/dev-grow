@@ -152,6 +152,47 @@
   animation: thinking-pulse 1.2s ease-in-out infinite;
 }
 
+/* Processor-pulse badge (animated-badge adaptation) */
+.devgrow-ml-light {
+  offset-anchor: 10px 0px;
+  offset-path: path(
+    "M 69 49.8 h -30 q -3 0 -3 -3 v -13 q 0 -3 -3 -3 h -23 q -3 0 -3 -3 v -13 q 0 -3 -3 -3 h -50"
+  );
+  animation: devgrow-ml-path 3s linear infinite;
+}
+
+@keyframes devgrow-ml-path {
+  0% {
+    offset-distance: 0%;
+  }
+  55% {
+    offset-distance: 100%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.devgrow-chip-sheen {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in oklch, var(--foreground) 12%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: devgrow-chip-sheen 3.2s linear infinite;
+}
+
+@keyframes devgrow-chip-sheen {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

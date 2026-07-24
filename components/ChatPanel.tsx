@@ -4,7 +4,7 @@ import type { UIMessage } from "ai";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import { Badge } from "@/components/ui/badge";
+import { AiThinkingIndicator } from "@/components/AiThinkingIndicator";
 import { CopyMessageButton } from "@/components/CopyMessageButton";
 import { useSmartScroll } from "@/lib/hooks/use-smart-scroll";
 import { type Language, t } from "@/lib/translations";
@@ -54,6 +54,19 @@ function getErrorMessage(error: Error | undefined, language: Language): string {
   return t("errorGeneric", language);
 }
 
+/** True while waiting for the first assistant stream token. */
+function isAwaitingFirstToken(
+  messages: UIMessage[],
+  isLoading: boolean,
+): boolean {
+  if (!isLoading) return false;
+
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== "assistant") return true;
+
+  return getMessageText(last).length === 0;
+}
+
 export function ChatPanel({
   messages,
   isLoading,
@@ -62,10 +75,12 @@ export function ChatPanel({
   visibilityKey,
 }: ChatPanelProps) {
   const isRTL = language === "ar";
+  const showThinking = isAwaitingFirstToken(messages, isLoading);
 
   const { scrollContainerRef, bottomSentinelRef } = useSmartScroll([
     messages,
     isLoading,
+    showThinking,
     visibilityKey,
   ]);
 
@@ -171,26 +186,21 @@ export function ChatPanel({
                 );
               })}
 
-              {isLoading && (
+              {showThinking ? (
                 <motion.div
                   key="thinking"
-                  initial={fadeIn.initial}
-                  animate={fadeIn.animate}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={fadeIn.transition}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4, transition: { duration: 0.18 } }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
                   className={cn(
                     "flex w-full",
                     isRTL ? "justify-end" : "justify-start",
                   )}
                 >
-                  <Badge
-                    variant="secondary"
-                    className="animate-thinking-pulse gap-1.5 px-3 py-1"
-                  >
-                    {t("thinking", language)}
-                  </Badge>
+                  <AiThinkingIndicator language={language} />
                 </motion.div>
-              )}
+              ) : null}
 
               {error && (
                 <motion.div
