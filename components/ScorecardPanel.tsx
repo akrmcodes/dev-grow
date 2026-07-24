@@ -1,11 +1,18 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { AnimatePresence, motion, useMotionValue, useTransform, animate } from "framer-motion";
+import {
+  BookOpenText,
+  Brain,
+  ChevronDown,
+  Sparkles,
+  Type,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { ScorecardResult } from "@/lib/schemas";
 import { type Language, type TranslationKey, t } from "@/lib/translations";
+import { cn } from "@/lib/utils";
 
 type ScorecardPanelProps = {
   data: ScorecardResult | null;
@@ -16,76 +23,206 @@ type ScorecardPanelProps = {
   onScoreCode: () => void;
 };
 
-type ScoreRow = {
-  key: keyof Pick<ScorecardResult, "readability" | "logic" | "documentation">;
+type MetricKey = keyof Pick<
+  ScorecardResult,
+  "readability" | "logic" | "documentation"
+>;
+
+type MetricDef = {
+  key: MetricKey;
   labelKey: TranslationKey;
+  Icon: typeof Type;
 };
 
-const SCORE_ROWS: ScoreRow[] = [
-  { key: "readability", labelKey: "readability" },
-  { key: "logic", labelKey: "logic" },
-  { key: "documentation", labelKey: "documentation" },
+const METRICS: MetricDef[] = [
+  { key: "readability", labelKey: "readability", Icon: Type },
+  { key: "logic", labelKey: "logic", Icon: Brain },
+  { key: "documentation", labelKey: "documentation", Icon: BookOpenText },
 ];
 
-function getScoreBarColorValue(score: number): string {
-  if (score >= 8) return "#10b981";
-  if (score >= 5) return "#fbbf24";
-  return "#ef4444";
-}
+const RING_SIZE = 56;
+const RING_STROKE = 4.5;
+const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 function getOverallScore(data: ScorecardResult): number {
   return (data.readability + data.logic + data.documentation) / 3;
+}
+
+function getTone(score: number): {
+  stroke: string;
+  glow: string;
+  label: string;
+} {
+  if (score >= 8) {
+    return {
+      stroke: "oklch(0.72 0.17 155)",
+      glow: "oklch(0.72 0.17 155 / 0.35)",
+      label: "excellent",
+    };
+  }
+  if (score >= 5) {
+    return {
+      stroke: "oklch(0.78 0.14 85)",
+      glow: "oklch(0.78 0.14 85 / 0.3)",
+      label: "fair",
+    };
+  }
+  return {
+    stroke: "oklch(0.65 0.2 25)",
+    glow: "oklch(0.65 0.2 25 / 0.3)",
+    label: "needs-work",
+  };
 }
 
 function getErrorMessage(error: string, language: Language): string {
   if (error === "RATE_LIMIT") {
     return t("errorRateLimit", language);
   }
-
   return t("scoreError", language);
 }
 
-type ScoreBarProps = {
-  label: string;
-  score: number;
-};
+function AnimatedNumber({ value }: { value: number }) {
+  const motionValue = useMotionValue(0);
+  const rounded = useTransform(motionValue, (v) => v.toFixed(1));
+  const [display, setDisplay] = useState("0.0");
 
-function ScoreBar({ label, score }: ScoreBarProps) {
+  useEffect(() => {
+    const controls = animate(motionValue, value, {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    const unsub = rounded.on("change", (v) => setDisplay(v));
+    return () => {
+      controls.stop();
+      unsub();
+    };
+  }, [motionValue, rounded, value]);
+
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="font-medium">{label}</span>
-        <span className="tabular-nums text-muted-foreground">
-          {score.toFixed(1)}/10
-        </span>
-      </div>
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
-        <motion.div
-          className="h-full rounded-full"
-          initial={{ width: "0%", backgroundColor: getScoreBarColorValue(score) }}
+    <span className="tabular-nums tracking-tight">{display}</span>
+  );
+}
+
+function ScoreRing({
+  score,
+  isLoading,
+}: {
+  score: number | null;
+  isLoading: boolean;
+}) {
+  const safeScore = score ?? 0;
+  const tone = getTone(safeScore);
+  const progress = Math.max(0, Math.min(1, safeScore / 10));
+  const offset = RING_CIRCUMFERENCE * (1 - progress);
+  const showScore = score !== null && !isLoading;
+
+  return (
+    <div className="relative size-14 shrink-0">
+      <motion.svg
+        width={RING_SIZE}
+        height={RING_SIZE}
+        viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
+        className="-rotate-90"
+        aria-hidden="true"
+        animate={isLoading && score === null ? { rotate: 360 } : { rotate: -90 }}
+        transition={
+          isLoading && score === null
+            ? { duration: 1.1, repeat: Infinity, ease: "linear" }
+            : { duration: 0.2 }
+        }
+        style={{ originX: "50%", originY: "50%" }}
+      >
+        <circle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={RING_RADIUS}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={RING_STROKE}
+          className="text-muted/50"
+        />
+        <motion.circle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={RING_RADIUS}
+          fill="none"
+          stroke={isLoading && score === null ? "oklch(0.72 0.17 155)" : tone.stroke}
+          strokeWidth={RING_STROKE}
+          strokeLinecap="round"
+          strokeDasharray={RING_CIRCUMFERENCE}
+          initial={{ strokeDashoffset: RING_CIRCUMFERENCE }}
           animate={{
-            width: `${(score / 10) * 100}%`,
-            backgroundColor: getScoreBarColorValue(score),
+            strokeDashoffset:
+              isLoading && score === null
+                ? RING_CIRCUMFERENCE * 0.72
+                : offset,
           }}
-          transition={{
-            width: { duration: 0.8, ease: "easeOut" },
-            backgroundColor: { duration: 0.3 },
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            filter: `drop-shadow(0 0 6px ${
+              isLoading && score === null
+                ? "oklch(0.72 0.17 155 / 0.35)"
+                : tone.glow
+            })`,
           }}
         />
+      </motion.svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        {isLoading && score === null ? (
+          <Sparkles className="size-3.5 animate-pulse text-primary" />
+        ) : (
+          <span className="text-[15px] font-semibold leading-none text-foreground">
+            {showScore || score !== null ? (
+              <AnimatedNumber value={safeScore} />
+            ) : (
+              "—"
+            )}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-function ScoreSkeleton() {
+function MetricChip({
+  label,
+  score,
+  Icon,
+  delay,
+}: {
+  label: string;
+  score: number;
+  Icon: typeof Type;
+  delay: number;
+}) {
+  const tone = getTone(score);
+  const widthPct = `${Math.max(0, Math.min(100, (score / 10) * 100))}%`;
+
   return (
-    <div className="space-y-4">
-      {SCORE_ROWS.map((row) => (
-        <div key={row.key} className="space-y-1.5">
-          <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-          <div className="h-2 animate-pulse rounded-full bg-muted" />
-        </div>
-      ))}
+    <div className="min-w-0 flex-1 space-y-1.5">
+      <div className="flex items-center justify-between gap-1.5">
+        <span className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-muted-foreground">
+          <Icon className="size-3 shrink-0 opacity-70" aria-hidden="true" />
+          <span className="truncate">{label}</span>
+        </span>
+        <span className="shrink-0 text-[11px] font-semibold tabular-nums text-foreground/90">
+          {score.toFixed(1)}
+        </span>
+      </div>
+      <div className="h-1 overflow-hidden rounded-full bg-muted/80">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ backgroundColor: tone.stroke }}
+          initial={{ width: 0 }}
+          animate={{ width: widthPct }}
+          transition={{
+            duration: 0.75,
+            delay,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -98,111 +235,152 @@ export function ScorecardPanel({
   onRetry,
   onScoreCode,
 }: ScorecardPanelProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const expanded = isOpen || isLoading;
+  const hasPayload = Boolean(data) || Boolean(error) || isLoading;
+  const [collapsed, setCollapsed] = useState(false);
+  const overall = data ? getOverallScore(data) : null;
+
+  const expanded = hasPayload && !collapsed;
+
+  const handleScore = () => {
+    setCollapsed(false);
+    onScoreCode();
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="mt-auto shrink-0 rounded-xl border border-border bg-card ring-1 ring-foreground/10"
+    <motion.section
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      aria-label={t("scoreTitle", language)}
+      className={cn(
+        "mt-auto shrink-0 overflow-hidden rounded-2xl border border-border/60",
+        "bg-card/70 shadow-sm backdrop-blur-xl",
+        "ring-1 ring-foreground/[0.04]",
+      )}
     >
-      <div className="flex items-center gap-2 px-4 py-3">
-        <button
-          type="button"
-          className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start text-sm font-medium"
-          onClick={() => setIsOpen((open) => !open)}
-          aria-expanded={expanded}
-        >
-          <span>{t("scoreTitle", language)}</span>
-          <ChevronDown
-            className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-            aria-hidden="true"
-          />
-        </button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isLoading}
-          onClick={onScoreCode}
-          className="shrink-0"
-        >
-          {t("scoreCode", language)}
-        </Button>
-      </div>
+      {/* Compact header strip — always visible */}
+      <div className="flex items-center gap-3 px-3.5 py-2.5">
+        <ScoreRing score={overall} isLoading={isLoading} />
 
-      <motion.div
-        initial={false}
-        animate={{ height: expanded ? "auto" : 0 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="overflow-hidden"
-      >
-        <div className="space-y-4 border-t border-border px-4 py-3">
-          {isLoading && !data && <ScoreSkeleton />}
-
-          {error && !isLoading && (
-            <div
-              className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-3"
-              role="alert"
-            >
-              <p className="text-sm text-destructive">
-                {getErrorMessage(error, language)}
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={onRetry}
-              >
-                {t("retry", language)}
-              </Button>
-            </div>
-          )}
-
-          <AnimatePresence>
-            {data && (
-              <motion.div
-                key="scorecard-data"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-4"
-              >
-                <div className="text-center">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    {t("overallScore", language)}
-                  </p>
-                  <p className="text-2xl font-bold tabular-nums">
-                    {getOverallScore(data).toFixed(1)}
-                    <span className="text-base font-normal text-muted-foreground">
-                      /10
-                    </span>
-                  </p>
-                </div>
-
-                {SCORE_ROWS.map((row) => (
-                  <ScoreBar
-                    key={row.key}
-                    label={t(row.labelKey, language)}
-                    score={data[row.key]}
-                  />
-                ))}
-
-                <blockquote className="border-s-2 border-primary/40 ps-3 text-sm italic text-muted-foreground">
-                  {data.summary}
-                </blockquote>
-              </motion.div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">
+              {t("scoreTitle", language)}
+            </h2>
+            {data && !isLoading && (
+              <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                {t("overallScore", language)}
+              </span>
             )}
-          </AnimatePresence>
+          </div>
 
-          {!isLoading && !error && !data && (
-            <p className="text-sm text-muted-foreground">
-              {t("scoreEmpty", language)}
-            </p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            {isLoading
+              ? t("thinking", language)
+              : data
+                ? data.summary
+                : error
+                  ? getErrorMessage(error, language)
+                  : t("scoreEmpty", language)}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant={data ? "ghost" : "default"}
+            size="sm"
+            disabled={isLoading}
+            onClick={handleScore}
+            className={cn(
+              "h-7 gap-1 rounded-full px-2.5 text-xs",
+              !data && "shadow-[0_0_0_1px] shadow-primary/20",
+            )}
+          >
+            <Sparkles className="size-3" aria-hidden="true" />
+            {t("scoreCode", language)}
+          </Button>
+
+          {hasPayload && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              className="size-7 rounded-full text-muted-foreground"
+              aria-expanded={expanded}
+              aria-label={t("scoreTitle", language)}
+              onClick={() => setCollapsed((c) => !c)}
+            >
+              <ChevronDown
+                className={cn(
+                  "size-3.5 transition-transform duration-300",
+                  expanded && "rotate-180",
+                )}
+              />
+            </Button>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+
+      {/* Expandable metrics — only when there is something to show */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            key="score-body"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border/50 px-3.5 pt-2.5 pb-3">
+              {error && !isLoading && !data && (
+                <div
+                  className="flex items-center justify-between gap-3 rounded-xl bg-destructive/8 px-3 py-2"
+                  role="alert"
+                >
+                  <p className="text-xs text-destructive">
+                    {getErrorMessage(error, language)}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={onRetry}
+                    className="shrink-0 rounded-full"
+                  >
+                    {t("retry", language)}
+                  </Button>
+                </div>
+              )}
+
+              {isLoading && !data && (
+                <div className="flex gap-3">
+                  {METRICS.map((metric) => (
+                    <div key={metric.key} className="min-w-0 flex-1 space-y-1.5">
+                      <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+                      <div className="h-1 animate-pulse rounded-full bg-muted" />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {data && (
+                <div className="flex gap-3 sm:gap-4">
+                  {METRICS.map((metric, index) => (
+                    <MetricChip
+                      key={metric.key}
+                      label={t(metric.labelKey, language)}
+                      score={data[metric.key]}
+                      Icon={metric.Icon}
+                      delay={0.08 + index * 0.08}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.section>
   );
 }

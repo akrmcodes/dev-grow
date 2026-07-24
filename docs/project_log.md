@@ -208,3 +208,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Fixed particle vanish submit UX: textarea text now clips right→left in sync with the particle sweep (replacing instant `text-transparent`), and the input clears only after the animation completes via `clearOnSubmit`.
 **Files:** lib/vanish-particles.ts, components/ui/ai-chat-input.tsx, components/ChatInput.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Scorecard redesign
+
+**Summary:** Rebuilt the code evaluation card as a compact glass strip: animated SVG score ring with count-up, tone-colored metric chips in a single row, summary in the header, and collapsible body. Aligned with the composer aesthetic; removed bulky stacked bars and emoji title copy.
+**Files:** components/ScorecardPanel.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed
