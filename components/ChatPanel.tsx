@@ -2,10 +2,8 @@
 
 import type { UIMessage } from "ai";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
 import { AiThinkingIndicator } from "@/components/AiThinkingIndicator";
-import { CopyMessageButton } from "@/components/CopyMessageButton";
+import { AssistantMessage } from "@/components/AssistantMessage";
 import { useSmartScroll } from "@/lib/hooks/use-smart-scroll";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
@@ -21,7 +19,7 @@ type ChatPanelProps = {
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.25, ease: "easeOut" as const },
+  transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
 };
 
 function getMessageText(message: UIMessage): string {
@@ -89,22 +87,30 @@ export function ChatPanel({
     return text.length > 0 || message.role === "user";
   });
 
+  const streamingAssistantId =
+    isLoading &&
+    visibleMessages.length > 0 &&
+    visibleMessages[visibleMessages.length - 1]?.role === "assistant"
+      ? visibleMessages[visibleMessages.length - 1]?.id
+      : null;
+
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col">
       <div
         ref={scrollContainerRef}
         className="chat-scroll flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto will-change-transform"
       >
-        {/* Content stays centered; scrollbar sits on the full-bleed column edge */}
         <MotionConfig reducedMotion="never">
           <div
             key={visibilityKey}
-            className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 pt-1 pb-4"
+            className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 pt-2 pb-6"
           >
             <AnimatePresence initial={false}>
               {visibleMessages.map((message) => {
                 const text = getMessageText(message);
                 const isUser = message.role === "user";
+                const isStreamingAssistant =
+                  !isUser && message.id === streamingAssistantId;
 
                 return (
                   <motion.div
@@ -118,74 +124,30 @@ export function ChatPanel({
                         ? isRTL
                           ? "justify-start"
                           : "justify-end"
-                        : isRTL
-                          ? "justify-end"
-                          : "justify-start",
+                        : "justify-start",
                     )}
                   >
-                    <div
-                      className={cn(
-                        "max-w-[92%] rounded-xl px-3 py-2 text-sm",
-                        isUser
-                          ? "bg-primary/10 text-foreground"
-                          : "group relative border border-border bg-card text-card-foreground",
-                      )}
-                    >
-                      {!isUser && (
-                        <CopyMessageButton text={text} language={language} />
-                      )}
-                      {isUser ? (
-                        <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
+                    {isUser ? (
+                      <div
+                        className={cn(
+                          "max-w-[min(92%,36rem)] rounded-2xl px-3.5 py-2.5 text-sm",
+                          "bg-foreground/[0.06] text-foreground",
+                        )}
+                      >
+                        <p
+                          className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed"
+                          dir="ltr"
+                        >
                           {text}
                         </p>
-                      ) : (
-                        <div
-                          className={cn(
-                            "prose prose-sm dark:prose-invert max-w-none",
-                            "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
-                            "prose-code:text-foreground/80",
-                          )}
-                        >
-                          <ReactMarkdown
-                            rehypePlugins={[rehypeHighlight]}
-                            components={{
-                              pre: ({ children }) => (
-                                <pre
-                                  dir="ltr"
-                                  className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
-                                >
-                                  {children}
-                                </pre>
-                              ),
-                              code: ({ className, children, ...props }) => {
-                                const isBlock =
-                                  className?.includes("language-");
-
-                                if (isBlock) {
-                                  return (
-                                    <code className={className} {...props}>
-                                      {children}
-                                    </code>
-                                  );
-                                }
-
-                                return (
-                                  <code
-                                    className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
-                                    dir="ltr"
-                                    {...props}
-                                  >
-                                    {children}
-                                  </code>
-                                );
-                              },
-                            }}
-                          >
-                            {text}
-                          </ReactMarkdown>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <AssistantMessage
+                        text={text}
+                        language={language}
+                        isStreaming={isStreamingAssistant}
+                      />
+                    )}
                   </motion.div>
                 );
               })}
@@ -197,16 +159,13 @@ export function ChatPanel({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4, transition: { duration: 0.18 } }}
                   transition={{ duration: 0.25, ease: "easeOut" }}
-                  className={cn(
-                    "flex w-full",
-                    isRTL ? "justify-end" : "justify-start",
-                  )}
+                  className="flex w-full justify-start"
                 >
                   <AiThinkingIndicator language={language} />
                 </motion.div>
               ) : null}
 
-              {error && (
+              {error ? (
                 <motion.div
                   key="error"
                   initial={fadeIn.initial}
@@ -218,7 +177,7 @@ export function ChatPanel({
                 >
                   {getErrorMessage(error, language)}
                 </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
 
             <div ref={bottomSentinelRef} aria-hidden="true" />

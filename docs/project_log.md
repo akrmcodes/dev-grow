@@ -358,3 +358,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Moved conversation scrolling to a full-bleed column so the scrollbar sits at the main pane edge, while messages remain centered in max-w-4xl; added thin monochrome scrollbar styling with stable gutter.
 **Files:** components/AppShell.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, app/globals.css, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — World-class assistant response presentation
+
+**Summary:** Removed assistant message cards for a borderless page-blended layout; integrated Aceternity Text Generate Effect for completed/history replies; refined prose hierarchy; moved Copy into a footer action under each response.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, components/ChatPanel.tsx, components/CopyMessageButton.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Assistant response presentation polish
+
+**Summary:** Finalized borderless assistant replies with Aceternity text-generate on history mounts, refined prose hierarchy, streaming caret, and footer Copy control.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
+**Status:** completed
