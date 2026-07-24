@@ -5,7 +5,6 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CopyMessageButton } from "@/components/CopyMessageButton";
 import { useSmartScroll } from "@/lib/hooks/use-smart-scroll";
 import { type Language, t } from "@/lib/translations";
@@ -64,12 +63,11 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const isRTL = language === "ar";
 
-  const {
-    scrollContainerRef,
-    bottomSentinelRef,
-    showNewMessagesPill,
-    scrollToBottom,
-  } = useSmartScroll([messages, isLoading, visibilityKey]);
+  const { scrollContainerRef, bottomSentinelRef } = useSmartScroll([
+    messages,
+    isLoading,
+    visibilityKey,
+  ]);
 
   const visibleMessages = messages.filter((message) => {
     const text = getMessageText(message);
@@ -78,19 +76,6 @@ export function ChatPanel({
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col">
-      {showNewMessagesPill && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center">
-          <Button
-            type="button"
-            size="sm"
-            className="pointer-events-auto rounded-full shadow-lg"
-            onClick={() => scrollToBottom("smooth")}
-          >
-            {t("newMessages", language)}
-          </Button>
-        </div>
-      )}
-
       <div
         ref={scrollContainerRef}
         className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-4 will-change-transform"

@@ -232,3 +232,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Slightly reduced Flip Words type scale so cycling words stay within the Ripple circle.
 **Files:** components/EmptyHero.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Remove New messages scroll pill
+
+**Summary:** Removed the New messages floating button from ChatPanel and cleaned pill state from useSmartScroll / translations.
+**Files:** components/ChatPanel.tsx, lib/hooks/use-smart-scroll.ts, lib/translations.ts, docs/project_log.md
+**Status:** completed

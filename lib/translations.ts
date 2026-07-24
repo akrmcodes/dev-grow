@@ -58,7 +58,6 @@ export const translations = {
     fileBadge: "📄 {name} ({lines} lines)",
     errorOnlyCodeFiles: "Only code files are supported.",
     errorFileTooLarge: "File too large. Max 100KB.",
-    newMessages: "↓ New messages",
     footerCredit: "Powered by OpenRouter · google/gemma-4-31b-it:free",
   },
   ar: {
@@ -118,7 +117,6 @@ export const translations = {
     fileBadge: "📄 {name} ({lines} سطر)",
     errorOnlyCodeFiles: "ملفات الكود فقط مدعومة.",
     errorFileTooLarge: "الملف كبير جداً. الحد الأقصى 100 كيلوبايت.",
-    newMessages: "↓ رسائل جديدة",
     footerCredit: "مدعوم من OpenRouter · google/gemma-4-31b-it:free",
   },
 } as const;

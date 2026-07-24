@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const NEAR_BOTTOM_MARGIN_PX = 100;
 
@@ -9,7 +9,6 @@ export function useSmartScroll(deps: unknown[]) {
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
   const scrollRafRef = useRef<number | null>(null);
-  const [showNewMessagesPill, setShowNewMessagesPill] = useState(false);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = scrollContainerRef.current;
@@ -20,7 +19,6 @@ export function useSmartScroll(deps: unknown[]) {
       behavior,
     });
     isNearBottomRef.current = true;
-    setShowNewMessagesPill(false);
   }, []);
 
   useEffect(() => {
@@ -30,12 +28,7 @@ export function useSmartScroll(deps: unknown[]) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const isNearBottom = entry?.isIntersecting ?? false;
-        isNearBottomRef.current = isNearBottom;
-
-        if (isNearBottom) {
-          setShowNewMessagesPill(false);
-        }
+        isNearBottomRef.current = entry?.isIntersecting ?? false;
       },
       {
         root: container,
@@ -50,23 +43,19 @@ export function useSmartScroll(deps: unknown[]) {
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || !isNearBottomRef.current) return;
 
-    if (isNearBottomRef.current) {
-      if (scrollRafRef.current !== null) {
-        cancelAnimationFrame(scrollRafRef.current);
-      }
-
-      scrollRafRef.current = requestAnimationFrame(() => {
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: "smooth",
-        });
-        scrollRafRef.current = null;
-      });
-    } else {
-      setShowNewMessagesPill(true);
+    if (scrollRafRef.current !== null) {
+      cancelAnimationFrame(scrollRafRef.current);
     }
+
+    scrollRafRef.current = requestAnimationFrame(() => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+      scrollRafRef.current = null;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deps array is intentional trigger list
   }, deps);
 
@@ -81,7 +70,6 @@ export function useSmartScroll(deps: unknown[]) {
   return {
     scrollContainerRef,
     bottomSentinelRef,
-    showNewMessagesPill,
     scrollToBottom,
   };
 }
