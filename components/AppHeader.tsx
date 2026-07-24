@@ -1,10 +1,19 @@
 "use client";
 
-import { PanelLeft } from "lucide-react";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { Languages, Moon, PanelLeft, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useMemo, useSyncExternalStore } from "react";
+import { NavBar, type TubelightNavItem } from "@/components/ui/tubelight-navbar";
 import { Button } from "@/components/ui/button";
 import { type Language, t } from "@/lib/translations";
+
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 type AppHeaderProps = {
   language: Language;
@@ -13,21 +22,53 @@ type AppHeaderProps = {
   isHistoryOpen: boolean;
 };
 
+/**
+ * DevGrow chrome: Tubelight navbar for language + theme, plus mobile history toggle.
+ */
 export function AppHeader({
   language,
   onLanguageToggle,
   onHistoryToggle,
   isHistoryOpen,
 }: AppHeaderProps) {
+  const { resolvedTheme, setTheme } = useTheme();
+  const mounted = useMounted();
+  const isArabic = language === "ar";
+  const isDark = mounted ? resolvedTheme === "dark" : true;
+
+  const items = useMemo<TubelightNavItem[]>(
+    () => [
+      {
+        name: "language",
+        label: isArabic ? "EN" : "AR",
+        icon: Languages,
+        onClick: onLanguageToggle,
+        ariaLabel: isArabic
+          ? t("switchToEnglish", language)
+          : t("switchToArabic", language),
+      },
+      {
+        name: "theme",
+        label: isDark ? "Light" : "Dark",
+        icon: isDark ? Sun : Moon,
+        onClick: () => setTheme(isDark ? "light" : "dark"),
+        ariaLabel: isDark
+          ? t("switchToLight", language)
+          : t("switchToDark", language),
+      },
+    ],
+    [isArabic, isDark, language, onLanguageToggle, setTheme],
+  );
+
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/80 px-4 backdrop-blur-sm md:px-6">
-      <div className="flex min-w-0 items-center gap-1">
-        {/* Mobile: opens Aceternity overlay. Desktop: rail expands on hover. */}
+    <>
+      {/* Mobile history + brand — clears the floating top area on small screens */}
+      <div className="pointer-events-none fixed top-0 inset-x-0 z-[60] flex h-14 items-center px-3 md:hidden">
         <Button
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="md:hidden"
+          className="pointer-events-auto rounded-full border border-border/60 bg-background/70 shadow-sm backdrop-blur-md"
           aria-label={t("toggleHistory", language)}
           aria-expanded={isHistoryOpen}
           onClick={onHistoryToggle}
@@ -35,7 +76,7 @@ export function AppHeader({
           <PanelLeft className="size-4" />
         </Button>
 
-        <h1 className="min-w-0 text-lg font-bold tracking-tight md:hidden">
+        <h1 className="pointer-events-none ms-2 text-base font-bold tracking-tight">
           <span
             className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
             aria-hidden="true"
@@ -48,10 +89,10 @@ export function AppHeader({
         </h1>
       </div>
 
-      <div className="ms-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
-        <LanguageToggle language={language} onToggle={onLanguageToggle} />
-        <ThemeToggle language={language} />
-      </div>
-    </header>
+      <NavBar items={items} />
+
+      {/* Top clearance: mobile brand row / desktop floating tubelight */}
+      <div className="h-14 shrink-0 sm:h-[4.5rem]" aria-hidden="true" />
+    </>
   );
 }

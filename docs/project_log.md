@@ -262,3 +262,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Search now mirrors the New Chat row (square icon + label); click starts the Gooey morph. Restyled Gooey Input to square corners, size-7 height, and background/foreground colors (white light / black dark).
 **Files:** components/HistorySidebar.tsx, components/ui/gooey-input.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 9.x] Tubelight navbar for language + theme
+
+**Summary:** Replaced the sticky header chrome with the Serenity/21st Tubelight Navbar (original colors preserved). Wired Language (EN/AR) and Theme (Light/Dark) as action pills with the glowing lamp indicator; kept a compact mobile history button + brand; added mobile bottom clearance for the floating bar.
+**Files:** components/ui/tubelight-navbar.tsx, components/AppHeader.tsx, components/AppShell.tsx, docs/project_log.md
+**Status:** completed
