@@ -310,3 +310,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Added elegant top-side tooltips on job-type mode icons in the chat input (inactive modes) and history sidebar mode tiles, showing localized labels (Review, Hint, etc.) for first-time users.
 **Files:** components/ui/ai-chat-input.tsx, components/HistorySidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Footer Link Preview credits
+
+**Summary:** Replaced the OpenRouter model footer string with an Aceternity Link Preview credit linking to akrmcodes profile and the dev-grow GitHub repo, with EN/AR copy.
+**Files:** components/ui/link-preview.tsx, components/FooterCredit.tsx, components/AppShell.tsx, lib/translations.ts, package.json, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Fix footer LinkPreview hydration nesting
+
+**Summary:** Resolved invalid HTML nesting (`div` inside `p`) by switching FooterCredit to a `div` and making LinkPreview use phrasing-safe spans plus a HoverCard portal for the preview popup.
+**Files:** components/FooterCredit.tsx, components/ui/link-preview.tsx, docs/project_log.md
+**Status:** completed

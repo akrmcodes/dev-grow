@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import type { ChatInputHandle } from "@/components/ChatInput";
 import { CustomCursor } from "@/components/CustomCursor";
+import { FooterCredit } from "@/components/FooterCredit";
 import { HistorySidebar } from "@/components/HistorySidebar";
 import { Sidebar } from "@/components/Sidebar";
 import {
@@ -318,8 +319,8 @@ export function AppShell() {
           </div>
         </motion.main>
 
-        <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">
-          {t("footerCredit", language)}
+        <footer className="shrink-0 border-t border-border py-3">
+          <FooterCredit language={language} />
         </footer>
       </div>
     </div>
