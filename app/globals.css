@@ -96,6 +96,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Selection — silver highlighter wash + ink stamp for code */
+  --selection: color-mix(in oklch, var(--foreground) 26%, transparent);
+  --selection-foreground: oklch(0.99 0 0);
+  --selection-strong: color-mix(in oklch, var(--foreground) 92%, transparent);
+  --selection-strong-foreground: oklch(0.145 0 0);
 }
 
 .light {
@@ -132,10 +137,64 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.9 0 0);
   --sidebar-ring: oklch(0.45 0 0);
+  /* Selection — charcoal ink wash + inverted stamp for code */
+  --selection: color-mix(in oklch, var(--foreground) 18%, transparent);
+  --selection-foreground: oklch(0.12 0 0);
+  --selection-strong: color-mix(in oklch, var(--foreground) 90%, transparent);
+  --selection-strong-foreground: oklch(0.99 0 0);
 }
 
 .font-arabic {
   font-family: var(--font-tajawal), sans-serif;
+}
+
+/*
+ * DevGrow text selection — monochrome brand highlight.
+ * Prose: luminous silver/charcoal wash with a soft ink rim.
+ * Code & inputs: solid inverted stamp for precise copy.
+ */
+::selection {
+  background-color: var(--selection);
+  color: var(--selection-foreground);
+  text-shadow:
+    0 0 18px color-mix(in oklch, var(--foreground) 28%, transparent),
+    0 0.5px 0 color-mix(in oklch, var(--background) 55%, transparent);
+}
+
+::-moz-selection {
+  background-color: var(--selection);
+  color: var(--selection-foreground);
+  text-shadow:
+    0 0 18px color-mix(in oklch, var(--foreground) 28%, transparent),
+    0 0.5px 0 color-mix(in oklch, var(--background) 55%, transparent);
+}
+
+pre::selection,
+pre *::selection,
+code::selection,
+code *::selection,
+.font-mono::selection,
+.font-mono *::selection,
+textarea::selection,
+input::selection,
+[contenteditable="true"]::selection {
+  background-color: var(--selection-strong);
+  color: var(--selection-strong-foreground);
+  text-shadow: none;
+}
+
+pre::-moz-selection,
+pre *::-moz-selection,
+code::-moz-selection,
+code *::-moz-selection,
+.font-mono::-moz-selection,
+.font-mono *::-moz-selection,
+textarea::-moz-selection,
+input::-moz-selection,
+[contenteditable="true"]::-moz-selection {
+  background-color: var(--selection-strong);
+  color: var(--selection-strong-foreground);
+  text-shadow: none;
 }
 
 @keyframes thinking-pulse {

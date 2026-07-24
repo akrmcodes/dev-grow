@@ -328,3 +328,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced hard mount/unmount of the Smooth cursor switch with a stay-mounted opacity/scale/width animation synced to the sidebar rail transition for a seamless expand/collapse feel.
 **Files:** components/HistorySidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Brand text selection styling
+
+**Summary:** Elevated native text selection with monochrome brand tokens — luminous wash + soft ink rim for prose, solid inverted stamp for code/inputs — tuned for both light and dark themes.
+**Files:** app/globals.css, docs/project_log.md
+**Status:** completed
