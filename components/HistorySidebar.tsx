@@ -75,7 +75,7 @@ function Brand() {
 }
 
 const SIDEBAR_CONTENT_TRANSITION = {
-  duration: 0.28,
+  duration: 0.32,
   ease: [0.22, 1, 0.36, 1] as const,
 };
 
@@ -336,7 +336,7 @@ function ClearAllRow({
 
 function CursorPreferenceRow({ language }: { language: Language }) {
   const { open, animate } = useSidebar();
-  const showLabels = !animate || open;
+  const expanded = !animate || open;
   const { preferred, setEnabled, available, hydrated } =
     useCustomCursorPreference();
 
@@ -362,7 +362,7 @@ function CursorPreferenceRow({ language }: { language: Language }) {
     >
       <span
         className={cn(
-          "relative flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors",
+          "relative flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors duration-200",
           preferred
             ? "border-foreground/25 bg-foreground text-background"
             : "border-border bg-card text-muted-foreground group-hover/cursor:text-foreground",
@@ -375,41 +375,66 @@ function CursorPreferenceRow({ language }: { language: Language }) {
         ) : null}
       </span>
 
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 flex-1 overflow-hidden">
         <SidebarLabel className="block font-medium">
           {t("customCursor", language)}
         </SidebarLabel>
-        {showLabels ? (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-0.5 text-[11px] text-muted-foreground"
-          >
+        <motion.div
+          initial={false}
+          animate={{
+            opacity: expanded ? 1 : 0,
+            height: expanded ? 16 : 0,
+            marginTop: expanded ? 2 : 0,
+          }}
+          transition={SIDEBAR_CONTENT_TRANSITION}
+          className="overflow-hidden"
+        >
+          <p className="truncate text-[11px] leading-4 text-muted-foreground">
             {label}
-          </motion.p>
-        ) : null}
+          </p>
+        </motion.div>
       </span>
 
-      {showLabels ? (
+      {/* Stay mounted — fade/scale/width with the rail so the switch never pops. */}
+      <motion.span
+        aria-hidden="true"
+        initial={false}
+        animate={{
+          opacity: expanded ? 1 : 0,
+          scale: expanded ? 1 : 0.88,
+          width: expanded ? 40 : 0,
+        }}
+        transition={{
+          ...SIDEBAR_CONTENT_TRANSITION,
+          opacity: {
+            duration: expanded ? 0.24 : 0.12,
+            ease: SIDEBAR_CONTENT_TRANSITION.ease,
+          },
+        }}
+        className="inline-flex shrink-0 items-center justify-center overflow-hidden"
+        style={{
+          transformOrigin: language === "ar" ? "right center" : "left center",
+          pointerEvents: "none",
+        }}
+      >
         <span
           className={cn(
-            "flex h-6 w-10 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200",
+            "flex h-6 w-10 items-center rounded-full border px-0.5 transition-colors duration-200",
             preferred
               ? "justify-end border-foreground/30 bg-foreground"
               : "justify-start border-border bg-muted",
           )}
-          aria-hidden="true"
         >
           <motion.span
             layout
-            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            transition={{ type: "spring", stiffness: 480, damping: 32, mass: 0.4 }}
             className={cn(
               "size-4 rounded-full shadow-sm",
               preferred ? "bg-background" : "bg-foreground/40",
             )}
           />
         </span>
-      ) : null}
+      </motion.span>
     </button>
   );
 }

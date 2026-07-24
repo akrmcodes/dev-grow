@@ -322,3 +322,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Resolved invalid HTML nesting (`div` inside `p`) by switching FooterCredit to a `div` and making LinkPreview use phrasing-safe spans plus a HoverCard portal for the preview popup.
 **Files:** components/FooterCredit.tsx, components/ui/link-preview.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Smooth cursor toggle sidebar reveal
+
+**Summary:** Replaced hard mount/unmount of the Smooth cursor switch with a stay-mounted opacity/scale/width animation synced to the sidebar rail transition for a seamless expand/collapse feel.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
