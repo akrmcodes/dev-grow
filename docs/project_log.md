@@ -196,3 +196,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced the floating chat input with an adapted 21st.dev `PromptInput` (spring height morph, voice/send/stop action). Swapped the Effort control for lucide mode icons (Review–Challenge); selecting a mode expands its label beside the icon. Removed the top `ModeSelector` so mode picking lives in the composer.
 **Files:** components/ui/ai-chat-input.tsx, components/ChatInput.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/ChatPanel.tsx, lib/mode-icons.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Particle vanish submit animation
+
+**Summary:** Integrated an Aceternity-inspired particle vanish on send into `PromptInput`. Added `lib/vanish-particles.ts` to sample visible mono textarea glyphs (scroll/padding-aware, density-capped) and dissolve them right→left with a subtle upward send bias and primary-tint accents. Respects `prefers-reduced-motion`; code value persists after the flourish.
+**Files:** lib/vanish-particles.ts, components/ui/ai-chat-input.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Vanish animation sync and clear-on-complete
+
+**Summary:** Fixed particle vanish submit UX: textarea text now clips right→left in sync with the particle sweep (replacing instant `text-transparent`), and the input clears only after the animation completes via `clearOnSubmit`.
+**Files:** lib/vanish-particles.ts, components/ui/ai-chat-input.tsx, components/ChatInput.tsx, docs/project_log.md
+**Status:** completed

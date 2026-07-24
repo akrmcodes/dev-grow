@@ -110,7 +110,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             onAttachClick={() => fileInputRef.current?.click()}
             attachDisabled={isStreaming}
             mono
-            clearOnSubmit={false}
+            clearOnSubmit
           />
         </div>
 

@@ -5,6 +5,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { MODE_ICONS } from "@/lib/mode-icons";
 import type { Mode } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
+import {
+  buildVanishSnapshot,
+  prefersReducedMotion,
+  runVanishAnimation,
+  type VanishAnimationHandle,
+} from "@/lib/vanish-particles";
 
 const SPRING_TRANSITION =
   "max-width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
@@ -233,15 +239,18 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
 
     const [textareaHeight, setTextareaHeight] = useState(68);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [isVanishing, setIsVanishing] = useState(false);
 
     const isControlled = controlledValue !== undefined;
     const value = isControlled ? controlledValue : localValue;
     const hasValue = value.trim() !== "";
     const isOpen =
-      expanded || hasValue || isRecording || isStreaming;
+      expanded || hasValue || isRecording || isStreaming || isVanishing;
     const containerHeight = Math.max(116, textareaHeight + 48);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const vanishCanvasRef = useRef<HTMLCanvasElement>(null);
+    const vanishHandleRef = useRef<VanishAnimationHandle | null>(null);
     const internalContainerRef = useRef<HTMLDivElement>(null);
     const topFadeRef = useRef<HTMLDivElement>(null);
     const bottomFadeRef = useRef<HTMLDivElement>(null);
@@ -481,11 +490,16 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
     useEffect(() => {
       return () => {
         stopRecording();
+        vanishHandleRef.current?.cancel();
+        vanishHandleRef.current = null;
+        if (textareaRef.current) {
+          textareaRef.current.style.clipPath = "";
+        }
       };
     }, [stopRecording]);
 
     useEffect(() => {
-      if (isOpen && !isRecording && !isStreaming) {
+      if (isOpen && !isRecording && !isStreaming && !isVanishing) {
         const timer = setTimeout(() => {
           if (textareaRef.current) {
             textareaRef.current.focus();
@@ -495,7 +509,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
         }, 50);
         return () => clearTimeout(timer);
       }
-    }, [isOpen, isRecording, isStreaming]);
+    }, [isOpen, isRecording, isStreaming, isVanishing]);
 
     useEffect(() => {
       if (!textareaRef.current) return;
@@ -531,24 +545,112 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
       }
     };
 
-    const handleSubmit = () => {
-      if (!hasValue || !canSend || isStreaming || isRecording) return;
-      setIsSmoothResize(false);
-      onSubmit?.(value);
+    const resetVanishClip = useCallback(() => {
+      const el = textareaRef.current;
+      if (el) {
+        el.style.clipPath = "";
+      }
+    }, []);
+
+    const applyVanishClip = useCallback((pos: number, bufferWidth: number) => {
+      const el = textareaRef.current;
+      if (!el || bufferWidth <= 0) return;
+      const rightInset = Math.max(
+        0,
+        Math.min(100, (1 - pos / bufferWidth) * 100),
+      );
+      el.style.clipPath = `inset(0 ${rightInset}% 0 0)`;
+    }, []);
+
+    const finishVanish = useCallback(() => {
+      resetVanishClip();
+      setIsVanishing(false);
+      vanishHandleRef.current = null;
       if (clearOnSubmit) {
         handleValueChange("");
         setExpanded(false);
       }
-    };
+    }, [clearOnSubmit, handleValueChange, resetVanishClip]);
 
-    const showArrow = (hasValue || isStreaming) && !isRecording;
+    const handleSubmit = useCallback(() => {
+      if (
+        !hasValue ||
+        !canSend ||
+        isStreaming ||
+        isRecording ||
+        isVanishing
+      ) {
+        return;
+      }
+
+      const submitted = value;
+      setIsSmoothResize(false);
+      onSubmit?.(submitted);
+
+      const textarea = textareaRef.current;
+      const canvas = vanishCanvasRef.current;
+
+      if (
+        prefersReducedMotion() ||
+        !textarea ||
+        !canvas
+      ) {
+        if (clearOnSubmit) {
+          handleValueChange("");
+          setExpanded(false);
+        }
+        return;
+      }
+
+      const snapshot = buildVanishSnapshot(textarea, submitted, {
+        accentColor: getComputedStyle(document.documentElement)
+          .getPropertyValue("--primary")
+          .trim(),
+      });
+
+      if (!snapshot) {
+        if (clearOnSubmit) {
+          handleValueChange("");
+          setExpanded(false);
+        }
+        return;
+      }
+
+      vanishHandleRef.current?.cancel();
+      setIsVanishing(true);
+
+      // Align the display canvas to the live textarea box.
+      canvas.style.width = `${textarea.clientWidth}px`;
+      canvas.style.height = `${textarea.clientHeight}px`;
+
+      vanishHandleRef.current = runVanishAnimation(canvas, snapshot, {
+        onSweep: applyVanishClip,
+        onComplete: finishVanish,
+      });
+    }, [
+      applyVanishClip,
+      canSend,
+      clearOnSubmit,
+      finishVanish,
+      handleValueChange,
+      hasValue,
+      isRecording,
+      isStreaming,
+      isVanishing,
+      onSubmit,
+      value,
+    ]);
+
     const showStop = isRecording || isStreaming;
-    const showMic = !hasValue && !isRecording && !isStreaming;
+    const showArrow =
+      ((hasValue || isStreaming || isVanishing) && !isRecording) && !showStop;
+    const showMic = !hasValue && !isRecording && !isStreaming && !isVanishing;
     const actionDisabled =
-      !isRecording &&
-      !isStreaming &&
-      !(hasValue && canSend) &&
-      !showMic;
+      isVanishing ||
+      (!isRecording &&
+        !isStreaming &&
+        !(hasValue && canSend) &&
+        !showMic);
 
     const onActionButtonClick = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -558,9 +660,9 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
       }
       if (isRecording) {
         stopRecording();
-      } else if (hasValue) {
+      } else if (hasValue && !isVanishing) {
         handleSubmit();
-      } else {
+      } else if (!isVanishing) {
         void startRecording();
       }
     };
@@ -604,24 +706,40 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             }}
           />
 
+          <canvas
+            ref={vanishCanvasRef}
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute top-0 left-0 z-[3] origin-top-left",
+              isVanishing ? "opacity-100" : "opacity-0",
+            )}
+          />
+
           <textarea
             ref={textareaRef}
             value={value}
-            onChange={(e) => handleValueChange(e.target.value)}
+            onChange={(e) => {
+              if (!isVanishing) handleValueChange(e.target.value);
+            }}
             onScroll={updateFades}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !isStreaming) {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !isStreaming &&
+                !isVanishing
+              ) {
                 e.preventDefault();
                 handleSubmit();
               }
-              if (e.key === "Escape" && value.trim() === "") {
+              if (e.key === "Escape" && value.trim() === "" && !isVanishing) {
                 setIsSmoothResize(false);
                 setExpanded(false);
               }
             }}
             placeholder={placeholder}
             aria-label="Prompt"
-            disabled={isRecording || isStreaming}
+            disabled={isRecording || isStreaming || isVanishing}
             dir="ltr"
             spellCheck={false}
             style={{
@@ -637,16 +755,23 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                 : "pointer-events-none -translate-y-1 scale-95 opacity-0",
               isScrolling ? "overflow-y-auto" : "overflow-y-hidden",
               (isRecording || isStreaming) && "pointer-events-none opacity-70",
+              isVanishing && "caret-transparent",
             )}
           />
 
           <div
             ref={topFadeRef}
-            className="pointer-events-none absolute top-0 left-4 z-[2] h-8 bg-gradient-to-b from-card via-card/90 to-transparent right-12"
+            className={cn(
+              "pointer-events-none absolute top-0 left-4 z-[2] h-8 bg-gradient-to-b from-card via-card/90 to-transparent right-12",
+              isVanishing && "opacity-0!",
+            )}
           />
           <div
             ref={bottomFadeRef}
-            className="pointer-events-none absolute left-4 z-[2] h-8 bg-gradient-to-t from-card via-card/90 to-transparent right-12"
+            className={cn(
+              "pointer-events-none absolute left-4 z-[2] h-8 bg-gradient-to-t from-card via-card/90 to-transparent right-12",
+              isVanishing && "opacity-0!",
+            )}
             style={{
               opacity: 0,
               top: `${textareaHeight - 32}px`,
@@ -678,7 +803,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
           <div
             className={cn(
               "absolute right-12 bottom-2 left-3 z-[10] flex items-center gap-0.5 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
-              isOpen && !isRecording
+              isOpen && !isRecording && !isVanishing
                 ? "pointer-events-auto translate-y-0 opacity-100 blur-0"
                 : "pointer-events-none translate-y-2 opacity-0 blur-sm",
             )}
@@ -690,7 +815,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                   mode={mode}
                   label={getModeLabel(mode)}
                   isActive={activeMode === mode}
-                  disabled={isStreaming}
+                  disabled={isStreaming || isVanishing}
                   onSelect={(next) => onModeChange?.(next)}
                 />
               ))}
@@ -704,7 +829,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                   e.stopPropagation();
                   onAttachClick();
                 }}
-                disabled={attachDisabled || isStreaming}
+                disabled={attachDisabled || isStreaming || isVanishing}
                 className="ml-auto flex size-7 shrink-0 items-center justify-center rounded-full text-foreground/50 outline-none transition-all duration-200 hover:bg-accent/60 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
                 aria-label="Attach file"
               >
@@ -755,13 +880,14 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                 ? "bg-destructive text-destructive-foreground hover:opacity-90"
                 : "bg-primary text-primary-foreground hover:opacity-90",
               actionDisabled && "opacity-40",
+              isVanishing && "scale-95 opacity-80",
             )}
           >
             <span className="relative flex h-full w-full items-center justify-center">
               <span
                 className={cn(
                   "absolute inset-0 flex items-center justify-center transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
-                  showArrow && !showStop
+                  showArrow
                     ? "scale-100 rotate-0 opacity-100 blur-none"
                     : "pointer-events-none scale-50 rotate-45 opacity-0 blur-[1px]",
                 )}
