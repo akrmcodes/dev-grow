@@ -239,7 +239,7 @@ export interface PromptInputProps {
   attachSlot?: React.ReactNode;
   mono?: boolean;
   clearOnSubmit?: boolean;
-  /** UI language — drives aria labels and RTL chrome around the LTR code field. */
+  /** UI language — drives aria labels, input direction, and chrome mirroring. */
   language?: Language;
 }
 
@@ -612,9 +612,17 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
       }
     }, []);
 
-    const applyVanishClip = useCallback((pos: number, bufferWidth: number) => {
+    const applyVanishClip = useCallback((pos: number, bufferWidth: number, rtl = false) => {
       const el = textareaRef.current;
       if (!el || bufferWidth <= 0) return;
+      if (rtl) {
+        const leftInset = Math.max(
+          0,
+          Math.min(100, (pos / bufferWidth) * 100),
+        );
+        el.style.clipPath = `inset(0 0 0 ${leftInset}%)`;
+        return;
+      }
       const rightInset = Math.max(
         0,
         Math.min(100, (1 - pos / bufferWidth) * 100),
@@ -801,7 +809,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             placeholder={placeholder}
             aria-label={t("promptAria", language)}
             disabled={isRecording || isStreaming || isVanishing}
-            dir="ltr"
+            dir={isRTL ? "rtl" : "ltr"}
             spellCheck={false}
             style={{
               transition: isSmoothResize
@@ -863,6 +871,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                 : "pointer-events-none translate-y-1 scale-105 opacity-0",
             )}
             aria-label={t("openPrompt", language)}
+            dir={isRTL ? "rtl" : "ltr"}
           >
             {placeholder}
           </button>

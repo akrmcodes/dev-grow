@@ -18,6 +18,8 @@ export type VanishSnapshot = {
   bufferHeight: number;
   /** CSS scale applied to canvas (Aceternity uses 0.5 after 2× draw). */
   displayScale: number;
+  /** Matches the source textarea writing direction. */
+  rtl: boolean;
 };
 
 const SUPER_SAMPLE = 2;
@@ -74,6 +76,7 @@ export function buildVanishSnapshot(
   const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
   const paddingTop = Number.parseFloat(styles.paddingTop) || 0;
   const paddingRight = Number.parseFloat(styles.paddingRight) || 0;
+  const rtl = styles.direction === "rtl";
 
   const displayWidth = source.clientWidth;
   const displayHeight = source.clientHeight;
@@ -91,6 +94,7 @@ export function buildVanishSnapshot(
   ctx.clearRect(0, 0, bufferWidth, bufferHeight);
   ctx.fillStyle = styles.color || "#ffffff";
   ctx.textBaseline = "top";
+  ctx.textAlign = rtl ? "right" : "left";
   ctx.font = `${fontSize * SUPER_SAMPLE}px ${styles.fontFamily}`;
 
   const scrollTop = source.scrollTop;
@@ -104,9 +108,12 @@ export function buildVanishSnapshot(
   );
 
   const scale = SUPER_SAMPLE;
-  const textX = paddingLeft * scale;
   const maxTextWidth =
     (displayWidth - paddingLeft - paddingRight) * scale;
+  const textX = rtl
+    ? (displayWidth - paddingRight) * scale
+    : paddingLeft * scale;
+  const clipX = rtl ? textX - maxTextWidth : textX;
 
   for (let i = firstVisibleLine; i <= lastVisibleLine; i++) {
     const line = allLines[i] ?? "";
@@ -119,7 +126,7 @@ export function buildVanishSnapshot(
     // Soft clip long lines to the visible gutter (matches overflow-x-hidden).
     ctx.save();
     ctx.beginPath();
-    ctx.rect(textX - 1, y - 1, maxTextWidth + 2, lineHeight * scale + 2);
+    ctx.rect(clipX - 1, y - 1, maxTextWidth + 2, lineHeight * scale + 2);
     ctx.clip();
     ctx.fillText(line, textX, y);
     ctx.restore();
@@ -173,6 +180,7 @@ export function buildVanishSnapshot(
     bufferWidth,
     bufferHeight,
     displayScale: 1 / SUPER_SAMPLE,
+    rtl,
   };
 }
 
@@ -181,7 +189,8 @@ export type VanishAnimationHandle = {
 };
 
 /**
- * Dissolves particles right→left with a gentle upward “send” bias.
+ * Dissolves particles along the reading direction with a gentle upward “send” bias.
+ * LTR: right→left · RTL: left→right.
  */
 export function runVanishAnimation(
   canvas: HTMLCanvasElement,
@@ -189,7 +198,7 @@ export function runVanishAnimation(
   options?: {
     onComplete?: () => void;
     /** Called each frame with the current sweep position (buffer coords). */
-    onSweep?: (pos: number, bufferWidth: number) => void;
+    onSweep?: (pos: number, bufferWidth: number, rtl: boolean) => void;
   },
 ): VanishAnimationHandle {
   const ctx = canvas.getContext("2d");
@@ -204,18 +213,24 @@ export function runVanishAnimation(
   let particles = snapshot.particles.map((p) => ({ ...p }));
   let rafId = 0;
   let cancelled = false;
+  const rtl = snapshot.rtl;
 
   const maxX = particles.reduce((m, p) => (p.x > m ? p.x : m), 0);
+  const minX = particles.reduce(
+    (m, p) => (p.x < m ? p.x : m),
+    snapshot.bufferWidth,
+  );
 
   const frame = (pos: number) => {
     if (cancelled) return;
 
-    options?.onSweep?.(pos, snapshot.bufferWidth);
+    options?.onSweep?.(pos, snapshot.bufferWidth, rtl);
 
     const next: VanishParticle[] = [];
     for (let i = 0; i < particles.length; i++) {
       const current = particles[i];
-      if (current.x < pos) {
+      const stillSolid = rtl ? current.x > pos : current.x < pos;
+      if (stillSolid) {
         next.push(current);
         continue;
       }
@@ -234,22 +249,27 @@ export function runVanishAnimation(
     ctx.clearRect(0, 0, snapshot.bufferWidth, snapshot.bufferHeight);
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
-      if (p.x <= pos) continue;
+      const dissolving = rtl ? p.x <= pos : p.x >= pos;
+      if (!dissolving) continue;
       ctx.beginPath();
       ctx.rect(p.x, p.y, p.r, p.r);
       ctx.fillStyle = p.color;
       ctx.fill();
     }
 
-    if (particles.length > 0 && pos > -48) {
-      rafId = requestAnimationFrame(() => frame(pos - 10));
+    const continueSweep = rtl
+      ? particles.length > 0 && pos < snapshot.bufferWidth + 48
+      : particles.length > 0 && pos > -48;
+
+    if (continueSweep) {
+      rafId = requestAnimationFrame(() => frame(pos + (rtl ? 10 : -10)));
     } else {
       ctx.clearRect(0, 0, snapshot.bufferWidth, snapshot.bufferHeight);
       options?.onComplete?.();
     }
   };
 
-  rafId = requestAnimationFrame(() => frame(maxX));
+  rafId = requestAnimationFrame(() => frame(rtl ? minX : maxX));
 
   return {
     cancel: () => {

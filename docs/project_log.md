@@ -418,3 +418,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Root causes were disabled generate during streaming, post-stream skip, ≤120-word cap, and paragraph-only coverage. Added incremental stream reveal, full entrance for history (any length), static settle after live stream, and generate for headings/list items; Arabic skips blur/tracking.
 **Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Live-stream text-generate (stable reveal)
+
+**Summary:** Live replies skipped artistic generate because ReactMarkdown remounted on every token. Added sealed-block + live-tail streaming reveal with declarative incremental motion on a stable prose-live node so words animate from the first token.
+**Files:** lib/streaming-reveal.ts, components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Arabic input caret starts RTL
+
+**Summary:** Prompt textarea/placeholder now use `dir=rtl` when the UI language is Arabic so the caret and typed text begin on the right; vanish raster/sweep follow the same direction.
+**Files:** components/ui/ai-chat-input.tsx, lib/vanish-particles.ts, docs/project_log.md
+**Status:** completed
