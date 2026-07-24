@@ -346,3 +346,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed the attach tooltip and separate 3D folder flyout; the three code icons now fan directly out of the upload folder glyph on hover as part of the icon itself.
 **Files:** components/FolderUploadTrigger.tsx, components/ui/3d-folder.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Larger inline folder sheet icons
+
+**Summary:** Enlarged the three fanned code icons in the upload glyph and switched their open/close motion to spring physics for a smoother, more polished fan-out.
+**Files:** components/ui/3d-folder.tsx, docs/project_log.md
+**Status:** completed

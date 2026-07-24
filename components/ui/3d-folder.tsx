@@ -5,6 +5,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { motion } from "motion/react";
 import {
   Braces,
   FileCode2,
@@ -377,88 +378,107 @@ export function MiniFolderGlyph({
   open?: boolean;
   className?: string;
 }) {
-  const rotates = [-22, 0, 22] as const;
-  const offsetsX = [-11, 0, 11] as const;
+  const rotates = [-26, 0, 26] as const;
+  const offsetsX = [-14, 0, 14] as const;
+  const sheetSpring = { type: "spring" as const, stiffness: 420, damping: 22, mass: 0.55 };
+  const lidSpring = { type: "spring" as const, stiffness: 380, damping: 24, mass: 0.5 };
 
   return (
     <span
       className={cn(
-        "relative inline-flex size-5 items-end justify-center",
+        "relative inline-flex size-6 items-end justify-center",
         className,
       )}
-      style={{ perspective: "180px" }}
+      style={{ perspective: "220px", transformStyle: "preserve-3d" }}
       aria-hidden="true"
     >
       {DEFAULT_CODE_FILES.map((file, index) => {
         const Icon = file.icon;
         return (
-          <span
+          <motion.span
             key={file.id}
-            className="absolute bottom-[7px] flex size-3.5 items-center justify-center rounded-[3px] border border-border/80 bg-card text-foreground shadow-sm"
+            className="absolute bottom-2 flex size-4 items-center justify-center rounded-[4px] border border-border/80 bg-card text-foreground shadow-md will-change-transform"
+            initial={false}
+            animate={
+              open
+                ? {
+                    x: offsetsX[index],
+                    y: -16,
+                    rotate: rotates[index],
+                    scale: 1,
+                    opacity: 1,
+                  }
+                : {
+                    x: 0,
+                    y: 3,
+                    rotate: 0,
+                    scale: 0.28,
+                    opacity: 0,
+                  }
+            }
+            transition={{
+              ...sheetSpring,
+              delay: open ? index * 0.04 : (2 - index) * 0.03,
+              opacity: { duration: open ? 0.18 : 0.12, delay: open ? index * 0.04 : 0 },
+            }}
             style={{
               zIndex: 5 - index,
-              transformOrigin: "bottom center",
-              transform: open
-                ? `translateY(-13px) translateX(${offsetsX[index]}px) rotate(${rotates[index]}deg) scale(1)`
-                : "translateY(2px) translateX(0px) rotate(0deg) scale(0.35)",
-              opacity: open ? 1 : 0,
-              transition: `transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 45}ms, opacity 220ms ease ${index * 35}ms`,
+              transformOrigin: "50% 100%",
             }}
           >
-            <Icon className="size-2.5" strokeWidth={2.1} />
-          </span>
+            <Icon className="size-3" strokeWidth={2} />
+          </motion.span>
         );
       })}
 
       {/* Back panel */}
-      <span
-        className="absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] bg-foreground/45 transition-transform duration-300"
-        style={{
-          zIndex: 1,
-          transformOrigin: "bottom center",
-          transform: open ? "rotateX(18deg) translateY(0.5px)" : "rotateX(0deg)",
-          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-        }}
+      <motion.span
+        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-foreground/45 will-change-transform"
+        initial={false}
+        animate={{ rotateX: open ? 20 : 0, y: open ? 0.5 : 0 }}
+        transition={lidSpring}
+        style={{ zIndex: 1, transformOrigin: "bottom center" }}
       />
       {/* Tab */}
-      <span
-        className="absolute bottom-[9px] start-[2px] h-[3.5px] w-[7px] rounded-t-[2px] bg-foreground/35 transition-transform duration-300"
-        style={{
-          zIndex: 1,
-          transformOrigin: "bottom center",
-          transform: open
-            ? "rotateX(-20deg) translateY(-1px)"
-            : "rotateX(0deg)",
-          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      <motion.span
+        className="absolute bottom-[10px] start-[2.5px] h-1 w-2 rounded-t-[2px] bg-foreground/35 will-change-transform"
+        initial={false}
+        animate={{
+          rotateX: open ? -22 : 0,
+          y: open ? -1 : 0,
         }}
+        transition={lidSpring}
+        style={{ zIndex: 1, transformOrigin: "bottom center" }}
       />
       {/* Front panel */}
-      <span
-        className="absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] bg-foreground/80 transition-transform duration-300"
-        style={{
-          zIndex: 6,
-          transformOrigin: "bottom center",
-          transform: open
-            ? "rotateX(-26deg) translateY(-0.5px)"
-            : "rotateX(0deg)",
-          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      <motion.span
+        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-foreground/80 will-change-transform"
+        initial={false}
+        animate={{
+          rotateX: open ? -28 : 0,
+          y: open ? -0.5 : 0,
         }}
+        transition={lidSpring}
+        style={{ zIndex: 6, transformOrigin: "bottom center" }}
       />
       {/* Shine on front */}
-      <span
-        className="pointer-events-none absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] transition-transform duration-300"
+      <motion.span
+        className="pointer-events-none absolute bottom-0 h-3 w-4 rounded-[3px] will-change-transform"
+        initial={false}
+        animate={{
+          rotateX: open ? -28 : 0,
+          y: open ? -0.5 : 0,
+        }}
+        transition={lidSpring}
         style={{
           zIndex: 7,
+          transformOrigin: "bottom center",
           background:
             "linear-gradient(135deg, color-mix(in oklch, var(--background) 45%, transparent) 0%, transparent 55%)",
-          transformOrigin: "bottom center",
-          transform: open
-            ? "rotateX(-26deg) translateY(-0.5px)"
-            : "rotateX(0deg)",
-          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       />
     </span>
   );
 }
+
 
