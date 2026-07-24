@@ -406,3 +406,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Refined Arabic copy for natural software-tutor tone; closed hardcoded EN string gaps; set AppShell `dir`/`lang` as source of truth (removed flex-row-reverse double-flip); converted composer/sidebar/gooey/scorecard to logical geometry with LTR-safe code field + vanish overlay; localized EmptyHero flip words and mobile drawer edge.
 **Files:** lib/translations.ts, components/AppShell.tsx, components/AppHeader.tsx, components/EmptyHero.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, components/ChatInput.tsx, components/AssistantMessage.tsx, components/AiThinkingIndicator.tsx, components/ScorecardPanel.tsx, components/HistorySidebar.tsx, components/ui/ai-chat-input.tsx, components/ui/sidebar.tsx, components/ui/gooey-input.tsx, components/ui/flip-words.tsx, components/ui/progress.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Fix Arabic EmptyHero letter joining
+
+**Summary:** FlipWords was splitting Arabic into per-letter inline-block spans, which breaks cursive glyph shaping; joining-script words now animate as a single text run, and tracking-tight is disabled for Arabic.
+**Files:** components/ui/flip-words.tsx, components/EmptyHero.tsx, docs/project_log.md
+**Status:** completed

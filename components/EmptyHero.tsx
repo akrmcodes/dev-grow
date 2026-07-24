@@ -49,7 +49,14 @@ export function EmptyHero({ visible, language, className }: EmptyHeroProps) {
             lang={language}
             className="relative z-10 flex items-center justify-center px-6"
           >
-            <div className="min-h-[1.35em] text-center text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+            <div
+              className={cn(
+                "min-h-[1.35em] text-center text-2xl font-semibold sm:text-3xl md:text-4xl",
+                // tracking-* inserts gaps between glyphs and breaks Arabic joining.
+                !isRTL && "tracking-tight",
+                isRTL && "font-arabic",
+              )}
+            >
               <FlipWords words={words} duration={3000} />
             </div>
           </div>
