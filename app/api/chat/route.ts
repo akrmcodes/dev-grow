@@ -74,7 +74,7 @@ export async function POST(request: Request) {
       messages: modelMessages,
     }));
 
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse({ sendReasoning: false });
   } catch (error) {
     return handleChatError(error);
   }
