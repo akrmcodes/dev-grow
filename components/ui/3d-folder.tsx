@@ -369,34 +369,96 @@ export function AnimatedFolder({
   );
 }
 
-/** Compact closed-folder glyph for the attach control. */
+/** Compact folder glyph — three code icons fan out of the folder on open. */
 export function MiniFolderGlyph({
-  open,
+  open = false,
   className,
 }: {
   open?: boolean;
   className?: string;
 }) {
+  const rotates = [-22, 0, 22] as const;
+  const offsetsX = [-11, 0, 11] as const;
+
   return (
     <span
-      className={cn("relative inline-flex size-4 items-end justify-center", className)}
+      className={cn(
+        "relative inline-flex size-5 items-end justify-center",
+        className,
+      )}
+      style={{ perspective: "180px" }}
       aria-hidden="true"
     >
+      {DEFAULT_CODE_FILES.map((file, index) => {
+        const Icon = file.icon;
+        return (
+          <span
+            key={file.id}
+            className="absolute bottom-[7px] flex size-3.5 items-center justify-center rounded-[3px] border border-border/80 bg-card text-foreground shadow-sm"
+            style={{
+              zIndex: 5 - index,
+              transformOrigin: "bottom center",
+              transform: open
+                ? `translateY(-13px) translateX(${offsetsX[index]}px) rotate(${rotates[index]}deg) scale(1)`
+                : "translateY(2px) translateX(0px) rotate(0deg) scale(0.35)",
+              opacity: open ? 1 : 0,
+              transition: `transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 45}ms, opacity 220ms ease ${index * 35}ms`,
+            }}
+          >
+            <Icon className="size-2.5" strokeWidth={2.1} />
+          </span>
+        );
+      })}
+
+      {/* Back panel */}
       <span
-        className="absolute bottom-0 h-2.5 w-3.5 rounded-[2px] bg-foreground/55 transition-transform duration-300"
+        className="absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] bg-foreground/45 transition-transform duration-300"
         style={{
+          zIndex: 1,
           transformOrigin: "bottom center",
-          transform: open ? "rotateX(22deg) translateY(1px)" : "none",
+          transform: open ? "rotateX(18deg) translateY(0.5px)" : "rotateX(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       />
-      <span className="absolute bottom-[7px] start-[1px] h-1 w-2 rounded-t-[2px] bg-foreground/40" />
+      {/* Tab */}
       <span
-        className="absolute bottom-0 h-2.5 w-3.5 rounded-[2px] bg-foreground/75 transition-transform duration-300"
+        className="absolute bottom-[9px] start-[2px] h-[3.5px] w-[7px] rounded-t-[2px] bg-foreground/35 transition-transform duration-300"
         style={{
+          zIndex: 1,
           transformOrigin: "bottom center",
-          transform: open ? "rotateX(-28deg) translateY(-1px)" : "none",
+          transform: open
+            ? "rotateX(-20deg) translateY(-1px)"
+            : "rotateX(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      />
+      {/* Front panel */}
+      <span
+        className="absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] bg-foreground/80 transition-transform duration-300"
+        style={{
+          zIndex: 6,
+          transformOrigin: "bottom center",
+          transform: open
+            ? "rotateX(-26deg) translateY(-0.5px)"
+            : "rotateX(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      />
+      {/* Shine on front */}
+      <span
+        className="pointer-events-none absolute bottom-0 h-[11px] w-[15px] rounded-[2.5px] transition-transform duration-300"
+        style={{
+          zIndex: 7,
+          background:
+            "linear-gradient(135deg, color-mix(in oklch, var(--background) 45%, transparent) 0%, transparent 55%)",
+          transformOrigin: "bottom center",
+          transform: open
+            ? "rotateX(-26deg) translateY(-0.5px)"
+            : "rotateX(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       />
     </span>
   );
 }
+

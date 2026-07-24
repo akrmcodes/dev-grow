@@ -340,3 +340,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Integrated a monochrome adaptation of the 21st.dev 3D Folder for uploads — code-file sheets replace images; hover on the attach control instantly opens a folder flyout; drag-and-drop overlay uses the same open folder.
 **Files:** components/ui/3d-folder.tsx, components/FolderUploadTrigger.tsx, components/FileDropZone.tsx, components/ChatInput.tsx, components/ui/ai-chat-input.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Inline folder-icon upload animation
+
+**Summary:** Removed the attach tooltip and separate 3D folder flyout; the three code icons now fan directly out of the upload folder glyph on hover as part of the icon itself.
+**Files:** components/FolderUploadTrigger.tsx, components/ui/3d-folder.tsx, docs/project_log.md
+**Status:** completed
