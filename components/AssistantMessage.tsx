@@ -129,6 +129,26 @@ function createMarkdownComponents(options: {
       <strong className="font-semibold text-foreground">{children}</strong>
     ),
     hr: () => <hr className="my-6 border-border/60" />,
+    table: ({ children }) => (
+      <div className="my-4 w-full overflow-x-auto rounded-lg border border-border/50">
+        <table className="w-full min-w-[16rem] border-collapse text-start text-[14px] leading-6">
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className="border-b border-border/60 bg-muted/40">{children}</thead>
+    ),
+    th: ({ children }) => (
+      <th className="px-3 py-2 text-start text-xs font-semibold tracking-wide text-foreground">
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td className="border-t border-border/40 px-3 py-2 align-top text-foreground/90">
+        {children}
+      </td>
+    ),
   };
 }
 

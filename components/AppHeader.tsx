@@ -1,6 +1,6 @@
 "use client";
 
-import { Languages, Moon, PanelLeft, Sun } from "lucide-react";
+import { Languages, Moon, PanelLeft, PanelRight, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMemo, useSyncExternalStore } from "react";
 import { NavBar, type TubelightNavItem } from "@/components/ui/tubelight-navbar";
@@ -36,6 +36,7 @@ export function AppHeader({
   const mounted = useMounted();
   const isArabic = language === "ar";
   const isDark = mounted ? resolvedTheme === "dark" : true;
+  const HistoryIcon = isArabic ? PanelRight : PanelLeft;
 
   const items = useMemo<TubelightNavItem[]>(
     () => [
@@ -50,7 +51,7 @@ export function AppHeader({
       },
       {
         name: "theme",
-        label: isDark ? "Light" : "Dark",
+        label: isDark ? t("themeLight", language) : t("themeDark", language),
         icon: isDark ? Sun : Moon,
         onClick: () => setTheme(isDark ? "light" : "dark"),
         ariaLabel: isDark
@@ -74,7 +75,7 @@ export function AppHeader({
           aria-expanded={isHistoryOpen}
           onClick={onHistoryToggle}
         >
-          <PanelLeft className="size-4" />
+          <HistoryIcon className="size-4" />
         </Button>
 
         <h1 className="pointer-events-none ms-2 flex items-center gap-2 text-base font-bold tracking-tight text-foreground">

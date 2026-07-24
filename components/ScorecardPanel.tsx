@@ -199,7 +199,6 @@ function MetricChip({
   delay: number;
 }) {
   const tone = getTone(score);
-  const widthPct = `${Math.max(0, Math.min(100, (score / 10) * 100))}%`;
 
   return (
     <div className="min-w-0 flex-1 space-y-1.5">
@@ -214,10 +213,10 @@ function MetricChip({
       </div>
       <div className="h-1 overflow-hidden rounded-full bg-muted/80">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full w-full origin-left rounded-full rtl:origin-right"
           style={{ backgroundColor: tone.stroke }}
-          initial={{ width: 0 }}
-          animate={{ width: widthPct }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: Math.max(0, Math.min(1, score / 10)) }}
           transition={{
             duration: 0.75,
             delay,

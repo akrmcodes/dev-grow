@@ -94,7 +94,7 @@ export function ChatPanel({
       : null;
 
   return (
-    <div className="relative flex h-full min-h-0 flex-1 flex-col">
+    <div className="relative flex h-full min-h-0 flex-1 flex-col" dir={isRTL ? "rtl" : "ltr"}>
       <div
         ref={scrollContainerRef}
         className="chat-scroll flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto will-change-transform"
@@ -119,11 +119,8 @@ export function ChatPanel({
                     transition={fadeIn.transition}
                     className={cn(
                       "flex w-full",
-                      isUser
-                        ? isRTL
-                          ? "justify-start"
-                          : "justify-end"
-                        : "justify-start",
+                      // Logical end = trailing edge (right in LTR, left in RTL).
+                      isUser ? "justify-end" : "justify-start",
                     )}
                   >
                     {isUser ? (

@@ -70,11 +70,23 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = ({
+  side,
+  closeLabel = "Close sidebar",
+  ...props
+}: React.ComponentProps<typeof motion.div> & {
+  /** Explicit side for mobile drawer animation (avoids post-mount dir flicker). */
+  side?: "left" | "right";
+  closeLabel?: string;
+}) => {
   return (
     <>
       <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <MobileSidebar
+        side={side}
+        closeLabel={closeLabel}
+        {...(props as React.ComponentProps<"div">)}
+      />
     </>
   );
 };
@@ -110,27 +122,28 @@ export const DesktopSidebar = ({
 
 /**
  * Mobile overlay only — chrome toggle lives in AppHeader (avoids a duplicate bar).
- * Supports RTL slide via `dir` on the document / parent.
+ * Pass `side` explicitly so the drawer never flashes from the wrong edge on open.
  */
 export const MobileSidebar = ({
   className,
   children,
-}: React.ComponentProps<"div">) => {
+  side = "left",
+  closeLabel = "Close sidebar",
+}: React.ComponentProps<"div"> & {
+  side?: "left" | "right";
+  closeLabel?: string;
+}) => {
   const { open, setOpen } = useSidebar();
-  const [isRtl, setIsRtl] = useState(false);
-
-  React.useEffect(() => {
-    setIsRtl(document.documentElement.dir === "rtl");
-  }, [open]);
+  const exitX = side === "right" ? "100%" : "-100%";
 
   return (
     <AnimatePresence>
       {open ? (
         <motion.div
           key="mobile-sidebar"
-          initial={{ x: isRtl ? "100%" : "-100%", opacity: 0 }}
+          initial={{ x: exitX, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: isRtl ? "100%" : "-100%", opacity: 0 }}
+          exit={{ x: exitX, opacity: 0 }}
           transition={{
             duration: 0.3,
             ease: "easeInOut",
@@ -143,7 +156,7 @@ export const MobileSidebar = ({
           <button
             type="button"
             className="absolute top-6 end-6 z-50 text-foreground"
-            aria-label="Close sidebar"
+            aria-label={closeLabel}
             onClick={() => setOpen(false)}
           >
             <IconX className="size-5" />
@@ -180,7 +193,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="m-0! inline-block p-0! text-sm whitespace-pre text-foreground transition duration-150 group-hover/sidebar:translate-x-1"
+        className="m-0! inline-block p-0! text-sm whitespace-pre text-foreground transition duration-150 group-hover/sidebar:translate-x-1 rtl:group-hover/sidebar:-translate-x-1"
       >
         {link.label}
       </motion.span>

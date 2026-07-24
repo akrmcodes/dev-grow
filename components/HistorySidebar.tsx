@@ -414,6 +414,7 @@ function CursorPreferenceRow({ language }: { language: Language }) {
         }}
       >
         <span
+          dir="ltr"
           className={cn(
             "flex h-6 w-10 items-center rounded-full border px-0.5 transition-colors duration-200",
             preferred
@@ -541,7 +542,11 @@ export function HistorySidebar({
   return (
     <>
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-6 overflow-visible">
+        <SidebarBody
+          side={language === "ar" ? "right" : "left"}
+          closeLabel={t("closeSidebar", language)}
+          className="justify-between gap-6 overflow-visible"
+        >
           <SidebarContent
             language={language}
             conversations={conversations}

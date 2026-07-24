@@ -119,6 +119,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             }
             mono
             clearOnSubmit
+            language={language}
           />
         </div>
 

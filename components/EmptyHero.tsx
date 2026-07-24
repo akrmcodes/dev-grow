@@ -3,20 +3,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Ripple } from "@/components/ui/ripple";
+import { getEmptyHeroWords, type Language } from "@/lib/translations";
 import { cn } from "@/lib/utils";
-
-export const EMPTY_HERO_WORDS = [
-  "clarity",
-  "velocity",
-  "precision",
-  "craft",
-  "mastery",
-];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 type EmptyHeroProps = {
   visible: boolean;
+  language: Language;
   className?: string;
 };
 
@@ -24,7 +18,10 @@ type EmptyHeroProps = {
  * Empty-state hero: Magic UI Ripple + Aceternity Flip Words.
  * Dissolves when the first message arrives; returns on New Chat.
  */
-export function EmptyHero({ visible, className }: EmptyHeroProps) {
+export function EmptyHero({ visible, language, className }: EmptyHeroProps) {
+  const words = getEmptyHeroWords(language);
+  const isRTL = language === "ar";
+
   return (
     <AnimatePresence>
       {visible ? (
@@ -48,12 +45,12 @@ export function EmptyHero({ visible, className }: EmptyHeroProps) {
           <Ripple />
 
           <div
-            dir="ltr"
-            lang="en"
+            dir={isRTL ? "rtl" : "ltr"}
+            lang={language}
             className="relative z-10 flex items-center justify-center px-6"
           >
             <div className="min-h-[1.35em] text-center text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              <FlipWords words={EMPTY_HERO_WORDS} duration={3000} />
+              <FlipWords words={words} duration={3000} />
             </div>
           </div>
         </motion.div>

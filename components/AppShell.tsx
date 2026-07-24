@@ -255,10 +255,12 @@ export function AppShell() {
 
   return (
     <div
+      dir={isRTL ? "rtl" : "ltr"}
+      lang={language}
       className={cn(
-        "flex h-dvh w-full overflow-hidden",
-        isRTL ? "md:flex-row-reverse" : "md:flex-row",
-        "flex-col",
+        // Rely on CSS `dir` for sidebar placement — avoid flex-row-reverse
+        // which double-flips when document direction is already RTL.
+        "flex h-dvh w-full flex-col overflow-hidden md:flex-row",
         isRTL && "font-arabic",
       )}
     >

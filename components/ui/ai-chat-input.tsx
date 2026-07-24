@@ -4,6 +4,7 @@ import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MODE_ICONS } from "@/lib/mode-icons";
 import type { Mode } from "@/lib/prompts";
+import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -161,7 +162,7 @@ function ModeButton({
     "transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
     "disabled:pointer-events-none disabled:opacity-40",
     isActive
-      ? "gap-1.5 bg-primary/15 pr-2.5 pl-2 text-primary shadow-[inset_0_0_0_1px] shadow-primary/30"
+      ? "gap-1.5 bg-primary/15 pe-2.5 ps-2 text-primary shadow-[inset_0_0_0_1px] shadow-primary/30"
       : "w-7 justify-center text-foreground/55 hover:bg-accent/70 hover:text-foreground",
   );
 
@@ -238,6 +239,8 @@ export interface PromptInputProps {
   attachSlot?: React.ReactNode;
   mono?: boolean;
   clearOnSubmit?: boolean;
+  /** UI language — drives aria labels and RTL chrome around the LTR code field. */
+  language?: Language;
 }
 
 export type PromptInputHandle = {
@@ -264,9 +267,11 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
       attachSlot,
       mono = false,
       clearOnSubmit = false,
+      language = "en",
     },
     ref,
   ) {
+    const isRTL = language === "ar";
     const [expanded, setExpanded] = useState(false);
     const [isSmoothResize, setIsSmoothResize] = useState(false);
     const [localValue, setLocalValue] = useState(defaultValue);
@@ -765,6 +770,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             ref={vanishCanvasRef}
             aria-hidden="true"
             className={cn(
+              // Canvas overlays the LTR code field — keep physical top-left origin.
               "pointer-events-none absolute top-0 left-0 z-[3] origin-top-left",
               isVanishing ? "opacity-100" : "opacity-0",
             )}
@@ -793,7 +799,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
               }
             }}
             placeholder={placeholder}
-            aria-label="Prompt"
+            aria-label={t("promptAria", language)}
             disabled={isRecording || isStreaming || isVanishing}
             dir="ltr"
             spellCheck={false}
@@ -803,7 +809,10 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                 : `opacity 0.3s ease-out, transform 0.3s ease-out, height 0.4s ${SPRING_EASE}`,
             }}
             className={cn(
-              "prompt-scrollbar absolute inset-x-0 top-0 z-[1] w-full resize-none bg-transparent py-3.5 pr-12 pl-4 text-sm leading-[22px] text-foreground outline-none placeholder:font-medium placeholder:text-muted-foreground/80",
+              // Code stays LTR; reserve physical padding on the UI inline-end
+              // where the send button sits (right in LTR, left in RTL).
+              "prompt-scrollbar absolute inset-x-0 top-0 z-[1] w-full resize-none bg-transparent py-3.5 text-sm leading-[22px] text-foreground outline-none placeholder:font-medium placeholder:text-muted-foreground/80",
+              isRTL ? "pl-12 pr-4" : "pr-12 pl-4",
               mono && "font-mono text-xs leading-relaxed",
               isOpen
                 ? "translate-y-0 scale-100 opacity-100"
@@ -817,14 +826,16 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
           <div
             ref={topFadeRef}
             className={cn(
-              "pointer-events-none absolute top-0 left-4 z-[2] h-8 bg-gradient-to-b from-card via-card/90 to-transparent right-12",
+              "pointer-events-none absolute top-0 z-[2] h-8 bg-gradient-to-b from-card via-card/90 to-transparent",
+              isRTL ? "right-4 left-12" : "left-4 right-12",
               isVanishing && "opacity-0!",
             )}
           />
           <div
             ref={bottomFadeRef}
             className={cn(
-              "pointer-events-none absolute left-4 z-[2] h-8 bg-gradient-to-t from-card via-card/90 to-transparent right-12",
+              "pointer-events-none absolute z-[2] h-8 bg-gradient-to-t from-card via-card/90 to-transparent",
+              isRTL ? "right-4 left-12" : "left-4 right-12",
               isVanishing && "opacity-0!",
             )}
             style={{
@@ -845,25 +856,27 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                 : `all 0.4s ${SPRING_EASE}`,
             }}
             className={cn(
-              "absolute inset-x-0 top-0 z-[1] cursor-text py-[15px] pr-12 pl-4 text-left text-sm leading-[17px] font-medium text-muted-foreground/80 outline-none",
+              "absolute inset-x-0 top-0 z-[1] cursor-text py-[15px] text-start text-sm leading-[17px] font-medium text-muted-foreground/80 outline-none",
+              isRTL ? "pl-12 pr-4" : "pr-12 pl-4",
               !isOpen
                 ? "translate-y-0 scale-100 opacity-100"
                 : "pointer-events-none translate-y-1 scale-105 opacity-0",
             )}
-            aria-label="Open prompt input"
+            aria-label={t("openPrompt", language)}
           >
             {placeholder}
           </button>
 
           <div
             className={cn(
-              "absolute right-12 bottom-2 left-3 z-[10] flex items-center gap-0.5 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
+              "absolute bottom-2 z-[10] flex items-center gap-0.5 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
+              "end-12 start-3",
               isOpen && !isRecording && !isVanishing
                 ? "pointer-events-auto translate-y-0 opacity-100 blur-0"
                 : "pointer-events-none translate-y-2 opacity-0 blur-sm",
             )}
           >
-            <div className="prompt-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto pr-1">
+            <div className="prompt-scrollbar flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto pe-1">
               {MODES.map((mode) => (
                 <ModeButton
                   key={mode}
@@ -877,7 +890,7 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             </div>
 
             {attachSlot ? (
-              <div className="ml-auto shrink-0">{attachSlot}</div>
+              <div className="ms-auto shrink-0">{attachSlot}</div>
             ) : onAttachClick ? (
               <button
                 type="button"
@@ -887,8 +900,8 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
                   onAttachClick();
                 }}
                 disabled={attachDisabled || isStreaming || isVanishing}
-                className="ml-auto flex size-7 shrink-0 items-center justify-center rounded-full text-foreground/50 outline-none transition-all duration-200 hover:bg-accent/60 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                aria-label="Attach file"
+                className="ms-auto flex size-7 shrink-0 items-center justify-center rounded-full text-foreground/50 outline-none transition-all duration-200 hover:bg-accent/60 hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                aria-label={t("uploadFile", language)}
               >
                 <PlusIcon />
               </button>
@@ -897,10 +910,13 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
 
           <div
             className={cn(
-              "absolute right-12 bottom-2 z-[10] flex h-8 items-center justify-end gap-[3px] transition-all duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
+              "absolute bottom-2 end-12 z-[10] flex h-8 items-center justify-end gap-[3px] transition-all duration-400 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]",
               isRecording
                 ? "w-16 translate-x-0 opacity-100"
-                : "pointer-events-none w-0 translate-x-4 opacity-0",
+                : cn(
+                    "pointer-events-none w-0 opacity-0",
+                    isRTL ? "-translate-x-4" : "translate-x-4",
+                  ),
             )}
           >
             {audioData.map((val, i) => (
@@ -922,16 +938,16 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             disabled={actionDisabled}
             aria-label={
               showStop && isStreaming
-                ? "Stop generating"
+                ? t("stop", language)
                 : showStop
-                  ? "Stop recording"
+                  ? t("stopRecording", language)
                   : showArrow
-                    ? "Send prompt"
-                    : "Use voice input"
+                    ? t("send", language)
+                    : t("useVoice", language)
             }
             style={{ borderRadius: 9999 }}
             className={cn(
-              "absolute right-2 bottom-2 z-[10] flex h-8 w-8 items-center justify-center outline-none transition-all duration-300",
+              "absolute end-2 bottom-2 z-[10] flex h-8 w-8 items-center justify-center outline-none transition-all duration-300",
               "focus-visible:ring-2 focus-visible:ring-ring",
               // Keep monochrome primary for send/stop — only the glyph changes.
               "bg-primary text-primary-foreground hover:opacity-90",

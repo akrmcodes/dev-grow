@@ -160,8 +160,8 @@ export function GooeyInput({
 
   const buttonVariants = useMemo(
     () => ({
-      collapsed: { width: collapsedWidth, marginLeft: 0 },
-      expanded: { width: expandedWidth, marginLeft: expandedOffset },
+      collapsed: { width: collapsedWidth, marginInlineStart: 0 },
+      expanded: { width: expandedWidth, marginInlineStart: expandedOffset },
     }),
     [collapsedWidth, expandedWidth, expandedOffset],
   );
@@ -247,7 +247,7 @@ export function GooeyInput({
 
         <motion.div
           className={cn(
-            "absolute top-1/2 left-0 flex size-7 -translate-y-1/2 items-center justify-center",
+            "absolute top-1/2 start-0 flex size-7 -translate-y-1/2 items-center justify-center",
             classNames?.bubble,
           )}
           variants={iconBubbleVariants}

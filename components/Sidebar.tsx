@@ -81,7 +81,7 @@ export function Sidebar({
         <div className="relative flex min-h-0 flex-1 flex-col">
           {/* Reserved canvas — hero absolute; messages fill same slot (zero CLS) */}
           <div className="relative min-h-0 flex-1">
-            <EmptyHero visible={isEmpty} />
+            <EmptyHero visible={isEmpty} language={language} />
             <ChatPanel
               messages={messages}
               isLoading={isLoading}
