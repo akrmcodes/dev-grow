@@ -250,3 +250,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Installed Aceternity Gooey Input and integrated it into HistorySidebar to filter conversations by title; collapsed rail shows a search affordance that expands the sidebar; EN/AR copy for search + empty results.
 **Files:** components/ui/gooey-input.tsx, components/HistorySidebar.tsx, components/ui/sidebar.tsx, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Sync sidebar search reveal with rail animation
+
+**Summary:** Softened Gooey Input appearance with a delayed fade/blur crossfade and aligned DesktopSidebar width easing so search no longer pops in ahead of the rail expand.
+**Files:** components/HistorySidebar.tsx, components/ui/sidebar.tsx, docs/project_log.md
+**Status:** completed
