@@ -124,7 +124,7 @@ export function ChatPanel({
                           className={cn(
                             "prose prose-sm dark:prose-invert max-w-none",
                             "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
-                            "prose-code:text-emerald-300",
+                            "prose-code:text-foreground/80",
                           )}
                         >
                           <ReactMarkdown

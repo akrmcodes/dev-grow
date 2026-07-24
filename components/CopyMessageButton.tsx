@@ -50,7 +50,7 @@ export function CopyMessageButton({ text, language }: CopyMessageButtonProps) {
       className={cn(
         "absolute top-1.5 end-1.5 z-10 size-6 select-none opacity-100 transition-opacity md:opacity-0",
         "group-hover:opacity-100 focus-visible:opacity-100",
-        copied && "text-emerald-500",
+        copied && "text-foreground",
       )}
     >
       {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}

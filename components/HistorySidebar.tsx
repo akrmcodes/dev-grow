@@ -43,7 +43,7 @@ function BrandMark({ expanded }: { expanded: boolean }) {
   return (
     <div className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium text-foreground">
       <span
-        className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-base"
+        className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-foreground/10 text-base"
         aria-hidden="true"
       >
         🌱
@@ -52,7 +52,7 @@ function BrandMark({ expanded }: { expanded: boolean }) {
         <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text whitespace-pre text-transparent"
+          className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text whitespace-pre text-transparent"
         >
           DevGrow
         </motion.span>

@@ -56,21 +56,21 @@ function getTone(score: number): {
 } {
   if (score >= 8) {
     return {
-      stroke: "oklch(0.72 0.17 155)",
-      glow: "oklch(0.72 0.17 155 / 0.35)",
+      stroke: "var(--foreground)",
+      glow: "color-mix(in oklch, var(--foreground) 30%, transparent)",
       label: "excellent",
     };
   }
   if (score >= 5) {
     return {
-      stroke: "oklch(0.78 0.14 85)",
-      glow: "oklch(0.78 0.14 85 / 0.3)",
+      stroke: "var(--muted-foreground)",
+      glow: "color-mix(in oklch, var(--muted-foreground) 28%, transparent)",
       label: "fair",
     };
   }
   return {
-    stroke: "oklch(0.65 0.2 25)",
-    glow: "oklch(0.65 0.2 25 / 0.3)",
+    stroke: "color-mix(in oklch, var(--foreground) 45%, transparent)",
+    glow: "color-mix(in oklch, var(--foreground) 18%, transparent)",
     label: "needs-work",
   };
 }
@@ -147,7 +147,9 @@ function ScoreRing({
           cy={RING_SIZE / 2}
           r={RING_RADIUS}
           fill="none"
-          stroke={isLoading && score === null ? "oklch(0.72 0.17 155)" : tone.stroke}
+          stroke={
+            isLoading && score === null ? "var(--foreground)" : tone.stroke
+          }
           strokeWidth={RING_STROKE}
           strokeLinecap="round"
           strokeDasharray={RING_CIRCUMFERENCE}
@@ -162,7 +164,7 @@ function ScoreRing({
           style={{
             filter: `drop-shadow(0 0 6px ${
               isLoading && score === null
-                ? "oklch(0.72 0.17 155 / 0.35)"
+                ? "color-mix(in oklch, var(--foreground) 30%, transparent)"
                 : tone.glow
             })`,
           }}

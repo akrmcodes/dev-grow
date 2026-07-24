@@ -76,16 +76,9 @@ export function AppHeader({
           <PanelLeft className="size-4" />
         </Button>
 
-        <h1 className="pointer-events-none ms-2 text-base font-bold tracking-tight">
-          <span
-            className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
-            aria-hidden="true"
-          >
-            🌱{" "}
-          </span>
-          <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-            DevGrow
-          </span>
+        <h1 className="pointer-events-none ms-2 text-base font-bold tracking-tight text-foreground">
+          <span aria-hidden="true">🌱 </span>
+          <span>DevGrow</span>
         </h1>
       </div>
 

@@ -268,3 +268,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced the sticky header chrome with the Serenity/21st Tubelight Navbar (original colors preserved). Wired Language (EN/AR) and Theme (Light/Dark) as action pills with the glowing lamp indicator; kept a compact mobile history button + brand; added mobile bottom clearance for the floating bar.
 **Files:** components/ui/tubelight-navbar.tsx, components/AppHeader.tsx, components/AppShell.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Monochrome white/charcoal retheme
+
+**Summary:** Removed emerald/green brand accents site-wide. Primary and sidebar tokens are now neutral white (dark) / charcoal (light); score tones, brand wordmarks, code highlights, and copy feedback use foreground greyscale only.
+**Files:** app/globals.css, components/ScorecardPanel.tsx, components/HistorySidebar.tsx, components/AppHeader.tsx, components/ChatPanel.tsx, components/CopyMessageButton.tsx, docs/project_log.md
+**Status:** completed
