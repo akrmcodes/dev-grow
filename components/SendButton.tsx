@@ -41,12 +41,6 @@ export function SendButton({
 
   return (
     <div className="relative shrink-0 self-center">
-      {isStreaming && (
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 animate-pulse rounded-full bg-destructive/30 ring-2 ring-destructive/50"
-        />
-      )}
       <Button
         type="button"
         size="icon-sm"
@@ -55,9 +49,7 @@ export function SendButton({
         onClick={handleClick}
         className={cn(
           "relative size-8 rounded-full",
-          isStreaming
-            ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            : "bg-primary text-primary-foreground hover:bg-primary/90",
+          "bg-primary text-primary-foreground hover:bg-primary/90",
         )}
       >
         <AnimatePresence mode="wait" initial={false}>

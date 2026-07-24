@@ -933,9 +933,8 @@ export const PromptInput = React.forwardRef<PromptInputHandle, PromptInputProps>
             className={cn(
               "absolute right-2 bottom-2 z-[10] flex h-8 w-8 items-center justify-center outline-none transition-all duration-300",
               "focus-visible:ring-2 focus-visible:ring-ring",
-              showStop && isStreaming
-                ? "bg-destructive text-destructive-foreground hover:opacity-90"
-                : "bg-primary text-primary-foreground hover:opacity-90",
+              // Keep monochrome primary for send/stop — only the glyph changes.
+              "bg-primary text-primary-foreground hover:opacity-90",
               actionDisabled && "opacity-40",
               isVanishing && "scale-95 opacity-80",
             )}

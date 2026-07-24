@@ -394,3 +394,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Hardened system prompt script purity and added client sanitizer for mixed-script model glitches; made streaming Markdown lightweight (no highlight / no TextGenerateEffect remount) and switched smart scroll to instant while loading to remove stutter and freeze-then-pop.
 **Files:** lib/prompts.ts, lib/sanitize-assistant-text.ts, components/AssistantMessage.tsx, lib/hooks/use-smart-scroll.ts, components/ChatPanel.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Soften folder icon + monochrome stop button
+
+**Summary:** Lightened the mini folder glyph toward muted gray via currentColor so it matches neighboring toolbar icons in light mode; kept send→stop icon swap but removed destructive red styling to preserve monochrome identity.
+**Files:** components/ui/3d-folder.tsx, components/FolderUploadTrigger.tsx, components/ui/ai-chat-input.tsx, components/SendButton.tsx, docs/project_log.md
+**Status:** completed

@@ -431,9 +431,9 @@ export function MiniFolderGlyph({
         );
       })}
 
-      {/* Back panel */}
+      {/* Back panel — soft gray via currentColor to match sibling toolbar icons */}
       <motion.span
-        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-foreground/45 will-change-transform"
+        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-current/30 will-change-transform"
         initial={false}
         animate={{ rotateX: open ? 20 : 0, y: open ? 0.5 : 0 }}
         transition={lidSpring}
@@ -441,7 +441,7 @@ export function MiniFolderGlyph({
       />
       {/* Tab */}
       <motion.span
-        className="absolute bottom-[10px] start-[2.5px] h-1 w-2 rounded-t-[2px] bg-foreground/35 will-change-transform"
+        className="absolute bottom-[10px] start-[2.5px] h-1 w-2 rounded-t-[2px] bg-current/22 will-change-transform"
         initial={false}
         animate={{
           rotateX: open ? -22 : 0,
@@ -452,7 +452,7 @@ export function MiniFolderGlyph({
       />
       {/* Front panel */}
       <motion.span
-        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-foreground/80 will-change-transform"
+        className="absolute bottom-0 h-3 w-4 rounded-[3px] bg-current/48 will-change-transform"
         initial={false}
         animate={{
           rotateX: open ? -28 : 0,

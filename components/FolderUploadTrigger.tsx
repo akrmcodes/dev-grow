@@ -46,10 +46,10 @@ export function FolderUploadTrigger({
       onBlur={() => setHovered(false)}
       className={cn(
         "relative flex size-7 shrink-0 items-center justify-center overflow-visible rounded-full outline-none",
-        "text-foreground/55 transition-colors duration-200",
-        "hover:bg-accent/60 hover:text-foreground",
+        "text-foreground/50 transition-colors duration-200",
+        "hover:bg-accent/60 hover:text-foreground/70",
         "disabled:pointer-events-none disabled:opacity-40",
-        open && "bg-accent/70 text-foreground",
+        open && "bg-accent/70 text-foreground/70",
         className,
       )}
     >
