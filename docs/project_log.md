@@ -214,3 +214,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Rebuilt the code evaluation card as a compact glass strip: animated SVG score ring with count-up, tone-colored metric chips in a single row, summary in the header, and collapsible body. Aligned with the composer aesthetic; removed bulky stacked bars and emoji title copy.
 **Files:** components/ScorecardPanel.tsx, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 9.2] Hero empty state (Ripple + Flip Words)
+
+**Summary:** Installed official Magic UI Ripple and Aceternity Flip Words; added EmptyHero with LTR slogans and AnimatePresence dissolve on first message; docked ChatInput + Scorecard under a CLS-stable flex-1 canvas; mount fade on main shell. `npm run build` passed.
+**Files:** components/ui/ripple.tsx, components/ui/flip-words.tsx, components/EmptyHero.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, components/ChatInput.tsx, components/ScorecardPanel.tsx, components/AppShell.tsx, app/globals.css, docs/project_log.md
+**Status:** completed

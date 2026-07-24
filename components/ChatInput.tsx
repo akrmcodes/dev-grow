@@ -77,7 +77,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       : null;
 
     return (
-      <div className="sticky bottom-0 z-10 shrink-0 pt-2">
+      <div className="relative z-10 shrink-0">
         <input
           ref={fileInputRef}
           type="file"
@@ -94,7 +94,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           </div>
         ) : null}
 
-        <div className="mx-auto w-full max-w-xl">
+        <div className="w-full">
           <PromptInput
             ref={promptRef}
             value={value}

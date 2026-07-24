@@ -3,6 +3,7 @@
 import type { UIMessage } from "ai";
 import { ChatInput, type ChatInputHandle } from "@/components/ChatInput";
 import { ChatPanel } from "@/components/ChatPanel";
+import { EmptyHero } from "@/components/EmptyHero";
 import { FileDropZone } from "@/components/FileDropZone";
 import { ScorecardPanel } from "@/components/ScorecardPanel";
 import type { Mode } from "@/lib/prompts";
@@ -59,8 +60,10 @@ export function Sidebar({
   onFetchScorecard,
   onRetryScorecard,
 }: SidebarProps) {
+  const isEmpty = messages.length === 0 && !isLoading && !error;
+
   return (
-    <aside className={cn("flex h-full min-h-[320px] flex-col gap-3")}>
+    <aside className={cn("flex min-h-0 flex-1 flex-col gap-2")}>
       {validationError && (
         <p className="text-sm text-destructive" role="alert">
           {validationError}
@@ -73,42 +76,45 @@ export function Sidebar({
         disabled={isLoading}
       >
         <div className="relative flex min-h-0 flex-1 flex-col">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-t from-background/80 to-transparent"
-          />
-          <ChatPanel
-            messages={messages}
-            isLoading={isLoading}
-            error={error}
-            language={language}
-            visibilityKey={visibilityKey}
-          />
-          <ChatInput
-            ref={chatInputRef}
-            value={code}
-            onChange={onCodeChange}
-            activeMode={activeMode}
-            onModeChange={onModeChange}
-            isStreaming={isLoading}
-            canSend={canSend}
-            onSend={onSend}
-            onStop={onStop}
-            language={language}
-            uploadedFilename={uploadedFilename}
-            onFileSelect={onFileSelect}
-          />
+          {/* Reserved canvas — hero absolute; messages fill same slot (zero CLS) */}
+          <div className="relative min-h-0 flex-1">
+            <EmptyHero visible={isEmpty} />
+            <ChatPanel
+              messages={messages}
+              isLoading={isLoading}
+              error={error}
+              language={language}
+              visibilityKey={visibilityKey}
+            />
+          </div>
+
+          {/* Composer + scorecard dock under the hero */}
+          <div className="relative z-10 mx-auto flex w-full max-w-xl shrink-0 flex-col gap-2.5 px-1 pb-1">
+            <ChatInput
+              ref={chatInputRef}
+              value={code}
+              onChange={onCodeChange}
+              activeMode={activeMode}
+              onModeChange={onModeChange}
+              isStreaming={isLoading}
+              canSend={canSend}
+              onSend={onSend}
+              onStop={onStop}
+              language={language}
+              uploadedFilename={uploadedFilename}
+              onFileSelect={onFileSelect}
+            />
+            <ScorecardPanel
+              data={scorecardData}
+              isLoading={scorecardLoading}
+              error={scorecardError}
+              language={language}
+              onRetry={onRetryScorecard}
+              onScoreCode={onFetchScorecard}
+            />
+          </div>
         </div>
       </FileDropZone>
-
-      <ScorecardPanel
-        data={scorecardData}
-        isLoading={scorecardLoading}
-        error={scorecardError}
-        language={language}
-        onRetry={onRetryScorecard}
-        onScoreCode={onFetchScorecard}
-      />
     </aside>
   );
 }

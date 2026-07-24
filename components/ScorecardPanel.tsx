@@ -254,7 +254,7 @@ export function ScorecardPanel({
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       aria-label={t("scoreTitle", language)}
       className={cn(
-        "mt-auto shrink-0 overflow-hidden rounded-2xl border border-border/60",
+        "shrink-0 overflow-hidden rounded-2xl border border-border/60",
         "bg-card/70 shadow-sm backdrop-blur-xl",
         "ring-1 ring-foreground/[0.04]",
       )}

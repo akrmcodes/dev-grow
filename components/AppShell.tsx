@@ -281,10 +281,10 @@ export function AppShell() {
         key={language}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="flex min-h-0 flex-1 flex-col"
       >
-        <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-3">
+        <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col px-4 py-3">
           <Sidebar
             language={language}
             activeMode={mode}

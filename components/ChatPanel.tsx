@@ -76,12 +76,10 @@ export function ChatPanel({
     return text.length > 0 || message.role === "user";
   });
 
-  const showEmptyState = visibleMessages.length === 0 && !isLoading && !error;
-
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col">
+    <div className="relative flex h-full min-h-0 flex-1 flex-col">
       {showNewMessagesPill && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-40 z-20 flex justify-center">
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 z-20 flex justify-center">
           <Button
             type="button"
             size="sm"
@@ -95,16 +93,8 @@ export function ChatPanel({
 
       <div
         ref={scrollContainerRef}
-        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-40 will-change-transform"
+        className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto pb-4 will-change-transform"
       >
-        {showEmptyState && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-            <p className="max-w-[220px] text-sm text-muted-foreground">
-              {t("responsesEmpty", language)}
-            </p>
-          </div>
-        )}
-
         <MotionConfig reducedMotion="never">
           <div key={visibilityKey} className="flex flex-col gap-3 p-1">
             <AnimatePresence initial={false}>
@@ -164,7 +154,8 @@ export function ChatPanel({
                                 </pre>
                               ),
                               code: ({ className, children, ...props }) => {
-                                const isBlock = className?.includes("language-");
+                                const isBlock =
+                                  className?.includes("language-");
 
                                 if (isBlock) {
                                   return (
