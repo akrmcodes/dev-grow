@@ -280,3 +280,15 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Added CustomCursor (sharp dot + trailing ring) with Framer Motion springs, interactive hover/click scales, coarse-pointer auto-hide, and desktop `cursor: none` with text-caret exceptions; mounted in AppShell.
 **Files:** components/CustomCursor.tsx, components/AppShell.tsx, app/globals.css, components/ui/smooth-cursor.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Custom cursor text-selection + crisp ring
+
+**Summary:** Hide custom cursor over text/code (native caret restored); remove backdrop-blur in favor of mix-blend-difference ring; fade center dot on interactive/text hover leaving ring-only feedback.
+**Files:** components/CustomCursor.tsx, app/globals.css, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Sidebar conversation mode icons
+
+**Summary:** Replaced emoji mode markers in history conversation rows with the shared Lucide MODE_ICONS set, styled as minimal bordered tiles that match the monochrome sidebar.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed

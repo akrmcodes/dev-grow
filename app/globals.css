@@ -171,9 +171,19 @@
     cursor: none !important;
   }
 
+  /* Precision text selection — restore native caret over text/code */
+  html.custom-cursor-active.custom-cursor-text,
+  html.custom-cursor-active.custom-cursor-text * {
+    cursor: text !important;
+  }
+
   html.custom-cursor-active input,
   html.custom-cursor-active textarea,
   html.custom-cursor-active select,
+  html.custom-cursor-active code,
+  html.custom-cursor-active pre,
+  html.custom-cursor-active .prose,
+  html.custom-cursor-active .prose *,
   html.custom-cursor-active [contenteditable="true"] {
     cursor: text !important;
   }

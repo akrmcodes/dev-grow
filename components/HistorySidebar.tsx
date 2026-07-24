@@ -21,9 +21,9 @@ import {
   SidebarLabel,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { MODE_CONFIG } from "@/lib/constants";
 import type { ConversationMetadata } from "@/lib/chat-db";
 import { formatTimeAgo } from "@/lib/format-time-ago";
+import { MODE_ICONS } from "@/lib/mode-icons";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -224,6 +224,7 @@ function ConversationRow({
 }) {
   const { open, animate, setOpen } = useSidebar();
   const showMeta = !animate || open;
+  const ModeIcon = MODE_ICONS[conversation.mode];
 
   return (
     <div
@@ -241,10 +242,15 @@ function ConversationRow({
         }}
       >
         <span
-          className="flex size-7 shrink-0 items-center justify-center text-base"
+          className={cn(
+            "flex size-7 shrink-0 items-center justify-center rounded-md border text-muted-foreground transition-colors",
+            isActive
+              ? "border-border bg-card text-foreground"
+              : "border-transparent bg-foreground/[0.04] group-hover/sidebar:border-border/60 group-hover/sidebar:bg-card",
+          )}
           aria-hidden="true"
         >
-          {MODE_CONFIG[conversation.mode].emoji}
+          <ModeIcon className="size-3.5" strokeWidth={1.75} />
         </span>
         <span className="min-w-0 flex-1">
           <SidebarLabel className="block font-medium">
