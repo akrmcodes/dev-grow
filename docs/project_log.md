@@ -238,3 +238,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed the New messages floating button from ChatPanel and cleaned pill state from useSmartScroll / translations.
 **Files:** components/ChatPanel.tsx, lib/hooks/use-smart-scroll.ts, lib/translations.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Aceternity hover-expand history sidebar
+
+**Summary:** Replaced the slide-over HistorySidebar with Aceternity/21st.dev Sidebar (hover-expand desktop rail + mobile overlay). Wired New Chat, conversation list, delete, and clear-all into the rail; AppShell is a full-height flex shell with RTL row reverse; AppHeader hamburger opens mobile overlay only.
+**Files:** components/ui/sidebar.tsx, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, package.json, docs/project_log.md
+**Status:** completed

@@ -254,20 +254,15 @@ export function AppShell() {
   return (
     <div
       className={cn(
-        "flex min-h-dvh flex-col",
+        "flex h-dvh w-full overflow-hidden",
+        isRTL ? "md:flex-row-reverse" : "md:flex-row",
+        "flex-col",
         isRTL && "font-arabic",
       )}
     >
-      <AppHeader
-        language={language}
-        onLanguageToggle={handleLanguageToggle}
-        onHistoryToggle={() => setIsHistoryOpen((open) => !open)}
-        isHistoryOpen={isHistoryOpen}
-      />
-
       <HistorySidebar
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
+        open={isHistoryOpen}
+        setOpen={setIsHistoryOpen}
         language={language}
         conversations={conversationList}
         activeConversationId={activeConversationId}
@@ -277,44 +272,53 @@ export function AppShell() {
         onClearAll={() => void handleClearAll()}
       />
 
-      <motion.main
-        key={language}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="flex min-h-0 flex-1 flex-col"
-      >
-        <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col px-4 py-3">
-          <Sidebar
-            language={language}
-            activeMode={mode}
-            onModeChange={handleModeChange}
-            isLoading={isLoading}
-            messages={messages}
-            error={error}
-            validationError={validationError}
-            code={code}
-            onCodeChange={handleCodeChange}
-            canSend={canSend}
-            onSend={handleSend}
-            onStop={handleStop}
-            chatInputRef={chatInputRef}
-            uploadedFilename={uploadedFilename}
-            onFileLoad={handleFileLoad}
-            onFileSelect={handleFileSelect}
-            visibilityKey={visibilityKey}
-            scorecardData={scorecardData}
-            scorecardLoading={scorecardLoading}
-            scorecardError={scorecardError}
-            onFetchScorecard={fetchScorecard}
-            onRetryScorecard={fetchScorecard}
-          />
-        </div>
-      </motion.main>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <AppHeader
+          language={language}
+          onLanguageToggle={handleLanguageToggle}
+          onHistoryToggle={() => setIsHistoryOpen((open) => !open)}
+          isHistoryOpen={isHistoryOpen}
+        />
 
-      <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">
-        {t("footerCredit", language)}
-      </footer>
+        <motion.main
+          key={language}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <div className="mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col px-4 py-3">
+            <Sidebar
+              language={language}
+              activeMode={mode}
+              onModeChange={handleModeChange}
+              isLoading={isLoading}
+              messages={messages}
+              error={error}
+              validationError={validationError}
+              code={code}
+              onCodeChange={handleCodeChange}
+              canSend={canSend}
+              onSend={handleSend}
+              onStop={handleStop}
+              chatInputRef={chatInputRef}
+              uploadedFilename={uploadedFilename}
+              onFileLoad={handleFileLoad}
+              onFileSelect={handleFileSelect}
+              visibilityKey={visibilityKey}
+              scorecardData={scorecardData}
+              scorecardLoading={scorecardLoading}
+              scorecardError={scorecardError}
+              onFetchScorecard={fetchScorecard}
+              onRetryScorecard={fetchScorecard}
+            />
+          </div>
+        </motion.main>
+
+        <footer className="shrink-0 border-t border-border py-3 text-center text-xs text-muted-foreground">
+          {t("footerCredit", language)}
+        </footer>
+      </div>
     </div>
   );
 }

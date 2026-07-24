@@ -1,8 +1,8 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Trash2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { MessageSquarePlus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +14,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarLabel,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { MODE_CONFIG } from "@/lib/constants";
 import type { ConversationMetadata } from "@/lib/chat-db";
 import { formatTimeAgo } from "@/lib/format-time-ago";
@@ -21,8 +27,8 @@ import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
 type HistorySidebarProps = {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   language: Language;
   conversations: ConversationMetadata[];
   activeConversationId: string | null;
@@ -32,9 +38,223 @@ type HistorySidebarProps = {
   onClearAll: () => void;
 };
 
+function BrandMark({ expanded }: { expanded: boolean }) {
+  return (
+    <div className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium text-foreground">
+      <span
+        className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-base"
+        aria-hidden="true"
+      >
+        🌱
+      </span>
+      {expanded ? (
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text whitespace-pre text-transparent"
+        >
+          DevGrow
+        </motion.span>
+      ) : null}
+    </div>
+  );
+}
+
+function Brand() {
+  const { open, animate } = useSidebar();
+  const showLabel = !animate || open;
+  return <BrandMark expanded={showLabel} />;
+}
+
+function NewChatRow({
+  language,
+  onNewChat,
+}: {
+  language: Language;
+  onNewChat: () => void;
+}) {
+  const { setOpen } = useSidebar();
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onNewChat();
+        setOpen(false);
+      }}
+      className="group/sidebar flex w-full items-center gap-2 rounded-lg px-1 py-2 text-start transition-colors hover:bg-muted/70"
+      aria-label={t("newChat", language)}
+    >
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border bg-card text-foreground">
+        <MessageSquarePlus className="size-4" />
+      </span>
+      <SidebarLabel className="font-medium">
+        {t("newChat", language)}
+      </SidebarLabel>
+    </button>
+  );
+}
+
+function ConversationRow({
+  conversation,
+  isActive,
+  language,
+  onSelect,
+  onDelete,
+}: {
+  conversation: ConversationMetadata;
+  isActive: boolean;
+  language: Language;
+  onSelect: (id: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  const { open, animate, setOpen } = useSidebar();
+  const showMeta = !animate || open;
+
+  return (
+    <div
+      className={cn(
+        "group/sidebar flex items-center gap-1 rounded-lg px-1 py-1.5 transition-colors hover:bg-muted/70",
+        isActive && "bg-muted",
+      )}
+    >
+      <button
+        type="button"
+        className="flex min-w-0 flex-1 items-center gap-2 text-start"
+        onClick={() => {
+          onSelect(conversation.id);
+          setOpen(false);
+        }}
+      >
+        <span
+          className="flex size-7 shrink-0 items-center justify-center text-base"
+          aria-hidden="true"
+        >
+          {MODE_CONFIG[conversation.mode].emoji}
+        </span>
+        <span className="min-w-0 flex-1">
+          <SidebarLabel className="block font-medium">
+            {conversation.title}
+          </SidebarLabel>
+          {showMeta ? (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-0.5 truncate text-[11px] text-muted-foreground"
+            >
+              {formatTimeAgo(conversation.updatedAt, language)}
+            </motion.p>
+          ) : null}
+        </span>
+      </button>
+
+      {showMeta ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          className="size-7 shrink-0 text-muted-foreground opacity-100 hover:text-destructive md:opacity-0 md:group-hover/sidebar:opacity-100"
+          aria-label={t("deleteConversation", language)}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(conversation.id);
+          }}
+        >
+          <Trash2 className="size-3.5" />
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+function ClearAllRow({
+  language,
+  onRequestClear,
+}: {
+  language: Language;
+  onRequestClear: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onRequestClear}
+      className="group/sidebar flex w-full items-center gap-2 rounded-lg px-1 py-2 text-start text-destructive transition-colors hover:bg-destructive/10"
+      aria-label={t("clearAllHistory", language)}
+    >
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-destructive/20 bg-destructive/10">
+        <Trash2 className="size-4" />
+      </span>
+      <SidebarLabel className="font-medium text-destructive">
+        {t("clearAllHistory", language)}
+      </SidebarLabel>
+    </button>
+  );
+}
+
+function SidebarContent({
+  language,
+  conversations,
+  activeConversationId,
+  onSelect,
+  onDelete,
+  onNewChat,
+  onRequestClear,
+}: {
+  language: Language;
+  conversations: ConversationMetadata[];
+  activeConversationId: string | null;
+  onSelect: (id: string) => void;
+  onDelete: (id: string) => void;
+  onNewChat: () => void;
+  onRequestClear: () => void;
+}) {
+  const { open, animate } = useSidebar();
+  const showEmptyCopy = (!animate || open) && conversations.length === 0;
+
+  return (
+    <>
+      <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+        <Brand />
+
+        <div className="mt-6 flex flex-col gap-1">
+          <NewChatRow language={language} onNewChat={onNewChat} />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-0.5">
+          {showEmptyCopy ? (
+            <p className="px-1 py-6 text-center text-xs text-muted-foreground">
+              {t("noHistory", language)}
+            </p>
+          ) : (
+            conversations.map((conversation) => (
+              <ConversationRow
+                key={conversation.id}
+                conversation={conversation}
+                isActive={conversation.id === activeConversationId}
+                language={language}
+                onSelect={onSelect}
+                onDelete={onDelete}
+              />
+            ))
+          )}
+        </div>
+      </div>
+
+      {conversations.length > 0 ? (
+        <div className="shrink-0 border-t border-border pt-3">
+          <ClearAllRow language={language} onRequestClear={onRequestClear} />
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Aceternity hover-expand sidebar adapted for DevGrow chat history.
+ */
 export function HistorySidebar({
-  isOpen,
-  onClose,
+  open,
+  setOpen,
   language,
   conversations,
   activeConversationId,
@@ -43,153 +263,29 @@ export function HistorySidebar({
   onNewChat,
   onClearAll,
 }: HistorySidebarProps) {
-  const isRTL = language === "ar";
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
 
   const handleClearAll = () => {
     onClearAll();
     setIsClearDialogOpen(false);
+    setOpen(false);
   };
 
   return (
     <>
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.button
-              type="button"
-              aria-label={t("cancel", language)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-              onClick={onClose}
-            />
-
-            <motion.aside
-              initial={{ x: isRTL ? "100%" : "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: isRTL ? "100%" : "-100%" }}
-              transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className={cn(
-                "fixed top-0 bottom-0 z-50 flex w-full max-w-sm flex-col border-border bg-background shadow-xl",
-                isRTL ? "right-0 border-s" : "left-0 border-e",
-              )}
-            >
-              <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                <h2 className="text-sm font-semibold text-foreground">
-                  {t("historyTitle", language)}
-                </h2>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={t("cancel", language)}
-                  onClick={onClose}
-                >
-                  <X className="size-4" />
-                </Button>
-              </div>
-
-              <div className="border-b border-border px-4 py-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                  onClick={onNewChat}
-                >
-                  <Plus className="size-4" />
-                  {t("newChat", language)}
-                </Button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto px-2 py-2">
-                {conversations.length === 0 ? (
-                  <p className="px-2 py-8 text-center text-sm text-muted-foreground">
-                    {t("noHistory", language)}
-                  </p>
-                ) : (
-                  <ul className="flex flex-col gap-1">
-                    {conversations.map((conversation) => {
-                      const isActive = conversation.id === activeConversationId;
-
-                      return (
-                        <li key={conversation.id}>
-                          <div
-                            className={cn(
-                              "group flex items-start gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-muted/60",
-                              isActive && "bg-muted",
-                            )}
-                          >
-                            <button
-                              type="button"
-                              className="min-w-0 flex-1 text-start"
-                              onClick={() => onSelect(conversation.id)}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span aria-hidden="true" className="shrink-0">
-                                  {MODE_CONFIG[conversation.mode].emoji}
-                                </span>
-                                <span className="truncate text-sm font-medium text-foreground">
-                                  {conversation.title}
-                                </span>
-                              </div>
-                              <p className="mt-1 text-xs text-muted-foreground">
-                                {formatTimeAgo(conversation.updatedAt, language)}
-                              </p>
-                            </button>
-
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              className="shrink-0 text-muted-foreground opacity-100 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
-                              aria-label={t("deleteConversation", language)}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                onDelete(conversation.id);
-                              }}
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-
-              {conversations.length > 0 && (
-                <div className="border-t border-border px-4 py-3">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => setIsClearDialogOpen(true)}
-                  >
-                    {t("clearAllHistory", language)}
-                  </Button>
-                </div>
-              )}
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      <Sidebar open={open} setOpen={setOpen}>
+        <SidebarBody className="justify-between gap-6">
+          <SidebarContent
+            language={language}
+            conversations={conversations}
+            activeConversationId={activeConversationId}
+            onSelect={onSelect}
+            onDelete={onDelete}
+            onNewChat={onNewChat}
+            onRequestClear={() => setIsClearDialogOpen(true)}
+          />
+        </SidebarBody>
+      </Sidebar>
 
       <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
         <AlertDialogContent>
@@ -203,10 +299,7 @@ export function HistorySidebar({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("cancel", language)}</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={handleClearAll}
-            >
+            <AlertDialogAction variant="destructive" onClick={handleClearAll}>
               {t("confirm", language)}
             </AlertDialogAction>
           </AlertDialogFooter>
