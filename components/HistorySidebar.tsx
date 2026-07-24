@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/BrandLogo";
 import { GooeyInput } from "@/components/ui/gooey-input";
 import {
   Sidebar,
@@ -49,12 +50,7 @@ type HistorySidebarProps = {
 function BrandMark({ expanded }: { expanded: boolean }) {
   return (
     <div className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium text-foreground">
-      <span
-        className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-foreground/10 text-base"
-        aria-hidden="true"
-      >
-        🌱
-      </span>
+      <BrandLogo className="size-6 shrink-0 text-foreground" aria-hidden="true" />
       {expanded ? (
         <motion.span
           initial={{ opacity: 0 }}

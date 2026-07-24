@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { useMemo, useSyncExternalStore } from "react";
 import { NavBar, type TubelightNavItem } from "@/components/ui/tubelight-navbar";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/BrandLogo";
 import { type Language, t } from "@/lib/translations";
 
 function useMounted() {
@@ -76,8 +77,8 @@ export function AppHeader({
           <PanelLeft className="size-4" />
         </Button>
 
-        <h1 className="pointer-events-none ms-2 text-base font-bold tracking-tight text-foreground">
-          <span aria-hidden="true">🌱 </span>
+        <h1 className="pointer-events-none ms-2 flex items-center gap-2 text-base font-bold tracking-tight text-foreground">
+          <BrandLogo className="size-5 text-foreground" title="DevGrow" />
           <span>DevGrow</span>
         </h1>
       </div>

@@ -29,6 +29,11 @@ export const metadata: Metadata = {
   title: "DevGrow — AI Coding Assistant",
   description:
     "Bilingual AI coding assistant for programming students. Review code, get hints, and grow your skills.",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "DevGrow — AI Coding Assistant",
     description:

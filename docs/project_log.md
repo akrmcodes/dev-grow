@@ -370,3 +370,21 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Finalized borderless assistant replies with Aceternity text-generate on history mounts, refined prose hierarchy, streaming caret, and footer Copy control.
 **Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Switch OpenRouter API key
+
+**Summary:** Commented out the rate-limited temporary OpenRouter key and reactivated the primary key; verified home page, OpenRouter auth, and streaming `/api/chat`.
+**Files:** .env.local, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Brand logo + favicon
+
+**Summary:** Moved logo.svg into public/brand and app/icon.svg; replaced emoji marks with a theme-aware BrandLogo (currentColor); set SVG favicon with light/dark prefers-color-scheme for the Chrome tab.
+**Files:** public/brand/logo.svg, public/icon.svg, app/icon.svg, components/BrandLogo.tsx, components/AppHeader.tsx, components/HistorySidebar.tsx, app/layout.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Sidebar logo size and background
+
+**Summary:** Removed the rounded background tile behind the sidebar brand mark and increased the logo size slightly for clearer presence.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
