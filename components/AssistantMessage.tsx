@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
-import { motion } from "motion/react";
+import { memo, useMemo, useRef, type ReactNode } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { CopyMessageButton } from "@/components/CopyMessageButton";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { sanitizeAssistantText } from "@/lib/sanitize-assistant-text";
 import { type Language } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -28,52 +28,12 @@ function flattenToText(node: ReactNode): string | null {
   return null;
 }
 
-function BlockReveal({
-  children,
-  delay = 0,
-  enabled = true,
-}: {
-  children: ReactNode;
-  delay?: number;
-  enabled?: boolean;
-}) {
-  if (!enabled) return <>{children}</>;
+function createMarkdownComponents(options: {
+  useWordGenerate: boolean;
+}): Components {
+  const { useWordGenerate } = options;
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6, filter: "blur(6px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{
-        duration: 0.45,
-        delay,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-/**
- * Borderless, page-blended assistant reply with generate-style typography
- * and a footer copy action.
- */
-export function AssistantMessage({
-  text,
-  language,
-  isStreaming = false,
-}: AssistantMessageProps) {
-  // Word generate for history mounts. Live streams render continuously,
-  // then settle with a soft clarity pass (no remount flash).
-  const sawStreamingRef = useRef(isStreaming);
-  useEffect(() => {
-    if (isStreaming) sawStreamingRef.current = true;
-  }, [isStreaming]);
-
-  const useWordGenerate = !isStreaming && !sawStreamingRef.current;
-  const settledLive = !isStreaming && sawStreamingRef.current;
-
-  const components: Components = {
+  return {
     p: ({ children }) => {
       const plain = flattenToText(children);
       if (useWordGenerate && plain && plain.trim().length > 0) {
@@ -82,7 +42,7 @@ export function AssistantMessage({
             words={plain}
             as="p"
             className="mb-4 text-[15px] font-normal leading-7 last:mb-0"
-            duration={0.3}
+            duration={0.28}
           />
         );
       }
@@ -94,59 +54,45 @@ export function AssistantMessage({
       );
     },
     h1: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <h1 className="mb-3 mt-6 text-xl font-semibold tracking-tight text-foreground first:mt-0">
-          {children}
-        </h1>
-      </BlockReveal>
+      <h1 className="mb-3 mt-6 text-xl font-semibold tracking-tight text-foreground first:mt-0">
+        {children}
+      </h1>
     ),
     h2: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <h2 className="mb-2.5 mt-5 text-lg font-semibold tracking-tight text-foreground first:mt-0">
-          {children}
-        </h2>
-      </BlockReveal>
+      <h2 className="mb-2.5 mt-5 text-lg font-semibold tracking-tight text-foreground first:mt-0">
+        {children}
+      </h2>
     ),
     h3: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <h3 className="mb-2 mt-4 text-base font-semibold tracking-tight text-foreground first:mt-0">
-          {children}
-        </h3>
-      </BlockReveal>
+      <h3 className="mb-2 mt-4 text-base font-semibold tracking-tight text-foreground first:mt-0">
+        {children}
+      </h3>
     ),
     ul: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <ul className="mb-4 list-disc space-y-1.5 ps-5 text-[15px] leading-7 marker:text-foreground/40">
-          {children}
-        </ul>
-      </BlockReveal>
+      <ul className="mb-4 list-disc space-y-1.5 ps-5 text-[15px] leading-7 marker:text-foreground/40">
+        {children}
+      </ul>
     ),
     ol: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <ol className="mb-4 list-decimal space-y-1.5 ps-5 text-[15px] leading-7 marker:text-foreground/40">
-          {children}
-        </ol>
-      </BlockReveal>
+      <ol className="mb-4 list-decimal space-y-1.5 ps-5 text-[15px] leading-7 marker:text-foreground/40">
+        {children}
+      </ol>
     ),
     li: ({ children }) => (
       <li className="ps-0.5 text-foreground/95">{children}</li>
     ),
     blockquote: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate}>
-        <blockquote className="mb-4 border-s-2 border-foreground/20 ps-4 text-[15px] leading-7 text-muted-foreground italic">
-          {children}
-        </blockquote>
-      </BlockReveal>
+      <blockquote className="mb-4 border-s-2 border-foreground/20 ps-4 text-[15px] leading-7 text-muted-foreground italic">
+        {children}
+      </blockquote>
     ),
     pre: ({ children }) => (
-      <BlockReveal enabled={useWordGenerate || settledLive} delay={0.04}>
-        <pre
-          dir="ltr"
-          className="my-4 overflow-x-auto rounded-xl border border-border/50 bg-[#0d1117] p-3.5 text-xs leading-relaxed shadow-[inset_0_1px_0_0_color-mix(in_oklch,var(--foreground)_6%,transparent)]"
-        >
-          {children}
-        </pre>
-      </BlockReveal>
+      <pre
+        dir="ltr"
+        className="my-4 overflow-x-auto rounded-xl border border-border/50 bg-[#0d1117] p-3.5 text-xs leading-relaxed shadow-[inset_0_1px_0_0_color-mix(in_oklch,var(--foreground)_6%,transparent)]"
+      >
+        {children}
+      </pre>
     ),
     code: ({ className, children, ...props }) => {
       const isBlock = className?.includes("language-");
@@ -184,24 +130,54 @@ export function AssistantMessage({
     ),
     hr: () => <hr className="my-6 border-border/60" />,
   };
+}
+
+/**
+ * Borderless assistant reply.
+ * Streaming stays lightweight (no highlight / no word-generate) so tokens paint continuously.
+ * History may use TextGenerateEffect once; live streams never remount into it after settle.
+ */
+function AssistantMessageComponent({
+  text,
+  language,
+  isStreaming = false,
+}: AssistantMessageProps) {
+  const cleanText = useMemo(() => sanitizeAssistantText(text), [text]);
+
+  // Once this instance has streamed live, never switch into TextGenerateEffect
+  // on settle — that remount caused freeze-then-pop after the response finished.
+  const sawStreamingRef = useRef(isStreaming);
+  if (isStreaming) {
+    sawStreamingRef.current = true;
+  }
+
+  const wordCount = cleanText.split(/\s+/).filter(Boolean).length;
+  const enableGenerate =
+    !isStreaming &&
+    !sawStreamingRef.current &&
+    wordCount > 0 &&
+    wordCount <= 120;
+
+  const components = useMemo(
+    () => createMarkdownComponents({ useWordGenerate: enableGenerate }),
+    [enableGenerate],
+  );
+
+  const rehypePlugins = useMemo(
+    () => (isStreaming ? [] : [rehypeHighlight]),
+    [isStreaming],
+  );
 
   return (
-    <motion.article
+    <article
       className={cn(
         "group/assistant relative w-full max-w-3xl bg-transparent",
         "text-foreground",
       )}
-      initial={false}
-      animate={
-        settledLive
-          ? { opacity: 1, filter: "blur(0px)" }
-          : { opacity: 1, filter: "blur(0px)" }
-      }
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className={cn("max-w-none", "[&>*:first-child]:mt-0")}>
-        <ReactMarkdown rehypePlugins={[rehypeHighlight]} components={components}>
-          {text}
+        <ReactMarkdown rehypePlugins={rehypePlugins} components={components}>
+          {cleanText}
         </ReactMarkdown>
         {isStreaming ? (
           <span
@@ -211,15 +187,17 @@ export function AssistantMessage({
         ) : null}
       </div>
 
-      {!isStreaming && text.trim().length > 0 ? (
+      {!isStreaming && cleanText.trim().length > 0 ? (
         <footer className="mt-5 flex items-center gap-1 border-t border-border/40 pt-3">
           <CopyMessageButton
-            text={text}
+            text={cleanText}
             language={language}
             placement="footer"
           />
         </footer>
       ) : null}
-    </motion.article>
+    </article>
   );
 }
+
+export const AssistantMessage = memo(AssistantMessageComponent);

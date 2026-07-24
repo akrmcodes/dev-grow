@@ -4,11 +4,22 @@ import { useCallback, useEffect, useRef } from "react";
 
 const NEAR_BOTTOM_MARGIN_PX = 100;
 
-export function useSmartScroll(deps: unknown[]) {
+type UseSmartScrollOptions = {
+  /** Prefer instant scroll while tokens arrive to avoid smooth-scroll backlog. */
+  preferInstant?: boolean;
+};
+
+export function useSmartScroll(
+  deps: unknown[],
+  options: UseSmartScrollOptions = {},
+) {
+  const { preferInstant = false } = options;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
   const scrollRafRef = useRef<number | null>(null);
+  const preferInstantRef = useRef(preferInstant);
+  preferInstantRef.current = preferInstant;
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const container = scrollContainerRef.current;
@@ -52,7 +63,8 @@ export function useSmartScroll(deps: unknown[]) {
     scrollRafRef.current = requestAnimationFrame(() => {
       container.scrollTo({
         top: container.scrollHeight,
-        behavior: "smooth",
+        // Smooth scrolling every token stacks animations and causes stutter.
+        behavior: preferInstantRef.current ? "auto" : "smooth",
       });
       scrollRafRef.current = null;
     });

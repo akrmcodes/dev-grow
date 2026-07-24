@@ -75,12 +75,11 @@ export function ChatPanel({
   const isRTL = language === "ar";
   const showThinking = isAwaitingFirstToken(messages, isLoading);
 
-  const { scrollContainerRef, bottomSentinelRef } = useSmartScroll([
-    messages,
-    isLoading,
-    showThinking,
-    visibilityKey,
-  ]);
+  const { scrollContainerRef, bottomSentinelRef } = useSmartScroll(
+    [messages, isLoading, showThinking, visibilityKey],
+    // Instant scroll while tokens arrive — smooth stacks and causes stutter.
+    { preferInstant: isLoading },
+  );
 
   const visibleMessages = messages.filter((message) => {
     const text = getMessageText(message);

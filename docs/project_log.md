@@ -388,3 +388,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed the rounded background tile behind the sidebar brand mark and increased the logo size slightly for clearer presence.
 **Files:** components/HistorySidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Fix garbled tokens + streaming lag
+
+**Summary:** Hardened system prompt script purity and added client sanitizer for mixed-script model glitches; made streaming Markdown lightweight (no highlight / no TextGenerateEffect remount) and switched smart scroll to instant while loading to remove stutter and freeze-then-pop.
+**Files:** lib/prompts.ts, lib/sanitize-assistant-text.ts, components/AssistantMessage.tsx, lib/hooks/use-smart-scroll.ts, components/ChatPanel.tsx, docs/project_log.md
+**Status:** completed
