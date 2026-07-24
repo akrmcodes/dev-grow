@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageSquarePlus, Search, Trash2 } from "lucide-react";
+import { MessageSquarePlus, MousePointer2, Search, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import type { ConversationMetadata } from "@/lib/chat-db";
 import { formatTimeAgo } from "@/lib/format-time-ago";
+import { useCustomCursorPreference } from "@/lib/hooks/use-custom-cursor-preference";
 import { MODE_ICONS } from "@/lib/mode-icons";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
@@ -311,6 +312,86 @@ function ClearAllRow({
   );
 }
 
+function CursorPreferenceRow({ language }: { language: Language }) {
+  const { open, animate } = useSidebar();
+  const showLabels = !animate || open;
+  const { preferred, setEnabled, available, hydrated } =
+    useCustomCursorPreference();
+
+  if (!hydrated || !available) return null;
+
+  const label = preferred
+    ? t("customCursorOn", language)
+    : t("customCursorOff", language);
+
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={preferred}
+      aria-label={t("toggleCustomCursor", language)}
+      title={t("toggleCustomCursor", language)}
+      onClick={() => setEnabled(!preferred)}
+      className={cn(
+        "group/cursor flex w-full items-center gap-2 rounded-xl px-1 py-2 text-start transition-colors",
+        "hover:bg-muted/70",
+        preferred && "bg-foreground/[0.03]",
+      )}
+    >
+      <span
+        className={cn(
+          "relative flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors",
+          preferred
+            ? "border-foreground/25 bg-foreground text-background"
+            : "border-border bg-card text-muted-foreground group-hover/cursor:text-foreground",
+        )}
+        aria-hidden="true"
+      >
+        <MousePointer2 className="size-3.5" strokeWidth={1.75} />
+        {preferred ? (
+          <span className="absolute top-1 end-1 size-1 rounded-full bg-background/90" />
+        ) : null}
+      </span>
+
+      <span className="min-w-0 flex-1">
+        <SidebarLabel className="block font-medium">
+          {t("customCursor", language)}
+        </SidebarLabel>
+        {showLabels ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-0.5 text-[11px] text-muted-foreground"
+          >
+            {label}
+          </motion.p>
+        ) : null}
+      </span>
+
+      {showLabels ? (
+        <span
+          className={cn(
+            "flex h-6 w-10 shrink-0 items-center rounded-full border px-0.5 transition-colors duration-200",
+            preferred
+              ? "justify-end border-foreground/30 bg-foreground"
+              : "justify-start border-border bg-muted",
+          )}
+          aria-hidden="true"
+        >
+          <motion.span
+            layout
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            className={cn(
+              "size-4 rounded-full shadow-sm",
+              preferred ? "bg-background" : "bg-foreground/40",
+            )}
+          />
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
 function SidebarContent({
   language,
   conversations,
@@ -382,11 +463,12 @@ function SidebarContent({
         </div>
       </div>
 
-      {conversations.length > 0 ? (
-        <div className="shrink-0 border-t border-border pt-3">
+      <div className="shrink-0 space-y-1 border-t border-border pt-3">
+        <CursorPreferenceRow language={language} />
+        {conversations.length > 0 ? (
           <ClearAllRow language={language} onRequestClear={onRequestClear} />
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </>
   );
 }

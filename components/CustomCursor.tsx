@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useCustomCursorPreference } from "@/lib/hooks/use-custom-cursor-preference";
 import { cn } from "@/lib/utils";
 
 const COARSE_POINTER = "(pointer: coarse)";
@@ -40,9 +41,12 @@ type CursorMode = "default" | "interactive" | "text";
  * Hides over text/code for precise selection; ring-only over buttons.
  */
 export function CustomCursor() {
-  const [enabled, setEnabled] = useState(false);
+  const { preferred, hydrated } = useCustomCursorPreference();
+  const [capable, setCapable] = useState(false);
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<CursorMode>("default");
+
+  const enabled = hydrated && preferred && capable;
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -62,7 +66,7 @@ export function CustomCursor() {
     const reduce = window.matchMedia(REDUCE_MOTION);
 
     const sync = () => {
-      setEnabled(fine.matches && !coarse.matches && !reduce.matches);
+      setCapable(fine.matches && !coarse.matches && !reduce.matches);
     };
 
     sync();

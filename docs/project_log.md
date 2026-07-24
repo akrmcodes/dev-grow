@@ -292,3 +292,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Replaced emoji mode markers in history conversation rows with the shared Lucide MODE_ICONS set, styled as minimal bordered tiles that match the monochrome sidebar.
 **Files:** components/HistorySidebar.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-24 — Custom cursor preference toggle
+
+**Summary:** Added a sidebar Smooth cursor switch (desktop only) with localStorage persistence so users can enable/disable the custom cursor; preference syncs to CustomCursor via a shared hook.
+**Files:** lib/hooks/use-custom-cursor-preference.ts, components/CustomCursor.tsx, components/HistorySidebar.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed

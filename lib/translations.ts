@@ -61,6 +61,10 @@ export const translations = {
     errorOnlyCodeFiles: "Only code files are supported.",
     errorFileTooLarge: "File too large. Max 100KB.",
     footerCredit: "Powered by OpenRouter · google/gemma-4-31b-it:free",
+    customCursor: "Smooth cursor",
+    customCursorOn: "On — soft ring follows your pointer",
+    customCursorOff: "Off — use the system cursor",
+    toggleCustomCursor: "Toggle smooth cursor",
   },
   ar: {
     switchToLight: "التبديل إلى الوضع الفاتح",
@@ -122,6 +126,10 @@ export const translations = {
     errorOnlyCodeFiles: "ملفات الكود فقط مدعومة.",
     errorFileTooLarge: "الملف كبير جداً. الحد الأقصى 100 كيلوبايت.",
     footerCredit: "مدعوم من OpenRouter · google/gemma-4-31b-it:free",
+    customCursor: "مؤشر سلس",
+    customCursorOn: "مفعّل — حلقة ناعمة تتبع المؤشر",
+    customCursorOff: "متوقف — استخدم مؤشر النظام",
+    toggleCustomCursor: "تبديل المؤشر السلس",
   },
 } as const;
 
