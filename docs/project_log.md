@@ -430,3 +430,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Prompt textarea/placeholder now use `dir=rtl` when the UI language is Arabic so the caret and typed text begin on the right; vanish raster/sweep follow the same direction.
 **Files:** components/ui/ai-chat-input.tsx, lib/vanish-particles.ts, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Fix scorecard analysis spinner glitch
+
+**Summary:** Score ring loader stuttered because Tailwind `-rotate-90` conflicted with Framer’s infinite rotate; replaced loading state with a CSS `animate-spin` arc on a separate SVG and removed section `layout` thrash during analysis.
+**Files:** components/ScorecardPanel.tsx, docs/project_log.md
+**Status:** completed

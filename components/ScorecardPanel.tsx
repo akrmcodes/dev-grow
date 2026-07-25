@@ -116,22 +116,17 @@ function ScoreRing({
   const progress = Math.max(0, Math.min(1, safeScore / 10));
   const offset = RING_CIRCUMFERENCE * (1 - progress);
   const showScore = score !== null && !isLoading;
+  const spinning = isLoading && score === null;
 
   return (
     <div className="relative size-14 shrink-0">
-      <motion.svg
+      {/* Track — always static */}
+      <svg
         width={RING_SIZE}
         height={RING_SIZE}
         viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
-        className="-rotate-90"
+        className="absolute inset-0 -rotate-90"
         aria-hidden="true"
-        animate={isLoading && score === null ? { rotate: 360 } : { rotate: -90 }}
-        transition={
-          isLoading && score === null
-            ? { duration: 1.1, repeat: Infinity, ease: "linear" }
-            : { duration: 0.2 }
-        }
-        style={{ originX: "50%", originY: "50%" }}
       >
         <circle
           cx={RING_SIZE / 2}
@@ -142,37 +137,64 @@ function ScoreRing({
           strokeWidth={RING_STROKE}
           className="text-muted/50"
         />
-        <motion.circle
-          cx={RING_SIZE / 2}
-          cy={RING_SIZE / 2}
-          r={RING_RADIUS}
-          fill="none"
-          stroke={
-            isLoading && score === null ? "var(--foreground)" : tone.stroke
-          }
-          strokeWidth={RING_STROKE}
-          strokeLinecap="round"
-          strokeDasharray={RING_CIRCUMFERENCE}
-          initial={{ strokeDashoffset: RING_CIRCUMFERENCE }}
-          animate={{
-            strokeDashoffset:
-              isLoading && score === null
-                ? RING_CIRCUMFERENCE * 0.72
-                : offset,
-          }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            filter: `drop-shadow(0 0 6px ${
-              isLoading && score === null
-                ? "color-mix(in oklch, var(--foreground) 30%, transparent)"
-                : tone.glow
-            })`,
-          }}
-        />
-      </motion.svg>
+      </svg>
+
+      {spinning ? (
+        /* CSS spin only — avoids Framer/Tailwind rotate conflicts that stutter. */
+        <svg
+          width={RING_SIZE}
+          height={RING_SIZE}
+          viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
+          className="absolute inset-0 animate-spin"
+          style={{ animationDuration: "0.9s" }}
+          aria-hidden="true"
+        >
+          <circle
+            cx={RING_SIZE / 2}
+            cy={RING_SIZE / 2}
+            r={RING_RADIUS}
+            fill="none"
+            stroke="var(--foreground)"
+            strokeWidth={RING_STROKE}
+            strokeLinecap="round"
+            strokeDasharray={RING_CIRCUMFERENCE}
+            strokeDashoffset={RING_CIRCUMFERENCE * 0.72}
+            style={{
+              filter:
+                "drop-shadow(0 0 6px color-mix(in oklch, var(--foreground) 30%, transparent))",
+            }}
+          />
+        </svg>
+      ) : (
+        <svg
+          width={RING_SIZE}
+          height={RING_SIZE}
+          viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
+          className="absolute inset-0 -rotate-90"
+          aria-hidden="true"
+        >
+          <motion.circle
+            cx={RING_SIZE / 2}
+            cy={RING_SIZE / 2}
+            r={RING_RADIUS}
+            fill="none"
+            stroke={tone.stroke}
+            strokeWidth={RING_STROKE}
+            strokeLinecap="round"
+            strokeDasharray={RING_CIRCUMFERENCE}
+            initial={{ strokeDashoffset: RING_CIRCUMFERENCE }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              filter: `drop-shadow(0 0 6px ${tone.glow})`,
+            }}
+          />
+        </svg>
+      )}
+
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {isLoading && score === null ? (
-          <Sparkles className="size-3.5 animate-pulse text-primary" />
+        {spinning ? (
+          <Sparkles className="size-3.5 text-primary opacity-80" aria-hidden="true" />
         ) : (
           <span className="text-[15px] font-semibold leading-none text-foreground">
             {showScore || score !== null ? (
@@ -186,6 +208,7 @@ function ScoreRing({
     </div>
   );
 }
+
 
 function MetricChip({
   label,
@@ -249,11 +272,11 @@ export function ScorecardPanel({
 
   return (
     <motion.section
-      layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       aria-label={t("scoreTitle", language)}
+      aria-busy={isLoading}
       className={cn(
         "shrink-0 overflow-hidden rounded-2xl border border-border/60",
         "bg-card/70 shadow-sm backdrop-blur-xl",
@@ -355,11 +378,17 @@ export function ScorecardPanel({
               )}
 
               {isLoading && !data && (
-                <div className="flex gap-3">
-                  {METRICS.map((metric) => (
+                <div className="flex gap-3" aria-hidden="true">
+                  {METRICS.map((metric, index) => (
                     <div key={metric.key} className="min-w-0 flex-1 space-y-1.5">
-                      <div className="h-3 w-16 animate-pulse rounded bg-muted" />
-                      <div className="h-1 animate-pulse rounded-full bg-muted" />
+                      <div
+                        className="h-3 w-16 animate-pulse rounded bg-muted/80"
+                        style={{ animationDelay: `${index * 120}ms` }}
+                      />
+                      <div
+                        className="h-1 animate-pulse rounded-full bg-muted/80"
+                        style={{ animationDelay: `${index * 120 + 60}ms` }}
+                      />
                     </div>
                   ))}
                 </div>
