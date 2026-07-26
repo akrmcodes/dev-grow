@@ -114,9 +114,13 @@ export function ChatPanel({
                 return (
                   <motion.div
                     key={message.id}
-                    initial={fadeIn.initial}
+                    initial={isStreamingAssistant ? false : fadeIn.initial}
                     animate={fadeIn.animate}
-                    transition={fadeIn.transition}
+                    transition={
+                      isStreamingAssistant
+                        ? { duration: 0 }
+                        : fadeIn.transition
+                    }
                     className={cn(
                       "flex w-full",
                       // Logical end = trailing edge (right in LTR, left in RTL).

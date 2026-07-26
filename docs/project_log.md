@@ -436,3 +436,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Score ring loader stuttered because Tailwind `-rotate-90` conflicted with Framer’s infinite rotate; replaced loading state with a CSS `animate-spin` arc on a separate SVG and removed section `layout` thrash during analysis.
 **Files:** components/ScorecardPanel.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-07-25 — Stream without text-generate (history-only)
+
+**Summary:** Removed TextGenerateEffect from live AI replies for smooth token throughput; entrance animation is history-only. Streaming uses a stable static Markdown path (no highlight/sanitize per chunk); generate effect simplified to entrance-only.
+**Files:** components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, components/ChatPanel.tsx, docs/project_log.md
+**Status:** completed
