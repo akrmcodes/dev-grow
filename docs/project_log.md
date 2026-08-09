@@ -166,3 +166,279 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Implemented all six Stage 7.4 micro-animations with Framer Motion and CSS. Chat messages, thinking badge, and errors fade in via AnimatePresence; mode buttons use motion.button hover/tap scale; scorecard panel slides in from the right on mount with animated bar colors (0.3s); main content fades on language switch. Thinking pulse was already in place via globals.css.
 **Files:** components/ChatPanel.tsx, components/ModeSelector.tsx, components/ScorecardPanel.tsx, components/AppShell.tsx, docs/roadmap.md, docs/project_log.md
 **Status:** completed
+
+## 2026-07-20 — [Stage 8.1–8.4] Floating input and decoupled send flow
+
+**Summary:** Redesigned chat interaction to match AI SaaS patterns. Added glass-morphism `ChatInput` with auto-expanding textarea (1–5 lines), dismissible mode badge, and sticky bottom placement. Created `SendButton` with Send/Stop Framer Motion swap wired to `useChat` `stop()`. Decoupled `ModeSelector` from submission; `AppShell` now bundles code editor + instruction on send with Enter/Shift+Enter and mode autofocus. Added bilingual strings and chat pane bottom padding/gradient fade.
+**Files:** components/ChatInput.tsx, components/SendButton.tsx, components/AppShell.tsx, components/Sidebar.tsx, components/ModeSelector.tsx, components/ChatPanel.tsx, lib/translations.ts, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 8.5] Copy button and unified code input
+
+**Summary:** Removed split-pane `CodeEditor` in favor of a single centered chat layout (`max-w-4xl`). `ChatInput` is now the sole code entry surface with CodeEditor parity (monospace, LTR, line count, emerald focus ring, code persists after send). Added `CopyMessageButton` on assistant bubbles with hover/desktop, always-visible/mobile, and 2s check feedback via clipboard API.
+**Files:** components/CopyMessageButton.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/AppShell.tsx, components/Sidebar.tsx, lib/translations.ts, components/CodeEditor.tsx (deleted), docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 8.6] Chat history sidebar (IndexedDB)
+
+**Summary:** Added client-side chat persistence with `idb` (`lib/chat-db.ts`): CRUD, 50-conversation LRU eviction, and title generation from first user message. Built `HistorySidebar` with Framer Motion slide (LTR/RTL), time-ago labels, per-item delete, and clear-all AlertDialog. Wired `AppShell` auto-save on stream complete, conversation restore (messages, code, mode), New Chat reset, and `PanelLeft` toggle in `AppHeader`.
+**Files:** lib/chat-db.ts, lib/format-time-ago.ts, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, components/ui/alert-dialog.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-20 — [Stage 8.7–8.9] File upload, smart scroll, tab-switch fix
+
+**Summary:** Added drag-and-drop and paperclip file upload to the chat pane with extension/size validation and Sonner toasts; populates `ChatInput` with filename badge. Implemented `useSmartScroll` with IntersectionObserver, rAF-throttled auto-scroll, and "New messages" pill. Added `useVisibilitySafe` re-render on tab focus plus `MotionConfig reducedMotion="never"` on chat messages to prevent black-screen flash during background streaming.
+**Files:** lib/file-upload.ts, lib/handle-file-upload.ts, lib/hooks/use-smart-scroll.ts, lib/hooks/use-visibility-safe.ts, components/FileDropZone.tsx, components/ChatInput.tsx, components/ChatPanel.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/providers/theme-provider.tsx, components/ui/sonner.tsx, lib/translations.ts, package.json, docs/roadmap.md, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] AI chat input redesign with inline modes
+
+**Summary:** Replaced the floating chat input with an adapted 21st.dev `PromptInput` (spring height morph, voice/send/stop action). Swapped the Effort control for lucide mode icons (Review–Challenge); selecting a mode expands its label beside the icon. Removed the top `ModeSelector` so mode picking lives in the composer.
+**Files:** components/ui/ai-chat-input.tsx, components/ChatInput.tsx, components/Sidebar.tsx, components/AppShell.tsx, components/ChatPanel.tsx, lib/mode-icons.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Particle vanish submit animation
+
+**Summary:** Integrated an Aceternity-inspired particle vanish on send into `PromptInput`. Added `lib/vanish-particles.ts` to sample visible mono textarea glyphs (scroll/padding-aware, density-capped) and dissolve them right→left with a subtle upward send bias and primary-tint accents. Respects `prefers-reduced-motion`; code value persists after the flourish.
+**Files:** lib/vanish-particles.ts, components/ui/ai-chat-input.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Vanish animation sync and clear-on-complete
+
+**Summary:** Fixed particle vanish submit UX: textarea text now clips right→left in sync with the particle sweep (replacing instant `text-transparent`), and the input clears only after the animation completes via `clearOnSubmit`.
+**Files:** lib/vanish-particles.ts, components/ui/ai-chat-input.tsx, components/ChatInput.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Scorecard redesign
+
+**Summary:** Rebuilt the code evaluation card as a compact glass strip: animated SVG score ring with count-up, tone-colored metric chips in a single row, summary in the header, and collapsible body. Aligned with the composer aesthetic; removed bulky stacked bars and emoji title copy.
+**Files:** components/ScorecardPanel.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 9.2] Hero empty state (Ripple + Flip Words)
+
+**Summary:** Installed official Magic UI Ripple and Aceternity Flip Words; added EmptyHero with LTR slogans and AnimatePresence dissolve on first message; docked ChatInput + Scorecard under a CLS-stable flex-1 canvas; mount fade on main shell. `npm run build` passed.
+**Files:** components/ui/ripple.tsx, components/ui/flip-words.tsx, components/EmptyHero.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, components/ChatInput.tsx, components/ScorecardPanel.tsx, components/AppShell.tsx, app/globals.css, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 9.2] EmptyHero: single-word Flip Words only
+
+**Summary:** Removed the “Where the code grows into” lead line; hero now shows only a centered single cycling word (clarity / velocity / precision / craft / mastery) over the Ripple.
+**Files:** components/EmptyHero.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 9.2] EmptyHero flip word size tweak
+
+**Summary:** Slightly reduced Flip Words type scale so cycling words stay within the Ripple circle.
+**Files:** components/EmptyHero.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Remove New messages scroll pill
+
+**Summary:** Removed the New messages floating button from ChatPanel and cleaned pill state from useSmartScroll / translations.
+**Files:** components/ChatPanel.tsx, lib/hooks/use-smart-scroll.ts, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Aceternity hover-expand history sidebar
+
+**Summary:** Replaced the slide-over HistorySidebar with Aceternity/21st.dev Sidebar (hover-expand desktop rail + mobile overlay). Wired New Chat, conversation list, delete, and clear-all into the rail; AppShell is a full-height flex shell with RTL row reverse; AppHeader hamburger opens mobile overlay only.
+**Files:** components/ui/sidebar.tsx, components/HistorySidebar.tsx, components/AppShell.tsx, components/AppHeader.tsx, package.json, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Gooey search in history sidebar
+
+**Summary:** Installed Aceternity Gooey Input and integrated it into HistorySidebar to filter conversations by title; collapsed rail shows a search affordance that expands the sidebar; EN/AR copy for search + empty results.
+**Files:** components/ui/gooey-input.tsx, components/HistorySidebar.tsx, components/ui/sidebar.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Sync sidebar search reveal with rail animation
+
+**Summary:** Softened Gooey Input appearance with a delayed fade/blur crossfade and aligned DesktopSidebar width easing so search no longer pops in ahead of the rail expand.
+**Files:** components/HistorySidebar.tsx, components/ui/sidebar.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 8.x] Align sidebar search with New Chat chrome
+
+**Summary:** Search now mirrors the New Chat row (square icon + label); click starts the Gooey morph. Restyled Gooey Input to square corners, size-7 height, and background/foreground colors (white light / black dark).
+**Files:** components/HistorySidebar.tsx, components/ui/gooey-input.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — [Stage 9.x] Tubelight navbar for language + theme
+
+**Summary:** Replaced the sticky header chrome with the Serenity/21st Tubelight Navbar (original colors preserved). Wired Language (EN/AR) and Theme (Light/Dark) as action pills with the glowing lamp indicator; kept a compact mobile history button + brand; added mobile bottom clearance for the floating bar.
+**Files:** components/ui/tubelight-navbar.tsx, components/AppHeader.tsx, components/AppShell.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Monochrome white/charcoal retheme
+
+**Summary:** Removed emerald/green brand accents site-wide. Primary and sidebar tokens are now neutral white (dark) / charcoal (light); score tones, brand wordmarks, code highlights, and copy feedback use foreground greyscale only.
+**Files:** app/globals.css, components/ScorecardPanel.tsx, components/HistorySidebar.tsx, components/AppHeader.tsx, components/ChatPanel.tsx, components/CopyMessageButton.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Custom monochrome smooth cursor
+
+**Summary:** Added CustomCursor (sharp dot + trailing ring) with Framer Motion springs, interactive hover/click scales, coarse-pointer auto-hide, and desktop `cursor: none` with text-caret exceptions; mounted in AppShell.
+**Files:** components/CustomCursor.tsx, components/AppShell.tsx, app/globals.css, components/ui/smooth-cursor.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Custom cursor text-selection + crisp ring
+
+**Summary:** Hide custom cursor over text/code (native caret restored); remove backdrop-blur in favor of mix-blend-difference ring; fade center dot on interactive/text hover leaving ring-only feedback.
+**Files:** components/CustomCursor.tsx, app/globals.css, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Sidebar conversation mode icons
+
+**Summary:** Replaced emoji mode markers in history conversation rows with the shared Lucide MODE_ICONS set, styled as minimal bordered tiles that match the monochrome sidebar.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Custom cursor preference toggle
+
+**Summary:** Added a sidebar Smooth cursor switch (desktop only) with localStorage persistence so users can enable/disable the custom cursor; preference syncs to CustomCursor via a shared hook.
+**Files:** lib/hooks/use-custom-cursor-preference.ts, components/CustomCursor.tsx, components/HistorySidebar.tsx, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Hybrid AI thinking indicator
+
+**Summary:** Replaced the plain thinking badge with a monochrome hybrid loader (ripple spinner + cycling AI text + processor-pulse badge frame) that shows only until the first stream token, then fades out; EN/AR progress copy added.
+**Files:** components/ui/spinner-09.tsx, components/ui/ai-text-loading.tsx, components/ui/animated-badge.tsx, components/AiThinkingIndicator.tsx, components/ChatPanel.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Mode icon tooltips
+
+**Summary:** Added elegant top-side tooltips on job-type mode icons in the chat input (inactive modes) and history sidebar mode tiles, showing localized labels (Review, Hint, etc.) for first-time users.
+**Files:** components/ui/ai-chat-input.tsx, components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Footer Link Preview credits
+
+**Summary:** Replaced the OpenRouter model footer string with an Aceternity Link Preview credit linking to akrmcodes profile and the dev-grow GitHub repo, with EN/AR copy.
+**Files:** components/ui/link-preview.tsx, components/FooterCredit.tsx, components/AppShell.tsx, lib/translations.ts, package.json, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Fix footer LinkPreview hydration nesting
+
+**Summary:** Resolved invalid HTML nesting (`div` inside `p`) by switching FooterCredit to a `div` and making LinkPreview use phrasing-safe spans plus a HoverCard portal for the preview popup.
+**Files:** components/FooterCredit.tsx, components/ui/link-preview.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Smooth cursor toggle sidebar reveal
+
+**Summary:** Replaced hard mount/unmount of the Smooth cursor switch with a stay-mounted opacity/scale/width animation synced to the sidebar rail transition for a seamless expand/collapse feel.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Brand text selection styling
+
+**Summary:** Elevated native text selection with monochrome brand tokens — luminous wash + soft ink rim for prose, solid inverted stamp for code/inputs — tuned for both light and dark themes.
+**Files:** app/globals.css, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — 3D folder upload experience
+
+**Summary:** Integrated a monochrome adaptation of the 21st.dev 3D Folder for uploads — code-file sheets replace images; hover on the attach control instantly opens a folder flyout; drag-and-drop overlay uses the same open folder.
+**Files:** components/ui/3d-folder.tsx, components/FolderUploadTrigger.tsx, components/FileDropZone.tsx, components/ChatInput.tsx, components/ui/ai-chat-input.tsx, app/globals.css, lib/translations.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Inline folder-icon upload animation
+
+**Summary:** Removed the attach tooltip and separate 3D folder flyout; the three code icons now fan directly out of the upload folder glyph on hover as part of the icon itself.
+**Files:** components/FolderUploadTrigger.tsx, components/ui/3d-folder.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Larger inline folder sheet icons
+
+**Summary:** Enlarged the three fanned code icons in the upload glyph and switched their open/close motion to spring physics for a smoother, more polished fan-out.
+**Files:** components/ui/3d-folder.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Chat scrollbar to pane edge
+
+**Summary:** Moved conversation scrolling to a full-bleed column so the scrollbar sits at the main pane edge, while messages remain centered in max-w-4xl; added thin monochrome scrollbar styling with stable gutter.
+**Files:** components/AppShell.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, app/globals.css, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — World-class assistant response presentation
+
+**Summary:** Removed assistant message cards for a borderless page-blended layout; integrated Aceternity Text Generate Effect for completed/history replies; refined prose hierarchy; moved Copy into a footer action under each response.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, components/ChatPanel.tsx, components/CopyMessageButton.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Assistant response presentation polish
+
+**Summary:** Finalized borderless assistant replies with Aceternity text-generate on history mounts, refined prose hierarchy, streaming caret, and footer Copy control.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Switch OpenRouter API key
+
+**Summary:** Commented out the rate-limited temporary OpenRouter key and reactivated the primary key; verified home page, OpenRouter auth, and streaming `/api/chat`.
+**Files:** .env.local, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Brand logo + favicon
+
+**Summary:** Moved logo.svg into public/brand and app/icon.svg; replaced emoji marks with a theme-aware BrandLogo (currentColor); set SVG favicon with light/dark prefers-color-scheme for the Chrome tab.
+**Files:** public/brand/logo.svg, public/icon.svg, app/icon.svg, components/BrandLogo.tsx, components/AppHeader.tsx, components/HistorySidebar.tsx, app/layout.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Sidebar logo size and background
+
+**Summary:** Removed the rounded background tile behind the sidebar brand mark and increased the logo size slightly for clearer presence.
+**Files:** components/HistorySidebar.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-24 — Fix garbled tokens + streaming lag
+
+**Summary:** Hardened system prompt script purity and added client sanitizer for mixed-script model glitches; made streaming Markdown lightweight (no highlight / no TextGenerateEffect remount) and switched smart scroll to instant while loading to remove stutter and freeze-then-pop.
+**Files:** lib/prompts.ts, lib/sanitize-assistant-text.ts, components/AssistantMessage.tsx, lib/hooks/use-smart-scroll.ts, components/ChatPanel.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Soften folder icon + monochrome stop button
+
+**Summary:** Lightened the mini folder glyph toward muted gray via currentColor so it matches neighboring toolbar icons in light mode; kept send→stop icon swap but removed destructive red styling to preserve monochrome identity.
+**Files:** components/ui/3d-folder.tsx, components/FolderUploadTrigger.tsx, components/ui/ai-chat-input.tsx, components/SendButton.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — RTL/i18n exhaustive audit & refinement
+
+**Summary:** Refined Arabic copy for natural software-tutor tone; closed hardcoded EN string gaps; set AppShell `dir`/`lang` as source of truth (removed flex-row-reverse double-flip); converted composer/sidebar/gooey/scorecard to logical geometry with LTR-safe code field + vanish overlay; localized EmptyHero flip words and mobile drawer edge.
+**Files:** lib/translations.ts, components/AppShell.tsx, components/AppHeader.tsx, components/EmptyHero.tsx, components/Sidebar.tsx, components/ChatPanel.tsx, components/ChatInput.tsx, components/AssistantMessage.tsx, components/AiThinkingIndicator.tsx, components/ScorecardPanel.tsx, components/HistorySidebar.tsx, components/ui/ai-chat-input.tsx, components/ui/sidebar.tsx, components/ui/gooey-input.tsx, components/ui/flip-words.tsx, components/ui/progress.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Fix Arabic EmptyHero letter joining
+
+**Summary:** FlipWords was splitting Arabic into per-letter inline-block spans, which breaks cursive glyph shaping; joining-script words now animate as a single text run, and tracking-tight is disabled for Arabic.
+**Files:** components/ui/flip-words.tsx, components/EmptyHero.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Reliable text-generate everywhere
+
+**Summary:** Root causes were disabled generate during streaming, post-stream skip, ≤120-word cap, and paragraph-only coverage. Added incremental stream reveal, full entrance for history (any length), static settle after live stream, and generate for headings/list items; Arabic skips blur/tracking.
+**Files:** components/ui/text-generate-effect.tsx, components/AssistantMessage.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Live-stream text-generate (stable reveal)
+
+**Summary:** Live replies skipped artistic generate because ReactMarkdown remounted on every token. Added sealed-block + live-tail streaming reveal with declarative incremental motion on a stable prose-live node so words animate from the first token.
+**Files:** lib/streaming-reveal.ts, components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Arabic input caret starts RTL
+
+**Summary:** Prompt textarea/placeholder now use `dir=rtl` when the UI language is Arabic so the caret and typed text begin on the right; vanish raster/sweep follow the same direction.
+**Files:** components/ui/ai-chat-input.tsx, lib/vanish-particles.ts, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Fix scorecard analysis spinner glitch
+
+**Summary:** Score ring loader stuttered because Tailwind `-rotate-90` conflicted with Framer’s infinite rotate; replaced loading state with a CSS `animate-spin` arc on a separate SVG and removed section `layout` thrash during analysis.
+**Files:** components/ScorecardPanel.tsx, docs/project_log.md
+**Status:** completed
+
+## 2026-07-25 — Stream without text-generate (history-only)
+
+**Summary:** Removed TextGenerateEffect from live AI replies for smooth token throughput; entrance animation is history-only. Streaming uses a stable static Markdown path (no highlight/sanitize per chunk); generate effect simplified to entrance-only.
+**Files:** components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, components/ChatPanel.tsx, docs/project_log.md
+**Status:** completed

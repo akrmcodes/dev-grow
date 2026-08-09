@@ -356,7 +356,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
 
 - [ ] **Step 14:** Build `<CodeEditor />` component.
   - A styled `<textarea>` with monospace font and proper sizing.
-  - Placeholder: "Paste your code here... 🌱"
+  - Placeholder: "Paste your code here..."
   - Auto-resize based on content length.
 
 - [ ] **Step 15:** Build `<ModeSelector />` component.
@@ -408,7 +408,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
   - **Mode button active state** — smooth background-color transition.
 
 - [ ] **Step 21:** Add the DevGrow header/navbar.
-  - 🌱 DevGrow logo/wordmark on the left.
+  - DevGrow logo/wordmark on the left.
   - Language toggle (AR/EN) and theme toggle (🌙/☀️) on the right.
   - Sticky at the top of the viewport.
 
@@ -442,7 +442,7 @@ Even with Layers 1 and 2, defensive programming demands a final fallback:
   - Test the fallback: temporarily break the API call and verify the "Unable to score" UI appears gracefully.
 
 - [ ] **Step 26:** Test edge cases.
-  - **Empty code submission** → Show a validation message: "Paste some code first! 🌱"
+  - **Empty code submission** → Show a validation message: "Paste some code first!"
   - **OpenRouter API key missing** → Show a clear error page: "API key not configured."
   - **Rate limit hit (429)** → Show a user-friendly message: "We've hit our request limit. Please wait a moment and try again." with a cooldown timer.
   - **Network error** → Show: "Connection issue. Please check your internet and try again."

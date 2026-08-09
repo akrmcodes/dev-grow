@@ -1,11 +1,10 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import { Badge } from "@/components/ui/badge";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { AiThinkingIndicator } from "@/components/AiThinkingIndicator";
+import { AssistantMessage } from "@/components/AssistantMessage";
+import { useSmartScroll } from "@/lib/hooks/use-smart-scroll";
 import { type Language, t } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
@@ -14,12 +13,13 @@ type ChatPanelProps = {
   isLoading: boolean;
   error: Error | undefined;
   language: Language;
+  visibilityKey: number;
 };
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.25, ease: "easeOut" as const },
+  transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
 };
 
 function getMessageText(message: UIMessage): string {
@@ -52,161 +52,137 @@ function getErrorMessage(error: Error | undefined, language: Language): string {
   return t("errorGeneric", language);
 }
 
+/** True while waiting for the first assistant stream token. */
+function isAwaitingFirstToken(
+  messages: UIMessage[],
+  isLoading: boolean,
+): boolean {
+  if (!isLoading) return false;
+
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== "assistant") return true;
+
+  return getMessageText(last).length === 0;
+}
+
 export function ChatPanel({
   messages,
   isLoading,
   error,
   language,
+  visibilityKey,
 }: ChatPanelProps) {
   const isRTL = language === "ar";
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const showThinking = isAwaitingFirstToken(messages, isLoading);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+  const { scrollContainerRef, bottomSentinelRef } = useSmartScroll(
+    [messages, isLoading, showThinking, visibilityKey],
+    // Instant scroll while tokens arrive — smooth stacks and causes stutter.
+    { preferInstant: isLoading },
+  );
 
   const visibleMessages = messages.filter((message) => {
     const text = getMessageText(message);
     return text.length > 0 || message.role === "user";
   });
 
-  const showEmptyState = visibleMessages.length === 0 && !isLoading && !error;
+  const streamingAssistantId =
+    isLoading &&
+    visibleMessages.length > 0 &&
+    visibleMessages[visibleMessages.length - 1]?.role === "assistant"
+      ? visibleMessages[visibleMessages.length - 1]?.id
+      : null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {showEmptyState && (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
-            <p className="max-w-[220px] text-sm text-muted-foreground">
-              {t("responsesEmpty", language)}
-            </p>
-          </div>
-        )}
+    <div className="relative flex h-full min-h-0 flex-1 flex-col" dir={isRTL ? "rtl" : "ltr"}>
+      <div
+        ref={scrollContainerRef}
+        className="chat-scroll flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto will-change-transform"
+      >
+        <MotionConfig reducedMotion="never">
+          <div
+            key={visibilityKey}
+            className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 pt-2 pb-6"
+          >
+            <AnimatePresence initial={false}>
+              {visibleMessages.map((message) => {
+                const text = getMessageText(message);
+                const isUser = message.role === "user";
+                const isStreamingAssistant =
+                  !isUser && message.id === streamingAssistantId;
 
-        <div className="flex flex-col gap-3 p-1">
-          <AnimatePresence initial={false}>
-            {visibleMessages.map((message) => {
-              const text = getMessageText(message);
-              const isUser = message.role === "user";
-
-              return (
-                <motion.div
-                  key={message.id}
-                  initial={fadeIn.initial}
-                  animate={fadeIn.animate}
-                  transition={fadeIn.transition}
-                  className={cn(
-                    "flex w-full",
-                    isUser
-                      ? isRTL
-                        ? "justify-start"
-                        : "justify-end"
-                      : isRTL
-                        ? "justify-end"
-                        : "justify-start",
-                  )}
-                >
-                  <div
+                return (
+                  <motion.div
+                    key={message.id}
+                    initial={isStreamingAssistant ? false : fadeIn.initial}
+                    animate={fadeIn.animate}
+                    transition={
+                      isStreamingAssistant
+                        ? { duration: 0 }
+                        : fadeIn.transition
+                    }
                     className={cn(
-                      "max-w-[92%] rounded-xl px-3 py-2 text-sm",
-                      isUser
-                        ? "bg-primary/10 text-foreground"
-                        : "border border-border bg-card text-card-foreground",
+                      "flex w-full",
+                      // Logical end = trailing edge (right in LTR, left in RTL).
+                      isUser ? "justify-end" : "justify-start",
                     )}
                   >
                     {isUser ? (
-                      <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
-                        {text}
-                      </p>
-                    ) : (
                       <div
                         className={cn(
-                          "prose prose-sm dark:prose-invert max-w-none",
-                          "prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0",
-                          "prose-code:text-emerald-300",
+                          "max-w-[min(92%,36rem)] rounded-2xl px-3.5 py-2.5 text-sm",
+                          "bg-foreground/[0.06] text-foreground",
                         )}
                       >
-                        <ReactMarkdown
-                          rehypePlugins={[rehypeHighlight]}
-                          components={{
-                            pre: ({ children }) => (
-                              <pre
-                                dir="ltr"
-                                className="my-2 overflow-x-auto rounded-lg bg-[#0d1117] p-3 text-xs"
-                              >
-                                {children}
-                              </pre>
-                            ),
-                            code: ({ className, children, ...props }) => {
-                              const isBlock = className?.includes("language-");
-
-                              if (isBlock) {
-                                return (
-                                  <code className={className} {...props}>
-                                    {children}
-                                  </code>
-                                );
-                              }
-
-                              return (
-                                <code
-                                  className="rounded bg-muted px-1 py-0.5 font-mono text-xs"
-                                  dir="ltr"
-                                  {...props}
-                                >
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
+                        <p
+                          className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed"
+                          dir="ltr"
                         >
                           {text}
-                        </ReactMarkdown>
+                        </p>
                       </div>
+                    ) : (
+                      <AssistantMessage
+                        text={text}
+                        language={language}
+                        isStreaming={isStreamingAssistant}
+                      />
                     )}
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })}
 
-            {isLoading && (
-              <motion.div
-                key="thinking"
-                initial={fadeIn.initial}
-                animate={fadeIn.animate}
-                exit={{ opacity: 0, y: 10 }}
-                transition={fadeIn.transition}
-                className={cn(
-                  "flex w-full",
-                  isRTL ? "justify-end" : "justify-start",
-                )}
-              >
-                <Badge
-                  variant="secondary"
-                  className="animate-thinking-pulse gap-1.5 px-3 py-1"
+              {showThinking ? (
+                <motion.div
+                  key="thinking"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4, transition: { duration: 0.18 } }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="flex w-full justify-start"
                 >
-                  {t("thinking", language)}
-                </Badge>
-              </motion.div>
-            )}
+                  <AiThinkingIndicator language={language} />
+                </motion.div>
+              ) : null}
 
-            {error && (
-              <motion.div
-                key="error"
-                initial={fadeIn.initial}
-                animate={fadeIn.animate}
-                exit={{ opacity: 0, y: 10 }}
-                transition={fadeIn.transition}
-                className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                role="alert"
-              >
-                {getErrorMessage(error, language)}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {error ? (
+                <motion.div
+                  key="error"
+                  initial={fadeIn.initial}
+                  animate={fadeIn.animate}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={fadeIn.transition}
+                  className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                  role="alert"
+                >
+                  {getErrorMessage(error, language)}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
 
-          <div ref={bottomRef} aria-hidden="true" />
-        </div>
+            <div ref={bottomSentinelRef} aria-hidden="true" />
+          </div>
+        </MotionConfig>
       </div>
     </div>
   );

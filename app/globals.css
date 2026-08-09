@@ -48,6 +48,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+  @keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
 }
 
 /* Dark-first defaults — :root matches .dark for zero-flash load */
@@ -60,7 +69,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.72 0.17 155);
+  /* Monochrome primary: white on charcoal */
+  --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.145 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -71,21 +81,30 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.92 0 0);
+  --chart-2: oklch(0.72 0 0);
+  --chart-3: oklch(0.55 0 0);
+  --chart-4: oklch(0.4 0 0);
+  --chart-5: oklch(0.28 0 0);
   --radius: 0.625rem;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.72 0.17 155);
+  --sidebar-primary: oklch(0.985 0 0);
   --sidebar-primary-foreground: oklch(0.145 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  /* Selection — silver highlighter wash + ink stamp for code */
+  --selection: color-mix(in oklch, var(--foreground) 26%, transparent);
+  --selection-foreground: oklch(0.99 0 0);
+  --selection-strong: color-mix(in oklch, var(--foreground) 92%, transparent);
+  --selection-strong-foreground: oklch(0.145 0 0);
+  /* 3D folder — monochrome paperboard */
+  --folder-back: color-mix(in oklch, var(--foreground) 28%, var(--card));
+  --folder-front: color-mix(in oklch, var(--foreground) 16%, var(--card));
+  --folder-tab: color-mix(in oklch, var(--foreground) 36%, var(--card));
 }
 
 .light {
@@ -96,35 +115,94 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.45 0.14 155);
-  --primary-foreground: oklch(0.985 0 0);
+  /* Monochrome primary: charcoal on white */
+  --primary: oklch(0.18 0 0);
+  --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.45 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.45 0 0);
+  --chart-1: oklch(0.2 0 0);
+  --chart-2: oklch(0.4 0 0);
+  --chart-3: oklch(0.55 0 0);
+  --chart-4: oklch(0.7 0 0);
+  --chart-5: oklch(0.85 0 0);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.45 0.14 155);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.18 0 0);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: oklch(0.9 0 0);
+  --sidebar-ring: oklch(0.45 0 0);
+  /* Selection — charcoal ink wash + inverted stamp for code */
+  --selection: color-mix(in oklch, var(--foreground) 18%, transparent);
+  --selection-foreground: oklch(0.12 0 0);
+  --selection-strong: color-mix(in oklch, var(--foreground) 90%, transparent);
+  --selection-strong-foreground: oklch(0.99 0 0);
+  /* 3D folder — monochrome paperboard */
+  --folder-back: color-mix(in oklch, var(--foreground) 14%, var(--card));
+  --folder-front: color-mix(in oklch, var(--foreground) 8%, var(--card));
+  --folder-tab: color-mix(in oklch, var(--foreground) 20%, var(--card));
 }
 
 .font-arabic {
   font-family: var(--font-tajawal), sans-serif;
+}
+
+/*
+ * DevGrow text selection — monochrome brand highlight.
+ * Prose: luminous silver/charcoal wash with a soft ink rim.
+ * Code & inputs: solid inverted stamp for precise copy.
+ */
+::selection {
+  background-color: var(--selection);
+  color: var(--selection-foreground);
+  text-shadow:
+    0 0 18px color-mix(in oklch, var(--foreground) 28%, transparent),
+    0 0.5px 0 color-mix(in oklch, var(--background) 55%, transparent);
+}
+
+::-moz-selection {
+  background-color: var(--selection);
+  color: var(--selection-foreground);
+  text-shadow:
+    0 0 18px color-mix(in oklch, var(--foreground) 28%, transparent),
+    0 0.5px 0 color-mix(in oklch, var(--background) 55%, transparent);
+}
+
+pre::selection,
+pre *::selection,
+code::selection,
+code *::selection,
+.font-mono::selection,
+.font-mono *::selection,
+textarea::selection,
+input::selection,
+[contenteditable="true"]::selection {
+  background-color: var(--selection-strong);
+  color: var(--selection-strong-foreground);
+  text-shadow: none;
+}
+
+pre::-moz-selection,
+pre *::-moz-selection,
+code::-moz-selection,
+code *::-moz-selection,
+.font-mono::-moz-selection,
+.font-mono *::-moz-selection,
+textarea::-moz-selection,
+input::-moz-selection,
+[contenteditable="true"]::-moz-selection {
+  background-color: var(--selection-strong);
+  color: var(--selection-strong-foreground);
+  text-shadow: none;
 }
 
 @keyframes thinking-pulse {
@@ -141,6 +219,75 @@
   animation: thinking-pulse 1.2s ease-in-out infinite;
 }
 
+/* Processor-pulse badge (animated-badge adaptation) */
+.devgrow-ml-light {
+  offset-anchor: 10px 0px;
+  offset-path: path(
+    "M 69 49.8 h -30 q -3 0 -3 -3 v -13 q 0 -3 -3 -3 h -23 q -3 0 -3 -3 v -13 q 0 -3 -3 -3 h -50"
+  );
+  animation: devgrow-ml-path 3s linear infinite;
+}
+
+@keyframes devgrow-ml-path {
+  0% {
+    offset-distance: 0%;
+  }
+  55% {
+    offset-distance: 100%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.devgrow-chip-sheen {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in oklch, var(--foreground) 12%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: devgrow-chip-sheen 3.2s linear infinite;
+}
+
+@keyframes devgrow-chip-sheen {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Chat conversation scroll — track at the pane edge, not beside bubbles */
+.chat-scroll {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--foreground) 22%, transparent)
+    transparent;
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  background-color: color-mix(in oklch, var(--foreground) 18%, transparent);
+}
+
+.chat-scroll:hover::-webkit-scrollbar-thumb,
+.chat-scroll:focus-within::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklch, var(--foreground) 32%, transparent);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -150,5 +297,30 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Custom smooth cursor — desktop / fine pointer only */
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor-active,
+  html.custom-cursor-active * {
+    cursor: none !important;
+  }
+
+  /* Precision text selection — restore native caret over text/code */
+  html.custom-cursor-active.custom-cursor-text,
+  html.custom-cursor-active.custom-cursor-text * {
+    cursor: text !important;
+  }
+
+  html.custom-cursor-active input,
+  html.custom-cursor-active textarea,
+  html.custom-cursor-active select,
+  html.custom-cursor-active code,
+  html.custom-cursor-active pre,
+  html.custom-cursor-active .prose,
+  html.custom-cursor-active .prose *,
+  html.custom-cursor-active [contenteditable="true"] {
+    cursor: text !important;
   }
 }
