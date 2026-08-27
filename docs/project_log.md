@@ -442,3 +442,9 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Summary:** Removed TextGenerateEffect from live AI replies for smooth token throughput; entrance animation is history-only. Streaming uses a stable static Markdown path (no highlight/sanitize per chunk); generate effect simplified to entrance-only.
 **Files:** components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, components/ChatPanel.tsx, docs/project_log.md
 **Status:** completed
+
+## 2026-08-27 — OpenRouter API key + env example
+
+**Summary:** Activated new OpenRouter API key in `.env.local`; added committed `.env.example` with placeholders and un-ignored it in `.gitignore` for onboarding.
+**Files:** .env.local, .env.example, .gitignore, docs/project_log.md
+**Status:** completed
