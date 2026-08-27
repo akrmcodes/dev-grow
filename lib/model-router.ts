@@ -1,19 +1,29 @@
-import { FALLBACK_MODEL, PRIMARY_MODEL } from "@/lib/openrouter";
+import {
+  FALLBACK_MODEL,
+  PRIMARY_MODEL,
+  ROUTER_MODEL,
+} from "@/lib/openrouter";
 
 const RATE_LIMIT_TTL_MS = 5 * 60 * 1000;
 
+const MODEL_CHAIN = [PRIMARY_MODEL, FALLBACK_MODEL, ROUTER_MODEL] as const;
+
 let primaryRateLimitedUntil = 0;
+
+function uniqueModels(models: readonly string[]): string[] {
+  return [...new Set(models)];
+}
 
 /**
  * Returns models in preferred order. When the primary was recently rate-limited,
- * the fallback is tried first so both chat and score routes share the same state.
+ * explicit fallbacks are tried first so both chat and score routes share state.
  */
-export function getPreferredModels(): [string, string] {
+export function getPreferredModels(): string[] {
   if (Date.now() < primaryRateLimitedUntil) {
-    return [FALLBACK_MODEL, PRIMARY_MODEL];
+    return uniqueModels([FALLBACK_MODEL, ROUTER_MODEL, PRIMARY_MODEL]);
   }
 
-  return [PRIMARY_MODEL, FALLBACK_MODEL];
+  return uniqueModels(MODEL_CHAIN);
 }
 
 export function markModelRateLimited(model: string): void {

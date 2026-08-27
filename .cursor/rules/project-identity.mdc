@@ -14,7 +14,7 @@ Bilingual (Arabic/English) AI coding assistant for programming students. Six ped
 - Next.js 16 App Router · Tailwind v4 · shadcn/ui (base-nova)
 - Vercel AI SDK (`ai`, `@ai-sdk/react`) · `@openrouter/ai-sdk-provider`
 - Primary model: `google/gemma-4-31b-it:free`
-- Fallback model: `openai/gpt-oss-20b:free`
+- Fallback model: `meta-llama/llama-3.3-70b-instruct:free` (last resort: `openrouter/free`)
 
 ## Canonical Paths
 

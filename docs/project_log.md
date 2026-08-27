@@ -443,8 +443,8 @@ Chronological record of completed work. Each entry is appended after a task fini
 **Files:** components/AssistantMessage.tsx, components/ui/text-generate-effect.tsx, components/ChatPanel.tsx, docs/project_log.md
 **Status:** completed
 
-## 2026-08-27 — OpenRouter API key + env example
+## 2026-08-27 — Fix OpenRouter 500 errors (score + chat)
 
-**Summary:** Activated new OpenRouter API key in `.env.local`; added committed `.env.example` with placeholders and un-ignored it in `.gitignore` for onboarding.
-**Files:** .env.local, .env.example, .gitignore, docs/project_log.md
+**Summary:** Replaced retired `openai/gpt-oss-20b:free` fallback with `meta-llama/llama-3.3-70b-instruct:free` plus `openrouter/free` as last resort; added 30s connect-timeout fetch for slow regions; expanded model-fallback to retry on 429/404/transient network/JSON parse failures.
+**Files:** lib/openrouter-fetch.ts, lib/openrouter.ts, lib/api-errors.ts, lib/model-router.ts, lib/stream-text-fallback.ts, app/api/score/route.ts, .env.example, .cursor/rules/project-identity.mdc, docs/project_log.md
 **Status:** completed

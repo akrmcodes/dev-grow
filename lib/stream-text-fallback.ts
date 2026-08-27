@@ -1,5 +1,5 @@
 import { streamText } from "ai";
-import { getErrorStatus } from "@/lib/api-errors";
+import { getErrorStatus, shouldTryNextModel } from "@/lib/api-errors";
 import {
   getPreferredModels,
   markModelRateLimited,
@@ -47,8 +47,10 @@ export async function streamTextWithModelFallback(
       lastError = error;
       console.error(error);
 
-      if (getErrorStatus(error) === 429) {
-        markModelRateLimited(modelId);
+      if (shouldTryNextModel(error)) {
+        if (getErrorStatus(error) === 429) {
+          markModelRateLimited(modelId);
+        }
         continue;
       }
 
