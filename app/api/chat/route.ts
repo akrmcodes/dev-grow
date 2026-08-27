@@ -68,8 +68,11 @@ export async function POST(request: Request) {
   try {
     const modelMessages = await convertToModelMessages(messagesForModel);
 
-    const result = await streamTextWithModelFallback((model) => ({
-      model: openrouter.chat(model),
+    const result = await streamTextWithModelFallback((model, nativeFallbacks) => ({
+      model: openrouter.chat(
+        model,
+        nativeFallbacks.length > 0 ? { models: nativeFallbacks } : undefined,
+      ),
       system: systemPrompt,
       messages: modelMessages,
     }));

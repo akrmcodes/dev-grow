@@ -1,24 +1,41 @@
 import { generateObject } from "ai";
 import { getErrorStatus, shouldTryNextModel } from "@/lib/api-errors";
-import {
-  getPreferredModels,
-  markModelRateLimited,
-} from "@/lib/model-router";
-import { openrouter } from "@/lib/openrouter";
+import { getPreferredModels, markModelFailed } from "@/lib/model-router";
+import { getNativeModelFallbacks, openrouter } from "@/lib/openrouter";
 import { SCORECARD_PROMPT } from "@/lib/prompts";
 import { ScorecardSchema, type ScorecardResult } from "@/lib/schemas";
 
 // Next.js requires a route-segment literal — keep in sync with MAX_DURATION in lib/constants.ts
 export const maxDuration = 30;
 
+function createExhaustedError(
+  lastError: unknown,
+  lastStatus?: number,
+): Error {
+  const error = new Error("All models unavailable");
+  if (lastStatus != null) {
+    (error as Error & { status: number }).status = lastStatus;
+  }
+  if (lastError) {
+    error.cause = lastError;
+  }
+  return error;
+}
+
 async function generateScorecard(code: string): Promise<ScorecardResult> {
   const prompt = `${SCORECARD_PROMPT}\n\n\`\`\`\n${code}\n\`\`\``;
+  const models = getPreferredModels();
+  let lastError: unknown;
+  let lastStatus: number | undefined;
 
-  for (const model of getPreferredModels()) {
+  for (const model of models) {
+    const nativeFallbacks = getNativeModelFallbacks(model, models);
+
     try {
       const result = await generateObject({
         model: openrouter.chat(model, {
           plugins: [{ id: "response-healing" }],
+          ...(nativeFallbacks.length > 0 ? { models: nativeFallbacks } : {}),
         }),
         schema: ScorecardSchema,
         prompt,
@@ -27,18 +44,23 @@ async function generateScorecard(code: string): Promise<ScorecardResult> {
 
       return result.object;
     } catch (error) {
+      lastError = error;
+      const status = getErrorStatus(error);
+      if (status != null) {
+        lastStatus = status;
+      }
       console.error(error);
+
       if (shouldTryNextModel(error)) {
-        if (getErrorStatus(error) === 429) {
-          markModelRateLimited(model);
-        }
+        markModelFailed(model, status);
         continue;
       }
+
       throw error;
     }
   }
 
-  throw new Error("All models unavailable");
+  throw createExhaustedError(lastError, lastStatus);
 }
 
 export async function POST(request: Request) {
@@ -61,10 +83,6 @@ export async function POST(request: Request) {
     return Response.json(scorecard, { status: 200 });
   } catch (error) {
     console.error(error);
-    // Three-layer reliability strategy:
-    // (1) generateObject() + Zod schema enforcement
-    // (2) OpenRouter Response Healing plugin
-    // (3) Application-level fallback JSON for the Scorecard UI
     const status = getErrorStatus(error);
 
     if (status === 429) {

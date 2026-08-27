@@ -1,5 +1,10 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { openRouterFetch } from "@/lib/openrouter-fetch";
+import {
+  FREE_MODEL_CHAIN,
+  PRIMARY_MODEL,
+  getNativeModelFallbacks,
+} from "@/lib/openrouter-models";
 
 const apiKey = process.env.OPENROUTER_API_KEY;
 
@@ -9,14 +14,7 @@ if (!apiKey) {
   );
 }
 
-export const PRIMARY_MODEL =
-  process.env.PRIMARY_MODEL ?? "google/gemma-4-31b-it:free";
-/** Reliable instruct model when the primary is rate-limited. */
-export const FALLBACK_MODEL =
-  process.env.FALLBACK_MODEL ?? "meta-llama/llama-3.3-70b-instruct:free";
-/** Last-resort smart router — may pick niche models; kept after explicit fallbacks. */
-export const ROUTER_MODEL =
-  process.env.ROUTER_MODEL ?? "openrouter/free";
+export { FREE_MODEL_CHAIN, PRIMARY_MODEL, getNativeModelFallbacks };
 
 export const openrouter = createOpenRouter({
   apiKey,

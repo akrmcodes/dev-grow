@@ -10,11 +10,11 @@ import { z } from "zod";
  */
 export const ScorecardSchema = z.object({
   // Code structure, naming, formatting, and clarity (0 = poor, 10 = excellent).
-  readability: z.number().min(0).max(10),
+  readability: z.coerce.number().min(0).max(10),
   // Correctness, edge-case handling, and algorithmic soundness.
-  logic: z.number().min(0).max(10),
+  logic: z.coerce.number().min(0).max(10),
   // Comments, docstrings, and self-explanatory naming.
-  documentation: z.number().min(0).max(10),
+  documentation: z.coerce.number().min(0).max(10),
   // One-sentence overall assessment — must not be blank for the scorecard UI.
   summary: z.string().min(1),
 });

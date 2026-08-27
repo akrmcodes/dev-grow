@@ -1,9 +1,7 @@
 import { streamText } from "ai";
 import { getErrorStatus, shouldTryNextModel } from "@/lib/api-errors";
-import {
-  getPreferredModels,
-  markModelRateLimited,
-} from "@/lib/model-router";
+import { getPreferredModels, markModelFailed } from "@/lib/model-router";
+import { getNativeModelFallbacks } from "@/lib/openrouter";
 
 type StreamTextParams = Parameters<typeof streamText>[0];
 type StreamTextResultType = ReturnType<typeof streamText>;
@@ -29,14 +27,34 @@ async function probeStreamResult(result: StreamTextResultType): Promise<void> {
   }
 }
 
-export async function streamTextWithModelFallback(
-  buildParams: (modelId: string) => StreamTextParams,
-): Promise<StreamTextResultType> {
-  let lastError: unknown;
+function createExhaustedError(
+  lastError: unknown,
+  lastStatus?: number,
+): Error {
+  const error = new Error("All models unavailable");
+  if (lastStatus != null) {
+    (error as Error & { status: number }).status = lastStatus;
+  }
+  if (lastError) {
+    error.cause = lastError;
+  }
+  return error;
+}
 
-  for (const modelId of getPreferredModels()) {
+export async function streamTextWithModelFallback(
+  buildParams: (
+    modelId: string,
+    nativeFallbacks: string[],
+  ) => StreamTextParams,
+): Promise<StreamTextResultType> {
+  const models = getPreferredModels();
+  let lastError: unknown;
+  let lastStatus: number | undefined;
+
+  for (const modelId of models) {
+    const nativeFallbacks = getNativeModelFallbacks(modelId, models);
     const result = streamText({
-      ...buildParams(modelId),
+      ...buildParams(modelId, nativeFallbacks),
       maxRetries: 0,
     });
 
@@ -45,12 +63,14 @@ export async function streamTextWithModelFallback(
       return result;
     } catch (error) {
       lastError = error;
+      const status = getErrorStatus(error);
+      if (status != null) {
+        lastStatus = status;
+      }
       console.error(error);
 
       if (shouldTryNextModel(error)) {
-        if (getErrorStatus(error) === 429) {
-          markModelRateLimited(modelId);
-        }
+        markModelFailed(modelId, status);
         continue;
       }
 
@@ -58,5 +78,5 @@ export async function streamTextWithModelFallback(
     }
   }
 
-  throw lastError ?? new Error("All models unavailable");
+  throw createExhaustedError(lastError, lastStatus);
 }
