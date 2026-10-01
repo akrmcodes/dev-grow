@@ -18,7 +18,19 @@
 
 DevGrow is a full-stack AI coding assistant that helps programming students improve their code through structured, pedagogical feedback. It supports Arabic and English, switches layout direction automatically (RTL/LTR), and streams responses in real time via the Vercel AI SDK and OpenRouter.
 
-## Features
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [API Reference](#api-reference)
+- [Environment Variables](#environment-variables)
+- [Development](#development)
+- [Roadmap](#roadmap)
+- [License](#license)
+
+## Key Features
 
 - **Six feedback modes** — Review, Hint, Concept, Solution, Analogy, Challenge — each with a distinct system prompt tuned for learning
 - **Bilingual** — automatically responds in Arabic or English based on the student's code and language toggle; full RTL layout support
@@ -46,33 +58,33 @@ DevGrow is a full-stack AI coding assistant that helps programming students impr
 
 ## Project Structure
 
-```
+```text
 dev-grow/
 ├── app/
 │   ├── api/
-│   │   ├── chat/route.ts      # Streaming chat endpoint
-│   │   └── score/route.ts     # Structured scorecard endpoint
+│   │   ├── chat/route.ts       # Streaming chat endpoint
+│   │   └── score/route.ts      # Structured scorecard endpoint
 │   ├── globals.css
 │   └── layout.tsx
 ├── components/
-│   ├── AppShell.tsx           # Root client shell (state, layout)
-│   ├── ChatInput.tsx          # Floating auto-expanding input
-│   ├── ChatPanel.tsx          # Streaming message list
-│   ├── CodeEditor.tsx         # Monospace textarea + line count
-│   ├── FileDropZone.tsx       # Drag-and-drop file loader
-│   ├── HistorySidebar.tsx     # IndexedDB conversation list
-│   ├── ModeSelector.tsx       # Six mode buttons
-│   ├── ScorecardPanel.tsx     # Animated score bars
-│   ├── Sidebar.tsx            # Right-pane container
+│   ├── AppShell.tsx            # Root client shell (state, layout)
+│   ├── ChatInput.tsx           # Floating auto-expanding input
+│   ├── ChatPanel.tsx           # Streaming message list
+│   ├── CodeEditor.tsx          # Monospace textarea + line count
+│   ├── FileDropZone.tsx        # Drag-and-drop file loader
+│   ├── HistorySidebar.tsx      # IndexedDB conversation list
+│   ├── ModeSelector.tsx        # Six mode buttons
+│   ├── ScorecardPanel.tsx      # Animated score bars
+│   ├── Sidebar.tsx             # Right-pane container
 │   └── ...
 ├── lib/
-│   ├── chat-db.ts             # IndexedDB CRUD layer
-│   ├── constants.ts           # MODE_CONFIG, timeouts, messages
-│   ├── openrouter.ts          # Singleton provider + model chain
-│   ├── prompts.ts             # System prompts + getSystemPrompt()
-│   ├── schemas.ts             # Zod ScorecardSchema
+│   ├── chat-db.ts              # IndexedDB CRUD layer
+│   ├── constants.ts            # MODE_CONFIG, timeouts, messages
+│   ├── openrouter.ts           # Singleton provider + model chain
+│   ├── prompts.ts              # System prompts + getSystemPrompt()
+│   ├── schemas.ts              # Zod ScorecardSchema
 │   ├── stream-text-fallback.ts # Model fallback orchestration
-│   └── translations.ts        # en/ar UI strings
+│   └── translations.ts         # en/ar UI strings
 └── docs/
     ├── plan.md
     ├── roadmap.md
@@ -86,7 +98,7 @@ dev-grow/
 - Node.js 18+
 - An [OpenRouter](https://openrouter.ai/keys) API key (free tier available)
 
-### 1. Clone and install
+### 1) Clone and Install
 
 ```bash
 git clone https://github.com/your-username/dev-grow.git
@@ -94,7 +106,7 @@ cd dev-grow
 npm install
 ```
 
-### 2. Configure environment
+### 2) Configure Environment Variables
 
 ```bash
 cp .env.example .env.local
@@ -108,7 +120,7 @@ OPENROUTER_API_KEY=sk-or-v1-your_key_here
 
 See [`.env.example`](.env.example) for the full list of optional overrides (model chain, app name).
 
-### 3. Run the development server
+### 3) Run the Development Server
 
 ```bash
 npm run dev
@@ -181,11 +193,12 @@ All scores are integers in the range 0–10, validated by Zod before returning.
 
 ## Development
 
-```bash
-npm run dev      # Start dev server (http://localhost:3000)
-npm run build    # Production build
-npm run lint     # ESLint check
-```
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server (`http://localhost:3000`) |
+| `npm run build` | Build for production |
+| `npm run lint` | Run ESLint |
+| `npm run start` | Start production server |
 
 ## Roadmap
 
